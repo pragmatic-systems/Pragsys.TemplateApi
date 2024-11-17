@@ -1,0 +1,24 @@
+{
+  "NugetPackages": [],
+  "DockerPackages": [
+    ".\\src\\Template.DbApi.Api\\Dockerfile",
+    ".\\src\\Template.DbApi.DbUp\\Dockerfile"
+  ],
+  "DockerComposeFiles": [
+    ".\\docker-compose.yml",
+    ".\\docker-compose.infra.yml",
+    ".\\docker-compose.override.yml"
+  ],
+  "AcceptanceTests": [
+    ".\\test\\Template.DbApi.AcceptanceTests\\Template.DbApi.AcceptanceTests.csproj"
+  ],
+  "UnitTests": [
+    ".\\test\\Template.DbApi.UnitTests\\Template.DbApi.UnitTests.csproj"
+  ],
+  "Benchmarks": [
+    ".\\test\\Template.DbApi.Benchmark\\Template.DbApi.Benchmark.csproj"
+  ],
+  "ApiSpecs": {
+    "Template.DbApi.Api": "http://localhost:5080"
+  }
+}

@@ -1,0 +1,15 @@
+version: '3.4'
+
+services:
+
+  enricher.api:
+    image: ${DOCKER_REGISTRY-}enricherapi
+    build:
+      context: .
+      dockerfile: src/Template.DbApi.Api/Dockerfile
+
+  enricher.dbup:
+    image: ${DOCKER_REGISTRY-}enricherdbup
+    build:
+      context: .
+      dockerfile: src/Template.DbApi.DbUp/Dockerfile

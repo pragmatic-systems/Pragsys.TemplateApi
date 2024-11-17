@@ -1,0 +1,14 @@
+{
+  "profiles": {
+    "Docker Compose": {
+      "commandName": "DockerCompose",
+      "commandVersion": "1.0",
+      "serviceActions": {
+        "enricher.api": "StartDebugging",
+        "enricher.consumer": "StartDebugging",
+        "enricher.queue": "StartWithoutDebugging",
+        "enricher.simulator": "StartDebugging"
+      }
+    }
+  }
+}

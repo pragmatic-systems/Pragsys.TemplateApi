@@ -1,0 +1,27 @@
+version: '3.4'
+
+services:
+
+  enricher.db:
+    image: postgres
+    container_name: Template.DbApi.Db
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: example
+    ports:
+      - 5432:5432
+    networks:
+      - main
+
+  enricher.seq:
+    image: datalust/seq
+    container_name: Template.DbApi.Seq
+    ports:
+      - "5030:80"
+    environment:
+      - ACCEPT_EULA=Y
+    networks:
+      - main
+
+networks:
+    main:
