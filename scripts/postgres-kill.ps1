@@ -1,5 +1,5 @@
 
-$container = $(docker container ls -a -q --filter=name='Template.DbApi.Db')
+$container = $(docker container ls -a -q --filter=name='Template.TestedApi.Db')
 
 # Remove DB containers
 if ($container -ne $null) {

@@ -4,7 +4,7 @@ services:
 
   enricher.db:
     image: postgres
-    container_name: Template.DbApi.Db
+    container_name: Template.TestedApi.Db
     restart: always
     environment:
       POSTGRES_PASSWORD: example
@@ -15,7 +15,7 @@ services:
 
   enricher.seq:
     image: datalust/seq
-    container_name: Template.DbApi.Seq
+    container_name: Template.TestedApi.Seq
     ports:
       - "5030:80"
     environment:

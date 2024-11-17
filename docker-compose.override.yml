@@ -6,9 +6,9 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - http://+:80
-      - Serilog__WriteTo__0__Args__serverUrl=http://Template.DbApi.Seq
-      - Postgres__WriteConnection=Host=Template.DbApi.Db;Port=5432;Username=postgres;Password=example;Database=shop;
-      - Postgres__ReadConnection=Host=Template.DbApi.Db;Port=5432;Username=postgres;Password=example;Database=shop;
+      - Serilog__WriteTo__0__Args__serverUrl=http://Template.TestedApi.Seq
+      - Postgres__WriteConnection=Host=Template.TestedApi.Db;Port=5432;Username=postgres;Password=example;Database=shop;
+      - Postgres__ReadConnection=Host=Template.TestedApi.Db;Port=5432;Username=postgres;Password=example;Database=shop;
     ports:
       - "5080:80"
     volumes:
@@ -20,7 +20,7 @@ services:
   enricher.dbup:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - DbConnectionString=Host=Template.DbApi.Db;Port=5432;Username=postgres;Password=example;Database=shop;
+      - DbConnectionString=Host=Template.TestedApi.Db;Port=5432;Username=postgres;Password=example;Database=shop;
     networks:
       - main
 

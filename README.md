@@ -1,4 +1,4 @@
-### Message Template.DbApi
+### Message Template.TestedApi
 
 ## Template Project
 This project was created from a template.
@@ -19,8 +19,8 @@ OR
 
 Run `docker compose -f docker-compose.infra.yml up` 
 Launch apps:
-* Template.DbApi.API
-* Template.DbApi.DbUp
+* Template.TestedApi.API
+* Template.TestedApi.DbUp
 
 
 ### Docker Pack and Push

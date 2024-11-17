@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "Template.DbApi.DbUp": {
-      "commandName": "Project",
-      "commandLineArgs": "Host=localhost;Port=5432;Username=postgres;Password=example;Database=shop;"
-    }
-  }
-}
