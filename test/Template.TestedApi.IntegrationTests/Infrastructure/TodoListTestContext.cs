@@ -1,4 +1,4 @@
-﻿namespace Template.TestedApi.IntegrationTests;
+﻿namespace Template.TestedApi.IntegrationTests.Infrastructure;
 
 public class TodoListTestContext
 {

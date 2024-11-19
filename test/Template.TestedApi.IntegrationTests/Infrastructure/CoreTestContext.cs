@@ -1,7 +1,7 @@
 ﻿using Polly;
 using System.Net.Http.Json;
 
-namespace Template.TestedApi.IntegrationTests;
+namespace Template.TestedApi.IntegrationTests.Infrastructure;
 public class CoreTestContext
 {
     public string Uri { get; set; }

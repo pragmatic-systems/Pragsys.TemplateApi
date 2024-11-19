@@ -1,4 +1,6 @@
-﻿namespace Template.TestedApi.IntegrationTests.StepDefinitions;
+﻿using Template.TestedApi.IntegrationTests.Infrastructure;
+
+namespace Template.TestedApi.IntegrationTests.StepDefinitions;
 
 [Binding]
 public class CommonStepDefinitions

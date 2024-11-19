@@ -1,5 +1,6 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Template.TestedApi.IntegrationTests.Infrastructure;
 
 namespace Template.TestedApi.IntegrationTests.StepDefinitions;
 
