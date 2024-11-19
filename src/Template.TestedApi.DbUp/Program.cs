@@ -1,9 +1,4 @@
-﻿using DbUp;
-using Npgsql;
-using Polly;
-using System.Reflection;
-
-public static class Program
+﻿public static class Program
 {
     static int Main(string[] args)
     {
@@ -14,34 +9,23 @@ public static class Program
         if (string.IsNullOrEmpty(connectionString))
             throw new ArgumentException("Must supply either connection string arg, or DbConnectionString environment variable.");
 
-        var retryPolicy = Policy
-            .Handle<NpgsqlException>()
-            .WaitAndRetry(20, i => TimeSpan.FromSeconds(5),
-                (e, t) => Console.WriteLine("Retrying... Waiting for database"));
-
-        retryPolicy.Execute(() =>
-            EnsureDatabase.For.PostgresqlDatabase(connectionString));
-
-        var upgrader =
-            DeployChanges.To
-                .PostgresqlDatabase(connectionString)
-                .WithScriptsEmbeddedInAssembly(Assembly.GetExecutingAssembly())
-                .LogToConsole()
-                .Build();
-
-        var result = upgrader.PerformUpgrade();
-
-        if (!result.Successful)
+        try
+        {
+            Migrator.Migrate(connectionString);
+        }
+        catch(Exception ex)
         {
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine(result.Error);
+            Console.WriteLine(ex);
             Console.ResetColor();
             return -1;
         }
-
+        
         Console.ForegroundColor = ConsoleColor.Green;
         Console.WriteLine("Success!");
         Console.ResetColor();
         return 0;
     }
+
+
 }

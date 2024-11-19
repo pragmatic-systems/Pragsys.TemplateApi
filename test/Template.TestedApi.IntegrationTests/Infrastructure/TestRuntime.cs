@@ -4,12 +4,13 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration.Memory;
+using Testcontainers.PostgreSql;
 
 namespace Template.TestedApi.IntegrationTests.Infrastructure;
 
 public class TestRuntime : IAsyncDisposable
 {
-    //private PostgreSqlContainer PostgresContainer;
+    private PostgreSqlContainer PostgresContainer;
     //private WireMockContainer WireMockContainer;
 
     public WebApplicationFactory<Template.TestedApi.Api.Program> TargetApi { get; private set; }
@@ -21,6 +22,14 @@ public class TestRuntime : IAsyncDisposable
 
     public async Task InitializeAsync()
     {
+        PostgresContainer = new PostgreSqlBuilder()
+            .WithAutoRemove(true)
+            .Build();
+
+        await PostgresContainer.StartAsync();
+
+        var postgresConnection = PostgresContainer.GetConnectionString();
+
         TargetApi = new WebApplicationFactory<Api.Program>()
             .WithWebHostBuilder(builder =>
             {
@@ -32,10 +41,10 @@ public class TestRuntime : IAsyncDisposable
                 {
                     var config = new MemoryConfigurationSource();
 
-                    // TODO: Override config settings for service urls here.
+                    // Override config settings for connection strings / service urls here.
                     config.InitialData = new Dictionary<string, string?>
                     {
-                        { "Key", "Value" }
+                        { "ConnectionStrings:PostgresDb", postgresConnection }
                     };
 
                     b.Add(config);
