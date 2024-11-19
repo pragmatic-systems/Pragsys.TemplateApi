@@ -1,6 +1,6 @@
 ﻿namespace Template.TestedApi.IntegrationTests.Infrastructure;
 
-public class TodoListTestContext
+public class TestContext
 {
     public dynamic NewTodoItem { get; set; }
 

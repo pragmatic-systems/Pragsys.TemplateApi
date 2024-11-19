@@ -8,11 +8,11 @@ namespace Template.TestedApi.IntegrationTests.StepDefinitions;
 public sealed class TodoApiFeatureStepDefinitions
 {
     private readonly CoreTestContext _testContext;
-    private readonly TodoListTestContext _todoListTestContext;
+    private readonly TestContext _todoListTestContext;
 
     public TodoApiFeatureStepDefinitions(
         CoreTestContext testContext,
-        TodoListTestContext todoListTestContext)
+        TestContext todoListTestContext)
     {
         _testContext = testContext;
         _todoListTestContext = todoListTestContext;
