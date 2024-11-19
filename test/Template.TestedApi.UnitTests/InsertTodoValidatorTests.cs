@@ -1,6 +1,6 @@
 using FluentAssertions;
-using Template.TestedApi.Handlers;
-using Template.TestedApi.Validators;
+using Template.TestedApi.Core.Handlers;
+using Template.TestedApi.Core.Validators;
 
 namespace Template.TestedApi.UnitTests;
 

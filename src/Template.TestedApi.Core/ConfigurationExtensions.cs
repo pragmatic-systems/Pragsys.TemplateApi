@@ -2,14 +2,9 @@
 using Serilog;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
-using System.Reflection;
-using static Dapper.SqlMapper;
-using Microsoft.Extensions.Options;
-using Template.TestedApi.Model;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 
-namespace Template.TestedApi;
+namespace Template.TestedApi.Core;
 public static class ConfigurationExtensions
 {
     public static IApplicationBuilder UseHttpsRedirectionExcluding(this IApplicationBuilder builder, string excluding)
@@ -32,7 +27,7 @@ public static class ConfigurationExtensions
         var writeConn = configuration.GetSection("Postgres:WriteConnection").Value;
         var readConn = configuration.GetSection("Postgres:ReadConnection").Value;
         services.AddSingleton<IConnectionFactory>(new PostgresConnectionFactory(writeConn, readConn));
-        
+
         return services;
     }
 
@@ -44,7 +39,8 @@ public static class ConfigurationExtensions
             .Enrich.WithProperty("App", appName)
             .CreateLogger();
         services.AddSingleton(Log.Logger);
-        services.AddLogging(lb => {
+        services.AddLogging(lb =>
+        {
             lb.ClearProviders();
             lb.AddSerilog(Log.Logger);
         });

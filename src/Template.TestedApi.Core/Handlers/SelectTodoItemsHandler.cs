@@ -1,14 +1,8 @@
 ﻿using Dapper;
 using MediatR;
-using Microsoft.AspNetCore.Connections;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Template.TestedApi.Model;
+using Template.TestedApi.Core.Model;
 
-namespace Template.TestedApi.Handlers;
+namespace Template.TestedApi.Core.Handlers;
 internal class SelectTodoItemsHandler : IRequestHandler<SelectTodo, IEnumerable<TodoRecord>>
 {
     private readonly IConnectionFactory _connectionFactory;

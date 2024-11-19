@@ -1,12 +1,7 @@
 ﻿using Polly;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http.Json;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Template.TestedApi.AcceptanceTests;
+namespace Template.TestedApi.IntegrationTests;
 public class CoreTestContext
 {
     public string Uri { get; set; }
@@ -25,11 +20,12 @@ public class CoreTestContext
         };
     }
 
-    public async Task GetAsync(string path) 
+    public async Task GetAsync(string path)
     {
         using var client = CreateClient();
 
-        Response = await RetryPolicy.ExecuteAsync(async () => {
+        Response = await RetryPolicy.ExecuteAsync(async () =>
+        {
             var result = await client.GetAsync(path);
             result.EnsureSuccessStatusCode();
             return result;
@@ -40,7 +36,8 @@ public class CoreTestContext
     {
         using var client = CreateClient();
 
-        Response = await RetryPolicy.ExecuteAsync(async () => {
+        Response = await RetryPolicy.ExecuteAsync(async () =>
+        {
             var result = await client.PostAsJsonAsync(path, payload);
             result.EnsureSuccessStatusCode();
             return result;

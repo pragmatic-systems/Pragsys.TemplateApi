@@ -10,7 +10,7 @@
 // ------------------------------------------------------------------------------
 #region Designer generated code
 #pragma warning disable
-namespace Template.TestedApi.AcceptanceTests.Features
+namespace Template.TestedApi.IntegrationTests.Features
 {
     using TechTalk.SpecFlow;
     using System;
@@ -19,7 +19,7 @@ namespace Template.TestedApi.AcceptanceTests.Features
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("TechTalk.SpecFlow", "3.9.0.0")]
     [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public partial class HealthchecksFeature : object, Xunit.IClassFixture<HealthchecksFeature.FixtureData>, System.IDisposable
+    public partial class TodoApiFeaturesFeature : object, Xunit.IClassFixture<TodoApiFeaturesFeature.FixtureData>, System.IDisposable
     {
         
         private static TechTalk.SpecFlow.ITestRunner testRunner;
@@ -28,10 +28,10 @@ namespace Template.TestedApi.AcceptanceTests.Features
         
         private Xunit.Abstractions.ITestOutputHelper _testOutputHelper;
         
-#line 1 "Healthcheck.feature"
+#line 1 "TodoApiFeatures.feature"
 #line hidden
         
-        public HealthchecksFeature(HealthchecksFeature.FixtureData fixtureData, Template_TestedApi_AcceptanceTests_XUnitAssemblyFixture assemblyFixture, Xunit.Abstractions.ITestOutputHelper testOutputHelper)
+        public TodoApiFeaturesFeature(TodoApiFeaturesFeature.FixtureData fixtureData, Template_TestedApi_IntegrationTests_XUnitAssemblyFixture assemblyFixture, Xunit.Abstractions.ITestOutputHelper testOutputHelper)
         {
             this._testOutputHelper = testOutputHelper;
             this.TestInitialize();
@@ -40,7 +40,7 @@ namespace Template.TestedApi.AcceptanceTests.Features
         public static void FeatureSetup()
         {
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner();
-            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Features", "Healthchecks", null, ProgrammingLanguage.CSharp, featureTags);
+            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Features", "TodoApiFeatures", "Feature test for the Todo list API.", ProgrammingLanguage.CSharp, featureTags);
             testRunner.OnFeatureStart(featureInfo);
         }
         
@@ -80,19 +80,19 @@ namespace Template.TestedApi.AcceptanceTests.Features
             this.TestTearDown();
         }
         
-        [Xunit.SkippableFactAttribute(DisplayName="API Healthcheck")]
-        [Xunit.TraitAttribute("FeatureTitle", "Healthchecks")]
-        [Xunit.TraitAttribute("Description", "API Healthcheck")]
-        [Xunit.TraitAttribute("Category", "healthcheck")]
+        [Xunit.SkippableFactAttribute(DisplayName="Create and View Todo item")]
+        [Xunit.TraitAttribute("FeatureTitle", "TodoApiFeatures")]
+        [Xunit.TraitAttribute("Description", "Create and View Todo item")]
+        [Xunit.TraitAttribute("Category", "todo-list")]
         [Xunit.TraitAttribute("Category", "api")]
-        public void APIHealthcheck()
+        public void CreateAndViewTodoItem()
         {
             string[] tagsOfScenario = new string[] {
-                    "healthcheck",
+                    "todo-list",
                     "api"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("API Healthcheck", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 4
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Create and View Todo item", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 6
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
@@ -102,32 +102,29 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 this.ScenarioStart();
-#line 5
+#line 7
  testRunner.Given("We have a Application api", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
-#line 6
- testRunner.When("We call the ping endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line hidden
-#line 7
- testRunner.Then("The response should be 200 OK", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line hidden
 #line 8
- testRunner.When("We call the healthcheck endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When("We create task \'New Task\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 9
  testRunner.Then("The response should be 200 OK", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
 #line 10
- testRunner.When("We call the metrics endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.And("The response should contain a new RecordId", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
 #line 11
- testRunner.Then("The response should be 200 OK", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.When("We get our TodoList", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 12
- testRunner.When("We call the swagger endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.Then("The response should be 200 OK", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
 #line 13
- testRunner.Then("The response should be 200 OK", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.And("The response should contain a Todo List", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+#line 14
+ testRunner.Then("The result contains the created recordId", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             }
             this.ScenarioCleanup();
@@ -140,12 +137,12 @@ this.ScenarioInitialize(scenarioInfo);
             
             public FixtureData()
             {
-                HealthchecksFeature.FeatureSetup();
+                TodoApiFeaturesFeature.FeatureSetup();
             }
             
             void System.IDisposable.Dispose()
             {
-                HealthchecksFeature.FeatureTearDown();
+                TodoApiFeaturesFeature.FeatureTearDown();
             }
         }
     }

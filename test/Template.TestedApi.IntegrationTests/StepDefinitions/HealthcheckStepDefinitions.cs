@@ -1,6 +1,4 @@
-using Template.TestedApi.AcceptanceTests;
-
-namespace SpecFlowProject1.StepDefinitions;
+namespace Template.TestedApi.IntegrationTests.StepDefinitions;
 
 [Binding]
 public sealed class HealthcheckStepDefinitions

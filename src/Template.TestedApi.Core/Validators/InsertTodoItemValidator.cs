@@ -1,12 +1,7 @@
 ﻿using FluentValidation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Template.TestedApi.Handlers;
+using Template.TestedApi.Core.Handlers;
 
-namespace Template.TestedApi.Validators;
+namespace Template.TestedApi.Core.Validators;
 public class InsertTodoValidator : AbstractValidator<InsertTodo>
 {
     public InsertTodoValidator()

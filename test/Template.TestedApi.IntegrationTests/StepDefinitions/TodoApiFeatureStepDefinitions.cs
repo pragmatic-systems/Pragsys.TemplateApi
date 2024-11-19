@@ -1,11 +1,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.ComponentModel;
-using System.Net.Http.Json;
-using TechTalk.SpecFlow.CommonModels;
-using Template.TestedApi.AcceptanceTests;
 
-namespace SpecFlowProject1.StepDefinitions;
+namespace Template.TestedApi.IntegrationTests.StepDefinitions;
 
 [Binding]
 public sealed class TodoApiFeatureStepDefinitions
@@ -14,7 +10,7 @@ public sealed class TodoApiFeatureStepDefinitions
     private readonly TodoListTestContext _todoListTestContext;
 
     public TodoApiFeatureStepDefinitions(
-        CoreTestContext testContext, 
+        CoreTestContext testContext,
         TodoListTestContext todoListTestContext)
     {
         _testContext = testContext;

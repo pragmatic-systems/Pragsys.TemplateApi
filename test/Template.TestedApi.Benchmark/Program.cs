@@ -1,8 +1,4 @@
-﻿using System;
-using System.Security.Cryptography;
-using BenchmarkDotNet.Configs;
-using BenchmarkDotNet.ConsoleArguments;
-using BenchmarkDotNet.Running;
+﻿using BenchmarkDotNet.Running;
 
 namespace Template.TestedApi.Benchmark
 {

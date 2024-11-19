@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Template.TestedApi.AcceptanceTests.StepDefinitions;
+﻿namespace Template.TestedApi.IntegrationTests.StepDefinitions;
 
 [Binding]
 public class CommonStepDefinitions
@@ -28,9 +22,9 @@ public class CommonStepDefinitions
     [Then("The response should be 200 OK")]
     public void TheResultShouldBeOk()
     {
-       _testContext.Response
-            .Should().NotBeNull()
-            .And
-            .Subject.EnsureSuccessStatusCode();
+        _testContext.Response
+             .Should().NotBeNull()
+             .And
+             .Subject.EnsureSuccessStatusCode();
     }
 }
