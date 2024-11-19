@@ -7,15 +7,12 @@ namespace Template.TestedApi.IntegrationTests.StepDefinitions;
 [Binding]
 public sealed class TodoApiFeatureStepDefinitions
 {
-    private readonly CoreTestContext _testContext;
-    private readonly TestContext _todoListTestContext;
+    private readonly TestContext _testContext;
 
     public TodoApiFeatureStepDefinitions(
-        CoreTestContext testContext,
-        TestContext todoListTestContext)
+        TestContext testContext)
     {
         _testContext = testContext;
-        _todoListTestContext = todoListTestContext;
     }
 
     [When("We create task '(.*)'")]
@@ -34,10 +31,10 @@ public sealed class TodoApiFeatureStepDefinitions
     [Then("The response should contain a new RecordId")]
     public async Task TheResponseShouldContainANewRecordId()
     {
-        var json = await _testContext.Response.Content.ReadAsStringAsync();
-        _todoListTestContext.NewTodoItem = JsonConvert.DeserializeObject<dynamic>(json);
+        var json = await _testContext.LastResponse.Content.ReadAsStringAsync();
+        _testContext.NewTodoItem = JsonConvert.DeserializeObject<dynamic>(json);
 
-        ((string)_todoListTestContext.NewTodoItem
+        ((string)_testContext.NewTodoItem
             .itemId.Value)
             .Should().NotBeNull();
     }
@@ -51,8 +48,8 @@ public sealed class TodoApiFeatureStepDefinitions
     [Then("The response should contain a Todo List")]
     public async Task TheResponseShouldContainATodoList()
     {
-        var json = await _testContext.Response.Content.ReadAsStringAsync();
-        _todoListTestContext.TaskList = ((JArray)JsonConvert.DeserializeObject<dynamic>(json))
+        var json = await _testContext.LastResponse.Content.ReadAsStringAsync();
+        _testContext.TaskList = ((JArray)JsonConvert.DeserializeObject<dynamic>(json))
             .Select(j => (dynamic)j)
             .ToList();
     }
@@ -60,10 +57,10 @@ public sealed class TodoApiFeatureStepDefinitions
     [Then("The result contains the created recordId")]
     public void TheResultsContainsTheCreatedItemId()
     {
-        var item = _todoListTestContext.NewTodoItem;
+        var item = _testContext.NewTodoItem;
         var id = item.itemId;
 
-        var match = _todoListTestContext.TaskList
+        var match = _testContext.TaskList
             .SingleOrDefault(i => i.itemId == id);
 
         ((object)match).Should().NotBeNull();

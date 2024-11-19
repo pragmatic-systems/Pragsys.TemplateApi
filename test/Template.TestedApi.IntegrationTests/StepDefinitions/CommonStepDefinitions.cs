@@ -5,9 +5,9 @@ namespace Template.TestedApi.IntegrationTests.StepDefinitions;
 [Binding]
 public class CommonStepDefinitions
 {
-    private readonly CoreTestContext _testContext;
+    private readonly TestContext _testContext;
 
-    public CommonStepDefinitions(CoreTestContext testContext)
+    public CommonStepDefinitions(TestContext testContext)
     {
         _testContext = testContext;
     }
@@ -15,16 +15,12 @@ public class CommonStepDefinitions
     [Given("We have a Application api")]
     public void WeHaveAnApplicationApi()
     {
-        _testContext.Uri
-            .Should().NotBeNullOrEmpty();
-
-        Console.WriteLine("Targeting: " + _testContext.Uri);
     }
 
     [Then("The response should be 200 OK")]
     public void TheResultShouldBeOk()
     {
-        _testContext.Response
+        _testContext.LastResponse
              .Should().NotBeNull()
              .And
              .Subject.EnsureSuccessStatusCode();

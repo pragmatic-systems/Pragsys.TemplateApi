@@ -21,6 +21,7 @@ public class ScenarioSetup
     {
         TestRuntime = RuntimeSetup.TestRuntime;
         TestContext = new TestContext();
+        TestContext.TestClient = TestRuntime.TargetApi.CreateClient();
 
         objectContainer.RegisterInstanceAs(TestRuntime);
         objectContainer.RegisterInstanceAs(TestContext);

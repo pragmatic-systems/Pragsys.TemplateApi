@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -27,8 +27,6 @@
     <ProjectReference Include="..\..\src\Template.TestedApi.Api\Template.TestedApi.Api.csproj" />
     <ProjectReference Include="..\..\src\Template.TestedApi.Core\Template.TestedApi.Core.csproj" />
     <ProjectReference Include="..\..\src\Template.TestedApi.DbUp\Template.TestedApi.DbUp.csproj" />
-    <ProjectReference Include="..\..\src\Template.TestedApi\Template.TestedApi.Core.csproj" />
-    <ProjectReference Include="..\..\src\Template.TestedApi\Template.TestedApi.csproj" />
   </ItemGroup>
 
 </Project>
