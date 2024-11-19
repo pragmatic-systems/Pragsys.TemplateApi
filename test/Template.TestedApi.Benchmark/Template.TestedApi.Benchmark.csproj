@@ -15,8 +15,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Template.TestedApi.Core\Template.TestedApi.Core.csproj" />
-    <ProjectReference Include="..\..\src\Template.TestedApi\Template.TestedApi.Core.csproj" />
-    <ProjectReference Include="..\..\src\Template.TestedApi\Template.TestedApi.csproj" />
   </ItemGroup>
 
 </Project>
