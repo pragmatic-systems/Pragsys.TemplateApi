@@ -5,7 +5,7 @@ run-name: Pack and Push Solution
 on:
   push:
     branches:    
-      - master
+      - main
 
 jobs:
   Pack-And-Push:

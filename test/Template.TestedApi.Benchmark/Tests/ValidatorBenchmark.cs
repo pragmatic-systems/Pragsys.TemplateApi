@@ -1,13 +1,7 @@
 ﻿using BenchmarkDotNet.Attributes;
-using FluentValidation;
 using FluentValidation.Results;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Template.TestedApi.Handlers;
-using Template.TestedApi.Validators;
+using Template.TestedApi.Core.Handlers;
+using Template.TestedApi.Core.Validators;
 
 namespace Template.TestedApi.Benchmark.Tests;
 

@@ -1,51 +1,88 @@
-using Template.TestedApi;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
+using Polly;
 using Prometheus;
 using Serilog;
+using System.Linq;
+using Template.TestedApi.Api.HostedServices;
+using Template.TestedApi.Core;
 
-var builder = WebApplication.CreateBuilder(args);
+namespace Template.TestedApi.Api;
 
-// Add services to the container.
-builder.Services.AddControllers();
-
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Services.WithSerilog(builder.Configuration, "Template.TestedApi API");
-builder.Services.WithPostgres(builder.Configuration);
-builder.Services.WithMediatr();
-builder.Services.AddHealthChecks();
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+public class Program
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    public static void Main(string[] args)
+    {
+        var builder = WebApplication.CreateBuilder(args);
+
+        // Add services to the container.
+        builder.Services.AddControllers();
+
+        builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddSwaggerGen();
+        builder.Services.WithSerilog(builder.Configuration, "Template.TestedApi API");
+        builder.Services.WithPostgres(builder.Configuration);
+        builder.Services.WithMediatr();
+        builder.Services
+            .AddHealthChecks()
+            .AddNpgSql(s =>
+            {
+                return builder.Configuration.GetConnectionString("PostgresDb");
+            });
+
+        // TODO: Config cleanup
+        builder.Services.AddHostedService<PostgresInitService>();
+
+        var app = builder.Build();
+
+        // Configure the HTTP request pipeline.
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseSwagger();
+            app.UseSwaggerUI();
+        }
+
+        app.UseHttpsRedirectionExcluding("/_system");
+
+        // https://github.com/prometheus-net/prometheus-net
+
+        app.UseMetricServer();
+        app.UseRouting();
+        app.UseHttpMetrics();
+        app.UseAuthorization();
+
+        app.MapControllers();
+        app.MapMetrics("_system/metrics");
+        app.MapHealthChecks("/_system/ping", new HealthCheckOptions { Predicate = _ => false });
+        app.MapHealthChecks("/_system/health", new HealthCheckOptions
+        {
+            ResponseWriter = async (c, r) =>
+            {
+                var response = new
+                {
+                    Status = r.Status.ToString(),
+                    Checks = r.Entries.Select(x =>
+                        new
+                        {
+                            Status = x.Value.Status.ToString(),
+                            Component = x.Key,
+                            Description = x.Value.Description
+                        }),
+                    Duration = r.TotalDuration
+                };
+                await c.Response.WriteAsJsonAsync(response);
+            }
+        });
+
+        app.MapControllers();
+
+        Log.Logger.Information("Starting Application");
+
+        app.Run();
+    }
 }
-
-app.UseHttpsRedirectionExcluding("/_system");
-
-// https://github.com/prometheus-net/prometheus-net
-
-app.UseMetricServer();
-app.UseRouting();
-app.UseHttpMetrics();
-app.UseAuthorization();
-
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapControllers();
-    endpoints.MapMetrics("_system/metrics");
-    endpoints.MapHealthChecks("/_system/health");
-    endpoints.MapGet("/_system/ping", () => Results.Ok("pong"));
-});
-
-app.MapControllers();
-
-Log.Logger.Information("Starting Application");
-
-app.Run();

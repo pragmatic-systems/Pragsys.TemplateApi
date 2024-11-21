@@ -1,12 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using Serilog;
-using System;
-using Dapper;
 using System.Threading.Tasks;
-using Template.TestedApi.Model;
 using MediatR;
-using System.Collections.Generic;
-using Template.TestedApi.Handlers;
+using Template.TestedApi.Core.Handlers;
 
 namespace Template.TestedApi.Api.Controllers
 {
