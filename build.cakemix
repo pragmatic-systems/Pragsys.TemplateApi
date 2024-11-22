@@ -16,7 +16,7 @@
     ".\\test\\Template.TestedApi.UnitTests\\Template.TestedApi.UnitTests.csproj"
   ],
   "Benchmarks": [
-    ".\\test\\Template.TestedApi.Benchmark\\Template.TestedApi.Benchmark.csproj"
+    //".\\test\\Template.TestedApi.Benchmark\\Template.TestedApi.Benchmark.csproj"
   ],
   "ApiSpecs": {
     "Template.TestedApi.Api": "http://localhost:5080"
