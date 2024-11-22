@@ -343,7 +343,10 @@ Task("__DockerPush")
 		{
 			Information($"Pushing Docker: {package}...");
 			var directoryName = System.IO.Path.GetDirectoryName(package);
+			Information($"Directory Name: {directoryName}");
 			var parts = directoryName.Split(System.IO.Path.DirectorySeparatorChar);
+			Information($"Parts: {parts.Length}");
+			Information($"Last Part: {parts.Last()}");
 			var packageName = parts.Last().ToLower();
 			packageName = $"{containerRegistry}/{packageName}".ToLower();	
 			var fullPackageName = $"{packageName}:{versionNumber}";
