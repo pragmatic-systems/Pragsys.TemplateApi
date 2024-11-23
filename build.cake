@@ -128,17 +128,6 @@ Task("__UnitTest")
 		}
 	});
 
-Task("__DockerComposeUp")
-	.Does(() => {
-
-		var settings = new DockerComposeUpSettings 
-		{
-			Files = buildManifest.DockerComposeFiles,
-			DetachedMode = true
-		};
-		DockerComposeUp(settings);
-	});
-
 Task("__Benchmark")
 	.Does(() => {
 
@@ -172,26 +161,6 @@ Task("__VersionInfo")
 		}
 
 		Information("Version Number: " + versionNumber);
-	});
-
-Task("__GenerateSwagger")
-	.Does(async () => {
-
-		if (!System.IO.Directory.Exists(swaggerFolder))
-			System.IO.Directory.CreateDirectory(swaggerFolder);
-
-		foreach(var kvp in buildManifest.ApiSpecs)
-		{
-			using var client = new System.Net.Http.HttpClient();
-			var response = await client.GetAsync($"{kvp.Value}/swagger/v1/swagger.json");
-			response.EnsureSuccessStatusCode();
-
-			var content = await response.Content.ReadAsStringAsync();
-
-			var fileArtifact = System.IO.Path.Combine(swaggerFolder, $"{kvp.Key}.swagger.json");
-
-			System.IO.File.WriteAllText(fileArtifact, content);
-		}
 	});
 
 Task("__NugetPack")
