@@ -224,38 +224,6 @@ Task("__GenerateSwagger")
 		}
 	});
 
-Task("__GeneratePostman")
-	.Does(() => {
-		
-		// From Root:
-		// docker build ./docker/OpenApiToPostman/ -t tr/openapi-to-postmanv2
-		// docker run -d -v {localroot}\artifacts\swagger:/swagger -v {localroot}\artifacts\postman:/postman -p 8080:8080 tr/openapi-to-postmanv2
-
-		var basePath = System.IO.Path.GetFullPath(@".\artifacts");
-
-		// Build Docker
-		var buildSettings = new DockerImageBuildSettings
-		{
-			Tag = new [] { "tr/openapi-to-postmanv2" }
-		};
-		DockerBuild(buildSettings, "./docker/OpenApiToPostman/");
-
-		// Run Docker
-		var runSettings = new DockerContainerRunSettings 
-		{
-			Volume = new [] 
-			{ 
-				@$"{basePath}\swagger:/swagger",
-				@$"{basePath}\postman:/postman",
-			},
-			Publish = new []
-			{
-				"8080:8080"
-			}
-		};
-		DockerRun(runSettings, "tr/openapi-to-postmanv2", string.Empty, "-d");
-	});
-
 Task("__NugetPack")
 	.Does(() => {
 
@@ -351,8 +319,7 @@ Task("__DockerPush")
 			Information($"Parts: {parts.Length}");
 			Information($"Last Part: {parts.Last()}");
 			var packageName = parts.Last().ToLower();
-			packageName = $"{containerRegistry}/{packageName}".ToLower();	
-			var fullPackageName = $"{packageName}:{versionNumber}";
+			packageName = $"{containerRegistry}/{packageName}".ToLower();
 
 			var settings = new DockerImagePushSettings
 			{ 
@@ -399,11 +366,6 @@ Task("FullPackAndPush")
 	.IsDependentOn("__DockerPack")
 	.IsDependentOn("__NugetPush")
 	.IsDependentOn("__DockerPush");
-
-Task("ExportApiSpecs")
-	.IsDependentOn("__DockerComposeUp")
-	.IsDependentOn("__GenerateSwagger")
-	.IsDependentOn("__GeneratePostman");
 
 Task("Default")
 	.IsDependentOn("__UnitTest")
