@@ -12,12 +12,18 @@ public static class Migrator
 
         var retryPolicy = Policy
             .Handle<NpgsqlException>()
-            .WaitAndRetry(20, i => TimeSpan.FromSeconds(5),
+            .WaitAndRetry(10, i => TimeSpan.FromSeconds(2),
                 (e, t) => Console.WriteLine("Retrying... Waiting for database"));
 
         retryPolicy.Execute(() =>
             EnsureDatabase.For.PostgresqlDatabase(connectionString));
 
+        retryPolicy.Execute(() =>
+            ExecuteMigration(connectionString));
+    }
+
+    private static void ExecuteMigration(string connectionString)
+    {
         var upgrader =
             DeployChanges.To
                 .PostgresqlDatabase(connectionString)

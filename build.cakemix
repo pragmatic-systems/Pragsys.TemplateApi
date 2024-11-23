@@ -6,10 +6,8 @@
   ],
   "DockerComposeFiles": [
   ],
-  "AcceptanceTests": [
-    "./test/Template.TestedApi.AcceptanceTests/Template.TestedApi.AcceptanceTests.csproj"
-  ],
-  "UnitTests": [
+  "Tests": [
+    "./test/Template.TestedApi.IntegrationTests/Template.TestedApi.IntegrationTests.csproj",
     "./test/Template.TestedApi.UnitTests/Template.TestedApi.UnitTests.csproj"
   ],
   "Benchmarks": [
