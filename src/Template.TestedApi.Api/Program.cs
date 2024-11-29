@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Polly;
 using Prometheus;
 using Serilog;
+using System;
 using System.Linq;
 using Template.TestedApi.Api.HostedServices;
 using Template.TestedApi.Core;
@@ -18,71 +19,78 @@ public class Program
 {
     public static void Main(string[] args)
     {
-        var builder = WebApplication.CreateBuilder(args);
+        try
+        {
+            var builder = WebApplication.CreateBuilder(args);
 
-        // Add services to the container.
-        builder.Services.AddControllers();
+            // Add services to the container.
+            builder.Services.AddControllers();
 
-        builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
-        builder.Services.WithSerilog(builder.Configuration, "Template.TestedApi API");
-        builder.Services.WithPostgres(builder.Configuration);
-        builder.Services.WithMediatr();
-        builder.Services
-            .AddHealthChecks()
-            .AddNpgSql(s =>
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen();
+            builder.Services.WithSerilog(builder.Configuration, "Template.TestedApi API");
+            builder.Services.WithPostgres(builder.Configuration);
+            builder.Services.WithMediatr();
+            builder.Services
+                .AddHealthChecks()
+                .AddNpgSql(s =>
+                {
+                    return builder.Configuration.GetConnectionString("PostgresDb");
+                });
+
+            // TODO: Config cleanup
+            builder.Services.AddHostedService<PostgresInitService>();
+
+            var app = builder.Build();
+
+            // Configure the HTTP request pipeline.
+            if (app.Environment.IsDevelopment())
             {
-                return builder.Configuration.GetConnectionString("PostgresDb");
+                app.UseSwagger();
+                app.UseSwaggerUI();
+            }
+
+            app.UseHttpsRedirectionExcluding("/_system");
+
+            // https://github.com/prometheus-net/prometheus-net
+
+            app.UseMetricServer();
+            app.UseRouting();
+            app.UseHttpMetrics();
+            app.UseAuthorization();
+
+            app.MapControllers();
+            app.MapMetrics("_system/metrics");
+            app.MapHealthChecks("/_system/ping", new HealthCheckOptions { Predicate = _ => false });
+            app.MapHealthChecks("/_system/health", new HealthCheckOptions
+            {
+                ResponseWriter = async (c, r) =>
+                {
+                    var response = new
+                    {
+                        Status = r.Status.ToString(),
+                        Checks = r.Entries.Select(x =>
+                            new
+                            {
+                                Status = x.Value.Status.ToString(),
+                                Component = x.Key,
+                                Description = x.Value.Description
+                            }),
+                        Duration = r.TotalDuration
+                    };
+                    await c.Response.WriteAsJsonAsync(response);
+                }
             });
 
-        // TODO: Config cleanup
-        builder.Services.AddHostedService<PostgresInitService>();
+            app.MapControllers();
 
-        var app = builder.Build();
+            Log.Logger.Information("Starting Application");
 
-        // Configure the HTTP request pipeline.
-        if (app.Environment.IsDevelopment())
-        {
-            app.UseSwagger();
-            app.UseSwaggerUI();
+            app.Run();
         }
-
-        app.UseHttpsRedirectionExcluding("/_system");
-
-        // https://github.com/prometheus-net/prometheus-net
-
-        app.UseMetricServer();
-        app.UseRouting();
-        app.UseHttpMetrics();
-        app.UseAuthorization();
-
-        app.MapControllers();
-        app.MapMetrics("_system/metrics");
-        app.MapHealthChecks("/_system/ping", new HealthCheckOptions { Predicate = _ => false });
-        app.MapHealthChecks("/_system/health", new HealthCheckOptions
+        catch(Exception ex)
         {
-            ResponseWriter = async (c, r) =>
-            {
-                var response = new
-                {
-                    Status = r.Status.ToString(),
-                    Checks = r.Entries.Select(x =>
-                        new
-                        {
-                            Status = x.Value.Status.ToString(),
-                            Component = x.Key,
-                            Description = x.Value.Description
-                        }),
-                    Duration = r.TotalDuration
-                };
-                await c.Response.WriteAsJsonAsync(response);
-            }
-        });
-
-        app.MapControllers();
-
-        Log.Logger.Information("Starting Application");
-
-        app.Run();
+            Log.Logger.Error(ex, "Error Starting Application");
+        }
     }
 }
