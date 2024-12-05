@@ -3,14 +3,13 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
-using Polly;
 using Prometheus;
 using Serilog;
 using System;
 using System.Linq;
 using Template.TestedApi.Api.HostedServices;
+using Template.TestedApi.Api.Middleware;
 using Template.TestedApi.Core;
 
 namespace Template.TestedApi.Api;
@@ -49,6 +48,8 @@ public class Program
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
+            app.UseMiddleware<AuthMiddleware>();
 
             app.UseHttpsRedirectionExcluding("/_system");
 
