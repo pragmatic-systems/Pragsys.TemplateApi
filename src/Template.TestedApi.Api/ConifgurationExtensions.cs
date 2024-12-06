@@ -3,8 +3,11 @@ using Serilog;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.IdentityModel.Protocols;
+using Template.TestedApi.Core;
 
-namespace Template.TestedApi.Core;
+namespace Template.TestedApi.Api;
 public static class ConfigurationExtensions
 {
     public static IApplicationBuilder UseHttpsRedirectionExcluding(this IApplicationBuilder builder, string excluding)
@@ -32,6 +35,14 @@ public static class ConfigurationExtensions
                 config.GetConnectionString("PostgresDb"));
         });
 
+        return services;
+    }
+
+    public static IServiceCollection WithOpenIdConnect(this IServiceCollection services, IConfiguration configuration)
+    {
+        const string openIdConfigUrl = "https://localhost:8443/realms/test-realm/.well-known/openid-configuration";
+        var configManager = new ConfigurationManager<OpenIdConnectConfiguration>(openIdConfigUrl, new OpenIdConnectConfigurationRetriever());
+        services.AddSingleton<IConfigurationManager<OpenIdConnectConfiguration>>(configManager);
         return services;
     }
 

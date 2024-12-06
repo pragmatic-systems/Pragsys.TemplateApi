@@ -1,5 +1,7 @@
 ﻿using BoDi;
 using Microsoft.Extensions.Configuration;
+using System.Net.Http.Headers;
+using Template.TestedApi.IntegrationTests.Infrastructure.Jwt;
 
 namespace Template.TestedApi.IntegrationTests.Infrastructure;
 
@@ -22,6 +24,10 @@ public class ScenarioSetup
         TestRuntime = RuntimeSetup.TestRuntime;
         TestContext = new TestContext();
         TestContext.TestClient = TestRuntime.TargetApi.CreateClient();
+
+        var accessTokenParameters = new AccessTokenParameters();
+        var encodedAccessToken = JwtBearerAccessTokenFactory.Create(accessTokenParameters);
+        TestContext.TestClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", encodedAccessToken);
 
         objectContainer.RegisterInstanceAs(TestRuntime);
         objectContainer.RegisterInstanceAs(TestContext);

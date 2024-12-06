@@ -10,7 +10,6 @@ using System;
 using System.Linq;
 using Template.TestedApi.Api.HostedServices;
 using Template.TestedApi.Api.Middleware;
-using Template.TestedApi.Core;
 
 namespace Template.TestedApi.Api;
 
@@ -29,6 +28,7 @@ public class Program
             builder.Services.AddSwaggerGen();
             builder.Services.WithSerilog(builder.Configuration, "Template.TestedApi API");
             builder.Services.WithPostgres(builder.Configuration);
+            //builder.Services.WithOpenIdConnect(builder.Configuration);
             builder.Services.WithMediatr();
             builder.Services
                 .AddHealthChecks()
@@ -49,7 +49,7 @@ public class Program
                 app.UseSwaggerUI();
             }
 
-            app.UseMiddleware<AuthMiddleware>();
+            //app.UseMiddleware<AuthMiddleware>();
 
             app.UseHttpsRedirectionExcluding("/_system");
 

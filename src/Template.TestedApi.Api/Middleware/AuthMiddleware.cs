@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
 using System.IdentityModel.Tokens.Jwt;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Template.TestedApi.Api.Middleware;
@@ -21,40 +22,54 @@ namespace Template.TestedApi.Api.Middleware;
 public class AuthMiddleware
 {
     private RequestDelegate _next;
+    private IConfigurationManager<OpenIdConnectConfiguration> _configurationManager;
 
-    public AuthMiddleware(RequestDelegate next)
+    public AuthMiddleware(RequestDelegate next, 
+        IConfigurationManager<OpenIdConnectConfiguration> configurationManager)
     {
         _next = next;
+        _configurationManager = configurationManager;
     }
 
     public async Task Invoke(HttpContext context)
     {
-        const string openIdConfigUrl = "https://localhost:8443/realms/test-realm/.well-known/openid-configuration";
-        const string audience = "account";
-
-        var headers = context.Request.Headers;
-        if (!headers.ContainsKey(HeaderNames.Authorization))
+        if (!SkipAuth(context))
         {
-            throw new SecurityTokenValidationException("No Authorization Token supplied.");
+            const string audience = "account";
+
+            var headers = context.Request.Headers;
+            if (!headers.ContainsKey(HeaderNames.Authorization))
+            {
+                throw new SecurityTokenValidationException("No Authorization Token supplied.");
+            }
+
+            var authHeader = headers[HeaderNames.Authorization].ToString();
+            var bearerToken = authHeader.Replace("Bearer", string.Empty).Trim();
+
+            var jwt = new JwtSecurityToken(bearerToken);
+            var config = await _configurationManager.GetConfigurationAsync(CancellationToken.None);
+
+            var validationParams = new TokenValidationParameters
+            {
+                ValidIssuer = config.Issuer,
+                ValidAudience = audience,
+                IssuerSigningKeys = config.SigningKeys,
+            };
+
+            context.User = new JwtSecurityTokenHandler()
+                .ValidateToken(bearerToken, validationParams, out var thing);
         }
 
-        var authHeader = headers[HeaderNames.Authorization].ToString();
-        var bearerToken = authHeader.Replace("Bearer", string.Empty).Trim();
-
-        var jwt = new JwtSecurityToken(bearerToken);
-        var configManager = new ConfigurationManager<OpenIdConnectConfiguration>(openIdConfigUrl, new OpenIdConnectConfigurationRetriever());
-        var config = await configManager.GetConfigurationAsync();
-
-        var validationParams = new TokenValidationParameters
-        {
-            ValidIssuer = config.Issuer,
-            ValidAudience = audience,
-            IssuerSigningKeys = config.SigningKeys,
-        };
-
-        context.User = new JwtSecurityTokenHandler()
-            .ValidateToken(bearerToken, validationParams, out var thing);
-
         await _next.Invoke(context);
+    }
+
+    private bool SkipAuth(HttpContext context)
+    {
+        var path = context.Request.Path.Value ?? string.Empty;
+        path = path.ToLower();
+
+        return path.EndsWith("/metrics") ||
+            path.EndsWith("/health") ||
+            path.EndsWith("/ping");
     }
 }

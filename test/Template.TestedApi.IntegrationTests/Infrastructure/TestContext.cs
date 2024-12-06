@@ -1,5 +1,6 @@
 ﻿using Polly;
 using System.Net.Http.Json;
+using Template.TestedApi.IntegrationTests.Infrastructure.Jwt;
 
 namespace Template.TestedApi.IntegrationTests.Infrastructure;
 

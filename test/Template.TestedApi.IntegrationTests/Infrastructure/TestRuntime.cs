@@ -1,9 +1,13 @@
-﻿
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration.Memory;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.IdentityModel.Protocols;
+using Serilog;
+using Template.TestedApi.IntegrationTests.Infrastructure.OpenId;
 using Testcontainers.PostgreSql;
 
 namespace Template.TestedApi.IntegrationTests.Infrastructure;
@@ -52,7 +56,8 @@ public class TestRuntime : IAsyncDisposable
 
                 builder.ConfigureTestServices(services =>
                 {
-                    // TODO: Inject test override services
+                    // Inject test override services
+                    services.AddSingleton<IConfigurationManager<OpenIdConnectConfiguration>>(ConfigForMockedOpenIdConnectServer.Create());
                 });
 
                 builder.UseDefaultServiceProvider(o =>
@@ -61,7 +66,5 @@ public class TestRuntime : IAsyncDisposable
                     o.ValidateOnBuild = true;
                 });
             });
-
-
     }
 }
