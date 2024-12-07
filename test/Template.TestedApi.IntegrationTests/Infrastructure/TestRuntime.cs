@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Protocols;
 using Serilog;
 using Template.TestedApi.IntegrationTests.Infrastructure.OpenId;
 using Testcontainers.PostgreSql;
+using Template.TestedApi.Api;
 
 namespace Template.TestedApi.IntegrationTests.Infrastructure;
 
@@ -56,8 +57,13 @@ public class TestRuntime : IAsyncDisposable
 
                 builder.ConfigureTestServices(services =>
                 {
+                    var config = ConfigForMockedOpenIdConnectServer.Create(
+                        OpenIdConnectDiscoveryDocumentConfigurationFactory.Create(AppConstantsThatShouldBeConfig.Issuer),
+                        Consts.ValidSigningCertificate,
+                        Consts.WellKnownOpenIdConfiguration);
+
                     // Inject test override services
-                    services.AddSingleton<IConfigurationManager<OpenIdConnectConfiguration>>(ConfigForMockedOpenIdConnectServer.Create());
+                    services.AddSingleton<IConfigurationManager<OpenIdConnectConfiguration>>(config);
                 });
 
                 builder.UseDefaultServiceProvider(o =>

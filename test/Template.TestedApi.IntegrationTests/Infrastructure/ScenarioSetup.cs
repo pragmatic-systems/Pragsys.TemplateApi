@@ -1,7 +1,10 @@
 ﻿using BoDi;
 using Microsoft.Extensions.Configuration;
 using System.Net.Http.Headers;
+using System.Security.Claims;
+using Template.TestedApi.Api;
 using Template.TestedApi.IntegrationTests.Infrastructure.Jwt;
+using Template.TestedApi.IntegrationTests.Infrastructure.OpenId;
 
 namespace Template.TestedApi.IntegrationTests.Infrastructure;
 
@@ -25,7 +28,16 @@ public class ScenarioSetup
         TestContext = new TestContext();
         TestContext.TestClient = TestRuntime.TargetApi.CreateClient();
 
-        var accessTokenParameters = new AccessTokenParameters();
+        var audience = AppConstantsThatShouldBeConfig.Audience;
+        var issuer = AppConstantsThatShouldBeConfig.Issuer;
+        var signingCertificate = Consts.ValidSigningCertificate.ToX509Certificate2();
+        var claims = new List<Claim>
+        {
+            new(AppClaimTypes.PermissionClaimType, Permissions.TodoListRead),
+            new(AppClaimTypes.PermissionClaimType, Permissions.TodoListWrite)
+        };
+
+        var accessTokenParameters = new AccessTokenParameters(audience, issuer, signingCertificate, claims);
         var encodedAccessToken = JwtBearerAccessTokenFactory.Create(accessTokenParameters);
         TestContext.TestClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", encodedAccessToken);
 

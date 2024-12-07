@@ -5,13 +5,17 @@ namespace Template.TestedApi.IntegrationTests.Infrastructure.OpenId;
 
 public class ConfigForMockedOpenIdConnectServer
 {
-    public static IConfigurationManager<OpenIdConnectConfiguration> Create()
+    public static IConfigurationManager<OpenIdConnectConfiguration> Create(
+        OpenIdConnectDiscoveryDocumentConfiguration config,
+        PemCertificate signingCertificate,
+        string openIdConfigUrl
+        )
     {
         var openIdHttpClient = new HttpClient(
-            new MockingOpenIdProviderMessageHandler(Consts.ValidOpenIdConnectDiscoveryDocumentConfiguration, Consts.ValidSigningCertificate));
+            new MockingOpenIdProviderMessageHandler(config, signingCertificate, openIdConfigUrl));
 
         return new ConfigurationManager<OpenIdConnectConfiguration>(
-            Consts.WellKnownOpenIdConfiguration, new OpenIdConnectConfigurationRetriever(),
+            openIdConfigUrl, new OpenIdConnectConfigurationRetriever(),
             new HttpDocumentRetriever(openIdHttpClient));
     }
 

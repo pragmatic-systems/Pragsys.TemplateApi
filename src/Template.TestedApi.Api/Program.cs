@@ -28,8 +28,16 @@ public class Program
             builder.Services.AddSwaggerGen();
             builder.Services.WithSerilog(builder.Configuration, "Template.TestedApi API");
             builder.Services.WithPostgres(builder.Configuration);
-            //builder.Services.WithOpenIdConnect(builder.Configuration);
+            builder.Services.WithOpenIdConnect(builder.Configuration);
             builder.Services.WithMediatr();
+
+            builder.Services.AddAuthorization(authorizationOptions => {
+
+                authorizationOptions.AddPolicy("TodoList:Read", policy => policy.RequireClaim("permission", "TodoList:Read"));
+                authorizationOptions.AddPolicy("TodoList:Write", policy => policy.RequireClaim("permission", "TodoList:Read"));
+
+            });
+
             builder.Services
                 .AddHealthChecks()
                 .AddNpgSql(s =>
@@ -49,7 +57,7 @@ public class Program
                 app.UseSwaggerUI();
             }
 
-            //app.UseMiddleware<AuthMiddleware>();
+            app.UseMiddleware<AuthMiddleware>();
 
             app.UseHttpsRedirectionExcluding("/_system");
 

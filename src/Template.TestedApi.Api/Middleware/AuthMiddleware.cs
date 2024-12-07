@@ -35,8 +35,6 @@ public class AuthMiddleware
     {
         if (!SkipAuth(context))
         {
-            const string audience = "account";
-
             var headers = context.Request.Headers;
             if (!headers.ContainsKey(HeaderNames.Authorization))
             {
@@ -52,7 +50,7 @@ public class AuthMiddleware
             var validationParams = new TokenValidationParameters
             {
                 ValidIssuer = config.Issuer,
-                ValidAudience = audience,
+                ValidAudience = AppConstantsThatShouldBeConfig.Audience,
                 IssuerSigningKeys = config.SigningKeys,
             };
 
@@ -68,8 +66,6 @@ public class AuthMiddleware
         var path = context.Request.Path.Value ?? string.Empty;
         path = path.ToLower();
 
-        return path.EndsWith("/metrics") ||
-            path.EndsWith("/health") ||
-            path.EndsWith("/ping");
+        return path.StartsWith("/_system");
     }
 }

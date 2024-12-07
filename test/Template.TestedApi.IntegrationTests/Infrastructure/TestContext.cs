@@ -12,7 +12,6 @@ public class TestContext
 
     public HttpClient TestClient { get;internal set; }
 
-
     public HttpResponseMessage LastResponse { get; set; }
 
     public AsyncPolicy RetryPolicy { get; } = Policy

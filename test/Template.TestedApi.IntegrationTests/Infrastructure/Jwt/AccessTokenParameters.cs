@@ -6,22 +6,19 @@ namespace Template.TestedApi.IntegrationTests.Infrastructure.Jwt;
 
 public record AccessTokenParameters
 {
-
-    public AccessTokenParameters()
+    public AccessTokenParameters(string audience, string issuer, X509Certificate2 certificate, params Claim[] claims)
     {
-        Audience = Consts.ValidAudience;
-
-        Issuer = Consts.ValidIssuer;
-        SigningCertificate = Consts.ValidSigningCertificate.ToX509Certificate2();
-        Claims = new List<Claim>
-        {
-            new(Consts.SubClaimType, Consts.SubClaimValidValue),
-            new(Consts.ScopeClaimType, Consts.ScopeClaimValidValue),
-            new(Consts.CountryClaimType,
-                Consts.CountryClaimValidValue)
-
-        };
+        Audience = audience;
+        Issuer = issuer;
+        SigningCertificate = certificate;
+        Claims = new List<Claim>(claims);
     }
+
+    public AccessTokenParameters(string audience, string issuer, X509Certificate2 certificate, IEnumerable<Claim> claims):
+        this(audience, issuer, certificate, claims.ToArray())
+    {
+    }
+
     public X509Certificate2 SigningCertificate { get; set; }
     public string Audience { get; set; }
     public string Issuer { get; set; }

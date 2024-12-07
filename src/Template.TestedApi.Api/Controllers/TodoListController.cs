@@ -2,33 +2,37 @@ using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using MediatR;
 using Template.TestedApi.Core.Handlers;
+using Microsoft.AspNetCore.Authorization;
 
-namespace Template.TestedApi.Api.Controllers
+namespace Template.TestedApi.Api.Controllers;
+
+[ApiController]
+[Route("[controller]")]
+public class TodoListController : ControllerBase
 {
-    [ApiController]
-    [Route("[controller]")]
-    public class TodoListController : ControllerBase
+    private readonly IMediator _mediator;
+
+    public TodoListController(IMediator store)
     {
-        private readonly IMediator _mediator;
+        _mediator = store;
+    }
 
-        public TodoListController(IMediator store)
-        {
-            _mediator = store;
-        }
+    [HttpGet]
+    [Authorize(Policy = Permissions.TodoListRead)]
+    public async Task<IActionResult> GetItems()
+    {
+        var result = await _mediator.Send(new SelectTodo());
 
-        [HttpGet]
-        public async Task<IActionResult> GetItems()
-        {
-            var result = await _mediator.Send(new SelectTodo());
+        return Ok(result);
+    }
 
-            return Ok(result);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> InsertItem(InsertTodo insert)
-        {
-            var result = await _mediator.Send(insert);
-            return Ok(result);
-        }
+    [HttpPost]
+    [Authorize(Policy = Permissions.TodoListWrite)]
+    public async Task<IActionResult> InsertItem(InsertTodo insert)
+    {
+        var result = await _mediator.Send(insert);
+        return Ok(result);
     }
 }
+
+

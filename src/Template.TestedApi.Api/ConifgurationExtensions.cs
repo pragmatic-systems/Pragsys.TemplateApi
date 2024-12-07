@@ -21,7 +21,7 @@ public static class ConfigurationExtensions
 
     public static IServiceCollection WithMediatr(this IServiceCollection services)
     {
-        services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining(typeof(ConfigurationExtensions)));
+        services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining(typeof(PostgresConnectionFactory)));
         return services;
     }
 

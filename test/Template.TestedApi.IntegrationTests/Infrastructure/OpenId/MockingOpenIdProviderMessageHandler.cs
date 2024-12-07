@@ -8,13 +8,16 @@ public sealed class MockingOpenIdProviderMessageHandler : HttpMessageHandler
 {
     private readonly OpenIdConnectDiscoveryDocumentConfiguration _openIdConnectDiscoveryDocumentConfiguration;
     private readonly PemCertificate _tokenSigningCertificate;
+    private readonly string _openIdConfigUrl;
 
     public MockingOpenIdProviderMessageHandler(
         OpenIdConnectDiscoveryDocumentConfiguration openIdConnectDiscoveryDocumentConfiguration,
-        PemCertificate tokenSigningCertificate)
+        PemCertificate tokenSigningCertificate,
+        string openIdConfigUrl)
     {
         _openIdConnectDiscoveryDocumentConfiguration = openIdConnectDiscoveryDocumentConfiguration ?? throw new ArgumentNullException(nameof(openIdConnectDiscoveryDocumentConfiguration));
         _tokenSigningCertificate = tokenSigningCertificate ?? throw new ArgumentNullException(nameof(tokenSigningCertificate));
+        _openIdConfigUrl = openIdConfigUrl;
     }
 
     protected override HttpResponseMessage Send(HttpRequestMessage request, CancellationToken cancellationToken)
@@ -28,7 +31,7 @@ public sealed class MockingOpenIdProviderMessageHandler : HttpMessageHandler
         if (request == null) throw new ArgumentNullException(nameof(request));
         if (request.RequestUri == null) throw new ArgumentNullException(nameof(request.RequestUri));
 
-        if (request.RequestUri.AbsoluteUri.Contains(Consts.WellKnownOpenIdConfiguration))
+        if (request.RequestUri.AbsoluteUri.Contains(_openIdConfigUrl))
             return await GetOpenIdConfigurationHttpResponseMessage();
 
         if (request.RequestUri.AbsoluteUri.Equals(_openIdConnectDiscoveryDocumentConfiguration.JwksUri))
