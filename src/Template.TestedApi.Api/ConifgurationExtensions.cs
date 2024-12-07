@@ -40,8 +40,11 @@ public static class ConfigurationExtensions
 
     public static IServiceCollection WithOpenIdConnect(this IServiceCollection services, IConfiguration configuration)
     {
-        const string openIdConfigUrl = "https://localhost:8443/realms/test-realm/.well-known/openid-configuration";
-        var configManager = new ConfigurationManager<OpenIdConnectConfiguration>(openIdConfigUrl, new OpenIdConnectConfigurationRetriever());
+        var config = configuration
+            .GetRequiredSection("OpenIdConnect:OpenIdConfigUrl")
+            .Value;
+
+        var configManager = new ConfigurationManager<OpenIdConnectConfiguration>(config, new OpenIdConnectConfigurationRetriever());
         services.AddSingleton<IConfigurationManager<OpenIdConnectConfiguration>>(configManager);
         return services;
     }

@@ -49,7 +49,10 @@ public class TestRuntime : IAsyncDisposable
                     // Override config settings for connection strings / service urls here.
                     config.InitialData = new Dictionary<string, string?>
                     {
-                        { "ConnectionStrings:PostgresDb", postgresConnection }
+                        { "ConnectionStrings:PostgresDb", postgresConnection },
+
+                        { "OpenIdConnect:OpenIdConfigUrl", "https://blank/.well-known/openid-configuration" },
+                        { "OpenIdConnect:Audience", AppConstantsThatShouldBeConfig.Audience }
                     };
 
                     b.Add(config);
@@ -59,8 +62,7 @@ public class TestRuntime : IAsyncDisposable
                 {
                     var config = ConfigForMockedOpenIdConnectServer.Create(
                         OpenIdConnectDiscoveryDocumentConfigurationFactory.Create(AppConstantsThatShouldBeConfig.Issuer),
-                        Consts.ValidSigningCertificate,
-                        Consts.WellKnownOpenIdConfiguration);
+                        Consts.ValidSigningCertificate);
 
                     // Inject test override services
                     services.AddSingleton<IConfigurationManager<OpenIdConnectConfiguration>>(config);

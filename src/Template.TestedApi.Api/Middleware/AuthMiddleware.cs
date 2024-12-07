@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
@@ -23,16 +24,23 @@ public class AuthMiddleware
 {
     private RequestDelegate _next;
     private IConfigurationManager<OpenIdConnectConfiguration> _configurationManager;
+    private IConfiguration _configuration;
 
     public AuthMiddleware(RequestDelegate next, 
-        IConfigurationManager<OpenIdConnectConfiguration> configurationManager)
+        IConfigurationManager<OpenIdConnectConfiguration> configurationManager, 
+        IConfiguration configuration)
     {
         _next = next;
         _configurationManager = configurationManager;
+        _configuration = configuration;
     }
 
     public async Task Invoke(HttpContext context)
     {
+        var audience = _configuration
+            .GetRequiredSection("OpenIdConnect:Audience")
+            .Value;
+
         if (!SkipAuth(context))
         {
             var headers = context.Request.Headers;
@@ -50,7 +58,7 @@ public class AuthMiddleware
             var validationParams = new TokenValidationParameters
             {
                 ValidIssuer = config.Issuer,
-                ValidAudience = AppConstantsThatShouldBeConfig.Audience,
+                ValidAudience = audience,
                 IssuerSigningKeys = config.SigningKeys,
             };
 

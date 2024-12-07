@@ -14,6 +14,6 @@ public static class Permissions
 //TODO: Move to config
 public static class AppConstantsThatShouldBeConfig
 {
-    public static string Issuer { get; } = $"Issuer:Dotnet:TemplateApi:Tests:Project";
-    public static string Audience { get; } = $"Issuer:Dotnet:TemplateApi:Tests:Project";
+    public static string Issuer { get; } = $"Issuer:Dotnet:TemplateApi:Tests:Project:Issuer";
+    public static string Audience { get; } = $"Issuer:Dotnet:TemplateApi:Tests:Project:Audience";
 }
