@@ -1,6 +1,5 @@
 ﻿using System.Security.Claims;
-using Template.TestedApi.IntegrationTests.Infrastructure.Jwt;
-using Template.TestedApi.IntegrationTests.Infrastructure.OpenId;
+using Template.TestedApi.IntegrationTests.Infrastructure.Auth;
 
 namespace Template.TestedApi.IntegrationTests.Infrastructure;
 
@@ -23,7 +22,7 @@ public class TestUser
         var issuer = TestConstants.Issuer;
         var signingCertificate = certificate.ToX509Certificate2();
 
-        var accessTokenParameters = new AccessTokenParameters(audience, issuer, signingCertificate, Claims);
-        UserJwt = JwtBearerAccessTokenFactory.Create(accessTokenParameters);
+        var accessTokenParameters = new AccessTokenBuilder(audience, issuer, signingCertificate, Claims);
+        UserJwt = accessTokenParameters.ToJwt();
     }
 }

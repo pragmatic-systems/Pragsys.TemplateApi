@@ -5,7 +5,7 @@ using Microsoft.Extensions.Configuration.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using Template.TestedApi.IntegrationTests.Infrastructure.OpenId;
+using Template.TestedApi.IntegrationTests.Infrastructure.Auth;
 using Testcontainers.PostgreSql;
 
 namespace Template.TestedApi.IntegrationTests.Infrastructure;
@@ -37,7 +37,7 @@ public class TestRuntime : IAsyncDisposable
         await PostgresContainer.StartAsync();
 
         // Create SSL Certificate
-        SigningCertificate = SelfSignedAccessTokenPemCertificateFactory.Create();
+        SigningCertificate = PemCertificate.Create();
 
         TargetApi = new WebApplicationFactory<Api.Program>()
             .WithWebHostBuilder(builder =>
@@ -64,10 +64,10 @@ public class TestRuntime : IAsyncDisposable
 
                 builder.ConfigureTestServices(services =>
                 {
-                    var config = ConfigForMockedOpenIdConnectServer.Create(
-                        OpenIdConnectDiscoveryDocumentConfigurationFactory.Create(TestConstants.Issuer),
-                        SigningCertificate, 
-                        TestConstants.OpenIdConfigUrl);
+                    var config = MockOpenIdConnectServerBuilder.Create(
+                        TestConstants.Issuer,
+                        TestConstants.OpenIdConfigUrl,
+                        SigningCertificate);
 
                     // Inject test override services
                     services.AddSingleton<IConfigurationManager<OpenIdConnectConfiguration>>(config);

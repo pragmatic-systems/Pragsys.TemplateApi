@@ -2,8 +2,7 @@
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Security.Claims;
-using Template.TestedApi.Api;
-using Template.TestedApi.IntegrationTests.Infrastructure.OpenId;
+using Template.TestedApi.IntegrationTests.Infrastructure.Auth;
 
 namespace Template.TestedApi.IntegrationTests.Infrastructure;
 

@@ -1,17 +1,19 @@
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 
-namespace Template.TestedApi.IntegrationTests.Infrastructure.OpenId;
+namespace Template.TestedApi.IntegrationTests.Infrastructure.Auth;
 
-public class ConfigForMockedOpenIdConnectServer
+public class MockOpenIdConnectServerBuilder
 {
     public static IConfigurationManager<OpenIdConnectConfiguration> Create(
-        OpenIdConnectDiscoveryDocumentConfiguration config,
-        PemCertificate signingCertificate,
-        string openIdConfigUrl)
+        string issuer,
+        string openIdConfigUrl,
+        PemCertificate signingCertificate)
     {
+        var config = OpenIdConnectDiscoveryDocumentConfiguration.ForIssuer(issuer);
+
         var openIdHttpClient = new HttpClient(
-            new MockingOpenIdProviderMessageHandler(config, signingCertificate, openIdConfigUrl));
+            new MockOpenIdProviderMessageHandler(config, signingCertificate, openIdConfigUrl));
 
         return new ConfigurationManager<OpenIdConnectConfiguration>(
             openIdConfigUrl, new OpenIdConnectConfigurationRetriever(),

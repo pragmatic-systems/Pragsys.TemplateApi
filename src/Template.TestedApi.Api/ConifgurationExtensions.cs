@@ -104,7 +104,7 @@ public static class ConfigurationExtensions
         return services;
     }
 
-    public static WebApplication UseAuthMiddleware(this WebApplication app)
+    public static WebApplication UseAuthMiddleware(this WebApplication app) 
     {
         app.UseMiddleware<AuthMiddleware>();
         return app;

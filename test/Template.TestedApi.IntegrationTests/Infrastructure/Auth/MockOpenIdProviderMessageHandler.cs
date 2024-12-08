@@ -2,15 +2,15 @@
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 
-namespace Template.TestedApi.IntegrationTests.Infrastructure.OpenId;
+namespace Template.TestedApi.IntegrationTests.Infrastructure.Auth;
 
-public sealed class MockingOpenIdProviderMessageHandler : HttpMessageHandler
+public sealed class MockOpenIdProviderMessageHandler : HttpMessageHandler
 {
     private readonly OpenIdConnectDiscoveryDocumentConfiguration _openIdConnectDiscoveryDocumentConfiguration;
     private readonly PemCertificate _tokenSigningCertificate;
     private readonly string _openIdConfigUrl;
 
-    public MockingOpenIdProviderMessageHandler(
+    public MockOpenIdProviderMessageHandler(
         OpenIdConnectDiscoveryDocumentConfiguration openIdConnectDiscoveryDocumentConfiguration,
         PemCertificate tokenSigningCertificate,
         string openIdConfigUrl)
@@ -60,7 +60,4 @@ public sealed class MockingOpenIdProviderMessageHandler : HttpMessageHandler
         httpResponseMessage.StatusCode = HttpStatusCode.OK;
         return Task.FromResult(httpResponseMessage);
     }
-
-
-
 }
