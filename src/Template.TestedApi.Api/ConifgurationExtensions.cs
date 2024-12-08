@@ -40,12 +40,15 @@ public static class ConfigurationExtensions
 
     public static IServiceCollection WithOpenIdConnect(this IServiceCollection services, IConfiguration configuration)
     {
-        var config = configuration
-            .GetRequiredSection("OpenIdConnect:OpenIdConfigUrl")
-            .Value;
+        services.AddSingleton<IConfigurationManager<OpenIdConnectConfiguration>>(s =>
+        {
+            var config = configuration
+                .GetRequiredSection("OpenIdConnect:OpenIdConfigUrl")
+                .Value;
 
-        var configManager = new ConfigurationManager<OpenIdConnectConfiguration>(config, new OpenIdConnectConfigurationRetriever());
-        services.AddSingleton<IConfigurationManager<OpenIdConnectConfiguration>>(configManager);
+            return new ConfigurationManager<OpenIdConnectConfiguration>(config, new OpenIdConnectConfigurationRetriever());
+        });
+
         return services;
     }
 
