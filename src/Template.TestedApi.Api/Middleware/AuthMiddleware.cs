@@ -18,9 +18,6 @@ namespace Template.TestedApi.Api.Middleware;
 // For mocking:
 // https://xebia.com/blog/mock-your-openid-connect-provider/
 
-// Note: Need to self sign a certificate and add it to trusted root to use local keycloak.
-// https://www.supportyourtech.com/articles/how-to-add-certificate-to-trusted-root-windows-10-a-step-by-step-guide/
-
 public class AuthMiddleware
 {
     private RequestDelegate _next;
@@ -57,7 +54,7 @@ public class AuthMiddleware
                 var bearerToken = authHeader.Replace("Bearer", string.Empty).Trim();
 
                 var jwt = new JwtSecurityToken(bearerToken);
-                var config = await _configurationManager.GetConfigurationAsync(CancellationToken.None);
+                var config = await _configurationManager.GetConfigurationAsync(context.RequestAborted);
 
                 var validationParams = new TokenValidationParameters
                 {

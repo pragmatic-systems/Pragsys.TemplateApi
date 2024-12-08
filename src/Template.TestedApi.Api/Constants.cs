@@ -2,7 +2,7 @@
 
 public static class AppClaimTypes
 {
-    public const string PermissionClaimType = "permission";
+    public const string Permission = "permission";
 }
 
 public static class Permissions

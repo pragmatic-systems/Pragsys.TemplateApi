@@ -1,8 +1,8 @@
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using MediatR;
 using Template.TestedApi.Core.Handlers;
-using Microsoft.AspNetCore.Authorization;
 
 namespace Template.TestedApi.Api.Controllers;
 

@@ -22,6 +22,8 @@ Run `docker compose -f docker-compose.infra.yml up`
 Launch apps:
 * Template.TestedApi.API
 
+### Authentication
+
 
 ### Docker Pack and Push
 

@@ -22,6 +22,9 @@ Scenario: Restricted Write Access
 	When We are connecting as 'James'
 	And We create task 'New Task'
 	Then The response should be 403 Forbidden
+	When We get our TodoList
+	Then The response should be 200 OK
+	And The response should contain a Todo List
 
 @todo-list @api
 Scenario: Restricted Anonymous Access
