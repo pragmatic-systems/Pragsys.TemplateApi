@@ -28,8 +28,8 @@ public class ScenarioSetup
         TestContext = new TestContext();
         TestContext.TestClient = TestRuntime.TargetApi.CreateClient();
 
-        var audience = AppConstantsThatShouldBeConfig.Audience;
-        var issuer = AppConstantsThatShouldBeConfig.Issuer;
+        var audience = TestConstants.Audience;
+        var issuer = TestConstants.Issuer;
         var signingCertificate = Consts.ValidSigningCertificate.ToX509Certificate2();
         var claims = new List<Claim>
         {
@@ -46,3 +46,8 @@ public class ScenarioSetup
     }
 }
 
+public static class TestConstants
+{
+    public static string Issuer { get; } = $"ApiTest:Issuer";
+    public static string Audience { get; } = $"ApiTest:Audience";
+}

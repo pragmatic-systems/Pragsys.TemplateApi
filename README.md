@@ -7,20 +7,20 @@ This project was created from a template.
 
 This project contains a postgres DB, an API, and a DB up project to handle DB migrations.
 
-* Keycloak and SSO
-* `Ping`, `Health`, and `Metrics` endpoints.
-* Unit Tests, Acceptance Tests and Benchmarks with packaged reports.
-* Export swagger defintions.
+* OpenIdConnect support for JWT based auth.
+* `Ping`, `Health`, and `Metrics` endpoints for service observability.
+* Database migration project to managed postgres migrations.
+* Unit Tests, Integration and Benchmarks with packaged reports.
+* Test Server / Test Container based test suite with Specflow.
+
+### Database Migrations
+Currently we run migrations on app-start, this simplifies startup and development, but for more mature projects we can 
 
 ### To Run
-Run docker-compose project in VS
-
-OR
 
 Run `docker compose -f docker-compose.infra.yml up` 
 Launch apps:
 * Template.TestedApi.API
-* Template.TestedApi.DbUp
 
 
 ### Docker Pack and Push

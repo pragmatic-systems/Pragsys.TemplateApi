@@ -15,8 +15,8 @@ namespace Template.TestedApi.IntegrationTests.Infrastructure;
 
 public class TestRuntime : IAsyncDisposable
 {
-    private PostgreSqlContainer PostgresContainer;
-    //private WireMockContainer WireMockContainer;
+    public PostgreSqlContainer PostgresContainer { get; private set; }
+    //public WireMockContainer WireMockContainer { get; private set; }
 
     public WebApplicationFactory<Template.TestedApi.Api.Program> TargetApi { get; private set; }
 
@@ -52,7 +52,7 @@ public class TestRuntime : IAsyncDisposable
                         { "ConnectionStrings:PostgresDb", postgresConnection },
 
                         { "OpenIdConnect:OpenIdConfigUrl", "https://blank/.well-known/openid-configuration" },
-                        { "OpenIdConnect:Audience", AppConstantsThatShouldBeConfig.Audience }
+                        { "OpenIdConnect:Audience", TestConstants.Audience }
                     };
 
                     b.Add(config);
@@ -61,7 +61,7 @@ public class TestRuntime : IAsyncDisposable
                 builder.ConfigureTestServices(services =>
                 {
                     var config = ConfigForMockedOpenIdConnectServer.Create(
-                        OpenIdConnectDiscoveryDocumentConfigurationFactory.Create(AppConstantsThatShouldBeConfig.Issuer),
+                        OpenIdConnectDiscoveryDocumentConfigurationFactory.Create(TestConstants.Issuer),
                         Consts.ValidSigningCertificate);
 
                     // Inject test override services

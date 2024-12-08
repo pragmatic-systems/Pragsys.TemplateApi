@@ -22,7 +22,6 @@ public class TodoListController : ControllerBase
     public async Task<IActionResult> GetItems()
     {
         var result = await _mediator.Send(new SelectTodo());
-
         return Ok(result);
     }
 
@@ -34,5 +33,3 @@ public class TodoListController : ControllerBase
         return Ok(result);
     }
 }
-
-

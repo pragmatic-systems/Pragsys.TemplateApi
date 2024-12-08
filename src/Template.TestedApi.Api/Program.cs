@@ -21,9 +21,7 @@ public class Program
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
             builder.Services.AddControllers();
-
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             builder.Services.WithSerilog(builder.Configuration, "Template.TestedApi API");
@@ -62,12 +60,11 @@ public class Program
             app.UseHttpsRedirectionExcluding("/_system");
 
             // https://github.com/prometheus-net/prometheus-net
-
             app.UseMetricServer();
+
             app.UseRouting();
             app.UseHttpMetrics();
             app.UseAuthorization();
-
             app.MapControllers();
             app.MapMetrics("_system/metrics");
             app.MapHealthChecks("/_system/ping", new HealthCheckOptions { Predicate = _ => false });
@@ -90,8 +87,6 @@ public class Program
                     await c.Response.WriteAsJsonAsync(response);
                 }
             });
-
-            app.MapControllers();
 
             Log.Logger.Information("Starting Application");
 
