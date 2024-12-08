@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -37,36 +38,45 @@ public class AuthMiddleware
 
     public async Task Invoke(HttpContext context)
     {
-        var audience = _configuration
-            .GetRequiredSection("OpenIdConnect:Audience")
-            .Value;
 
-        if (!SkipAuth(context))
+        try
         {
-            var headers = context.Request.Headers;
-            if (!headers.ContainsKey(HeaderNames.Authorization))
+            var audience = _configuration
+                .GetRequiredSection("OpenIdConnect:Audience")
+                .Value;
+
+            if (!SkipAuth(context))
             {
-                throw new SecurityTokenValidationException("No Authorization Token supplied.");
+                var headers = context.Request.Headers;
+                if (!headers.ContainsKey(HeaderNames.Authorization))
+                {
+                    throw new SecurityTokenValidationException("No Authorization Token supplied.");
+                }
+
+                var authHeader = headers[HeaderNames.Authorization].ToString();
+                var bearerToken = authHeader.Replace("Bearer", string.Empty).Trim();
+
+                var jwt = new JwtSecurityToken(bearerToken);
+                var config = await _configurationManager.GetConfigurationAsync(CancellationToken.None);
+
+                var validationParams = new TokenValidationParameters
+                {
+                    ValidIssuer = config.Issuer,
+                    ValidAudience = audience,
+                    IssuerSigningKeys = config.SigningKeys,
+                };
+
+                context.User = new JwtSecurityTokenHandler()
+                    .ValidateToken(bearerToken, validationParams, out var thing);
             }
 
-            var authHeader = headers[HeaderNames.Authorization].ToString();
-            var bearerToken = authHeader.Replace("Bearer", string.Empty).Trim();
-
-            var jwt = new JwtSecurityToken(bearerToken);
-            var config = await _configurationManager.GetConfigurationAsync(CancellationToken.None);
-
-            var validationParams = new TokenValidationParameters
-            {
-                ValidIssuer = config.Issuer,
-                ValidAudience = audience,
-                IssuerSigningKeys = config.SigningKeys,
-            };
-
-            context.User = new JwtSecurityTokenHandler()
-                .ValidateToken(bearerToken, validationParams, out var thing);
+            await _next.Invoke(context);
         }
-
-        await _next.Invoke(context);
+        catch(SecurityTokenException ex)
+        {
+            context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+            await context.Response.CompleteAsync();
+        }
     }
 
     private bool SkipAuth(HttpContext context)

@@ -1,10 +1,4 @@
 ﻿using BoDi;
-using Microsoft.Extensions.Configuration;
-using System.Net.Http.Headers;
-using System.Security.Claims;
-using Template.TestedApi.Api;
-using Template.TestedApi.IntegrationTests.Infrastructure.Jwt;
-using Template.TestedApi.IntegrationTests.Infrastructure.OpenId;
 
 namespace Template.TestedApi.IntegrationTests.Infrastructure;
 
@@ -25,21 +19,7 @@ public class ScenarioSetup
     public void ConfigureInjection()
     {
         TestRuntime = RuntimeSetup.TestRuntime;
-        TestContext = new TestContext();
-        TestContext.TestClient = TestRuntime.TargetApi.CreateClient();
-
-        var audience = TestConstants.Audience;
-        var issuer = TestConstants.Issuer;
-        var signingCertificate = Consts.ValidSigningCertificate.ToX509Certificate2();
-        var claims = new List<Claim>
-        {
-            new(AppClaimTypes.PermissionClaimType, Permissions.TodoListRead),
-            new(AppClaimTypes.PermissionClaimType, Permissions.TodoListWrite)
-        };
-
-        var accessTokenParameters = new AccessTokenParameters(audience, issuer, signingCertificate, claims);
-        var encodedAccessToken = JwtBearerAccessTokenFactory.Create(accessTokenParameters);
-        TestContext.TestClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", encodedAccessToken);
+        TestContext = new TestContext(TestRuntime);
 
         objectContainer.RegisterInstanceAs(TestRuntime);
         objectContainer.RegisterInstanceAs(TestContext);
@@ -48,6 +28,7 @@ public class ScenarioSetup
 
 public static class TestConstants
 {
+    public static string OpenIdConfigUrl { get; } = "https://i.do.not.exist/.well-known/openid-configuration";
     public static string Issuer { get; } = $"ApiTest:Issuer";
     public static string Audience { get; } = $"ApiTest:Audience";
 }

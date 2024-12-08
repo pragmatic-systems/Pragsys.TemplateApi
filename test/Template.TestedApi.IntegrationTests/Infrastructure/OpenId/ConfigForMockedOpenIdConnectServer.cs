@@ -7,10 +7,9 @@ public class ConfigForMockedOpenIdConnectServer
 {
     public static IConfigurationManager<OpenIdConnectConfiguration> Create(
         OpenIdConnectDiscoveryDocumentConfiguration config,
-        PemCertificate signingCertificate)
+        PemCertificate signingCertificate,
+        string openIdConfigUrl)
     {
-        var openIdConfigUrl = "https://i.do.not.exist/.well-known/openid-configuration";
-
         var openIdHttpClient = new HttpClient(
             new MockingOpenIdProviderMessageHandler(config, signingCertificate, openIdConfigUrl));
 

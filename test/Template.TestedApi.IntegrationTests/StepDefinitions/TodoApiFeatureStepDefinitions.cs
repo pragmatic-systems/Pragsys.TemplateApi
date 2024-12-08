@@ -1,5 +1,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Security.Claims;
+using Template.TestedApi.Api;
 using Template.TestedApi.IntegrationTests.Infrastructure;
 
 namespace Template.TestedApi.IntegrationTests.StepDefinitions;

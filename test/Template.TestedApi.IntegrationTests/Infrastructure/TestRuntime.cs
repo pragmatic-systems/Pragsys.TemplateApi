@@ -1,15 +1,12 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration.Memory;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Protocols;
-using Serilog;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Template.TestedApi.IntegrationTests.Infrastructure.OpenId;
 using Testcontainers.PostgreSql;
-using Template.TestedApi.Api;
 
 namespace Template.TestedApi.IntegrationTests.Infrastructure;
 
@@ -20,6 +17,11 @@ public class TestRuntime : IAsyncDisposable
 
     public WebApplicationFactory<Template.TestedApi.Api.Program> TargetApi { get; private set; }
 
+    /// <summary>
+    /// Certificate used for signing the JWT used by the API.
+    /// </summary>
+    public PemCertificate SigningCertificate { get; private set; }
+
     public async ValueTask DisposeAsync()
     {
         await TargetApi.DisposeAsync();
@@ -27,13 +29,15 @@ public class TestRuntime : IAsyncDisposable
 
     public async Task InitializeAsync()
     {
+        // Configure Postgres
         PostgresContainer = new PostgreSqlBuilder()
             .WithAutoRemove(true)
             .Build();
 
         await PostgresContainer.StartAsync();
 
-        var postgresConnection = PostgresContainer.GetConnectionString();
+        // Create SSL Certificate
+        SigningCertificate = SelfSignedAccessTokenPemCertificateFactory.Create();
 
         TargetApi = new WebApplicationFactory<Api.Program>()
             .WithWebHostBuilder(builder =>
@@ -49,9 +53,9 @@ public class TestRuntime : IAsyncDisposable
                     // Override config settings for connection strings / service urls here.
                     config.InitialData = new Dictionary<string, string?>
                     {
-                        { "ConnectionStrings:PostgresDb", postgresConnection },
+                        { "ConnectionStrings:PostgresDb", PostgresContainer.GetConnectionString() },
 
-                        { "OpenIdConnect:OpenIdConfigUrl", "https://blank/.well-known/openid-configuration" },
+                        { "OpenIdConnect:OpenIdConfigUrl", TestConstants.OpenIdConfigUrl },
                         { "OpenIdConnect:Audience", TestConstants.Audience }
                     };
 
@@ -62,7 +66,8 @@ public class TestRuntime : IAsyncDisposable
                 {
                     var config = ConfigForMockedOpenIdConnectServer.Create(
                         OpenIdConnectDiscoveryDocumentConfigurationFactory.Create(TestConstants.Issuer),
-                        Consts.ValidSigningCertificate);
+                        SigningCertificate, 
+                        TestConstants.OpenIdConfigUrl);
 
                     // Inject test override services
                     services.AddSingleton<IConfigurationManager<OpenIdConnectConfiguration>>(config);

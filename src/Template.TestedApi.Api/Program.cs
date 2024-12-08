@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Http;
@@ -21,20 +22,20 @@ public class Program
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             builder.Services.WithSerilog(builder.Configuration, "Template.TestedApi API");
             builder.Services.WithPostgres(builder.Configuration);
             builder.Services.WithOpenIdConnect(builder.Configuration);
             builder.Services.WithMediatr();
-
+            builder.Services.AddAuthentication().AddJwtBearer();
             builder.Services.AddAuthorization(authorizationOptions => {
 
                 authorizationOptions.AddPolicy("TodoList:Read", policy => policy.RequireClaim("permission", "TodoList:Read"));
-                authorizationOptions.AddPolicy("TodoList:Write", policy => policy.RequireClaim("permission", "TodoList:Read"));
-
+                authorizationOptions.AddPolicy("TodoList:Write", policy => policy.RequireClaim("permission", "TodoList:Write"));
             });
+
+            builder.Services.AddControllers();
 
             builder.Services
                 .AddHealthChecks()
@@ -64,6 +65,7 @@ public class Program
 
             app.UseRouting();
             app.UseHttpMetrics();
+            app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();
             app.MapMetrics("_system/metrics");
