@@ -3,7 +3,7 @@ using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 
 namespace Template.TestedApi.IntegrationTests.Infrastructure.Auth;
 
-public class MockOpenIdConnectServerBuilder
+public class MockOpenIdConfigurationManagerBuilder
 {
     public static IConfigurationManager<OpenIdConnectConfiguration> Create(
         string issuer,

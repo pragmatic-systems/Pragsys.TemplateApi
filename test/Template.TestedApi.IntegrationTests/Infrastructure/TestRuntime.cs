@@ -64,7 +64,7 @@ public class TestRuntime : IAsyncDisposable
 
                 builder.ConfigureTestServices(services =>
                 {
-                    var config = MockOpenIdConnectServerBuilder.Create(
+                    var config = MockOpenIdConfigurationManagerBuilder.Create(
                         TestConstants.Issuer,
                         TestConstants.OpenIdConfigUrl,
                         SigningCertificate);

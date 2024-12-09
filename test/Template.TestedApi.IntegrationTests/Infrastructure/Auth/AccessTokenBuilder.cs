@@ -25,9 +25,19 @@ public record AccessTokenBuilder
     public string Issuer { get; set; }
     public List<Claim> Claims { get; set; }
 
-    public void AddOrReplaceClaim(string claimType, string claimValue)
+    public void SetClaim(string claimType, string claimValue)
     {
         var claim = Claims?.FirstOrDefault(x => x.Type == claimType);
+        if (claim != null)
+            Claims?.Remove(claim);
+
+        Claims ??= new List<Claim>();
+        Claims.Add(new Claim(claimType, claimValue));
+    }
+
+    public void AppendClaim(string claimType, string claimValue)
+    {
+        var claim = Claims?.FirstOrDefault(x => x.Type == claimType && x.Value == claimValue);
         if (claim != null)
             Claims?.Remove(claim);
 
