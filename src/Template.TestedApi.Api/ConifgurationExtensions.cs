@@ -122,13 +122,12 @@ public static class ConfigurationExtensions
             {
                 var response = new
                 {
-                    Status = r.Status.ToString(),
+                    Health = r.Status.ToString(),
                     Checks = r.Entries.Select(x =>
                         new
                         {
-                            Status = x.Value.Status.ToString(),
-                            Component = x.Key,
-                            Description = x.Value.Description
+                            Health = x.Value.Status.ToString(),
+                            Name = x.Key,
                         }),
                     Duration = r.TotalDuration
                 };

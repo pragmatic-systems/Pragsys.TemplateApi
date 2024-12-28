@@ -5,9 +5,9 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace Template.TestedApi.IntegrationTests.Infrastructure.Auth;
 
-public record AccessTokenBuilder
+public record AccessToken
 {
-    public AccessTokenBuilder(string audience, string issuer, X509Certificate2 certificate, params Claim[] claims)
+    public AccessToken(string audience, string issuer, X509Certificate2 certificate, params Claim[] claims)
     {
         Audience = audience;
         Issuer = issuer;
@@ -15,7 +15,7 @@ public record AccessTokenBuilder
         Claims = new List<Claim>(claims);
     }
 
-    public AccessTokenBuilder(string audience, string issuer, X509Certificate2 certificate, IEnumerable<Claim> claims) :
+    public AccessToken(string audience, string issuer, X509Certificate2 certificate, IEnumerable<Claim> claims) :
         this(audience, issuer, certificate, claims.ToArray())
     {
     }

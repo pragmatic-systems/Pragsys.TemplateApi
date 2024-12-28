@@ -22,7 +22,7 @@ public class TestUser
         var issuer = TestConstants.Issuer;
         var signingCertificate = certificate.ToX509Certificate2();
 
-        var accessTokenParameters = new AccessTokenBuilder(audience, issuer, signingCertificate, Claims);
+        var accessTokenParameters = new AccessToken(audience, issuer, signingCertificate, Claims);
         UserJwt = accessTokenParameters.ToJwt();
     }
 }
