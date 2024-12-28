@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Prometheus;
 using Serilog;
 using System.Linq;
+using System.Security.Claims;
 using Template.TestedApi.Api.HostedServices;
 using Template.TestedApi.Api.Middleware;
 using Template.TestedApi.Core;
@@ -66,8 +67,8 @@ public static class ConfigurationExtensions
     {
         services.AddAuthorization(authorizationOptions => {
 
-            authorizationOptions.AddPolicy(Permissions.TodoListRead, policy => policy.RequireClaim(AppClaimTypes.Permission, Permissions.TodoListRead));
-            authorizationOptions.AddPolicy(Permissions.TodoListWrite, policy => policy.RequireClaim(AppClaimTypes.Permission, Permissions.TodoListWrite));
+            authorizationOptions.AddPolicy(Roles.TodoListRead, policy => policy.RequireClaim(ClaimTypes.Role, Roles.TodoListRead));
+            authorizationOptions.AddPolicy(Roles.TodoListWrite, policy => policy.RequireClaim(ClaimTypes.Role, Roles.TodoListWrite));
         });
 
         return services;

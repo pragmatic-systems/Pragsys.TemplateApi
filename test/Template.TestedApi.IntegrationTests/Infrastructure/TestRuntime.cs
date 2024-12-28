@@ -56,7 +56,8 @@ public class TestRuntime : IAsyncDisposable
                         { "ConnectionStrings:PostgresDb", PostgresContainer.GetConnectionString() },
 
                         { "OpenIdConnect:OpenIdConfigUrl", TestConstants.OpenIdConfigUrl },
-                        { "OpenIdConnect:Audience", TestConstants.Audience }
+                        { "OpenIdConnect:Audience", TestConstants.Audience },
+                        { "OpenIdConnect:Issuer", TestConstants.Issuer }
                     };
 
                     b.Add(config);

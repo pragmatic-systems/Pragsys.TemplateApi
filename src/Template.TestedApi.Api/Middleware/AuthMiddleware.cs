@@ -76,7 +76,6 @@ public class AuthMiddleware
                 context.User = new JwtSecurityTokenHandler()
                     .ValidateToken(bearerToken, validationParams, out var thing);
 
-                BuildAzureAdClaimMap(context);
                 BuildAwsIamClaimMap(context);
             }
 
@@ -89,27 +88,13 @@ public class AuthMiddleware
         }
     }
 
-    private static void BuildAzureAdClaimMap(HttpContext context)
-    {
-        // All claims come in as "ClaimTypes.Role" from AD, so we're going to find all roles and map them over to the AppClaimTypes.Permission role we have for the app.
-        var claims = context.User.Claims
-            .Where(c => c.Type == ClaimTypes.Role);
-        
-        var identity = new ClaimsIdentity();
-        foreach (var claim in claims)
-        {
-            identity.AddClaim(new Claim(AppClaimTypes.Permission, claim.Value));
-        }
-        context.User.AddIdentity(identity);
-    }
-
     private static void BuildAwsIamClaimMap(HttpContext context)
     {
-        // All our "Claims" for service to service from AWS Cognito are going to come in as scopes.
+        // All our Claims for service to service from AWS Cognito are going to come in as scopes.
         // How we implement the naming of the scopes is really up to the implementor, for now we are
         // hard coding these values.
 
-        // If we integrate with IAM, we can use Roles, but this is for Service to Service and we are quite restricted.
+        // If we integrate with IAM, we can use Roles.
 
         var claims = context.User.Claims
             .Where(c => c.Type == "scope")
@@ -119,7 +104,7 @@ public class AuthMiddleware
         var identity = new ClaimsIdentity();
         foreach (var claim in claims)
         {
-            identity.AddClaim(new Claim(AppClaimTypes.Permission, claim));
+            identity.AddClaim(new Claim(ClaimTypes.Role, claim));
         }
         context.User.AddIdentity(identity);
     }

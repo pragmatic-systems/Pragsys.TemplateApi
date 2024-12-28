@@ -55,13 +55,13 @@ public class CommonStepDefinitions
 
         if (claimSetName == "Read")
         {
-            claims.Add(new Claim(AppClaimTypes.Permission, Permissions.TodoListRead));
+            claims.Add(new Claim(ClaimTypes.Role, Roles.TodoListRead));
         };
 
         if (claimSetName == "ReadWrite")
         {
-            claims.Add(new Claim(AppClaimTypes.Permission, Permissions.TodoListRead));
-            claims.Add(new Claim(AppClaimTypes.Permission, Permissions.TodoListWrite));
+            claims.Add(new Claim(ClaimTypes.Role, Roles.TodoListRead));
+            claims.Add(new Claim(ClaimTypes.Role, Roles.TodoListWrite));
         }
 
         _testContext.AddUserClaims(userName, claims);

@@ -18,7 +18,7 @@ public class TodoListController : ControllerBase
     }
 
     [HttpGet]
-    [Authorize(Policy = Permissions.TodoListRead)]
+    [Authorize(Policy = Roles.TodoListRead)]
     public async Task<IActionResult> GetItems()
     {
         var result = await _mediator.Send(new SelectTodo());
@@ -26,7 +26,7 @@ public class TodoListController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize(Policy = Permissions.TodoListWrite)]
+    [Authorize(Policy = Roles.TodoListWrite)]
     public async Task<IActionResult> InsertItem(InsertTodo insert)
     {
         var result = await _mediator.Send(insert);
