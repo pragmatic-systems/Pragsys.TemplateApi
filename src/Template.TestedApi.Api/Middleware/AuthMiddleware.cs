@@ -114,6 +114,9 @@ public class AuthMiddleware
         var path = context.Request.Path.Value ?? string.Empty;
         path = path.ToLower();
 
+        if (path.StartsWith("/favicon.ico"))
+            return true;
+
         return path.StartsWith("/_system");
     }
 }

@@ -1,14 +1,14 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Prometheus;
 using Serilog;
-using System.Linq;
+using System;
 using System.Security.Claims;
 using Template.TestedApi.Api.HostedServices;
 using Template.TestedApi.Api.Middleware;
@@ -93,19 +93,44 @@ public static class ConfigurationExtensions
         return services;
     }
 
-    public static IServiceCollection AddAppHealthChecks(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddAppHealthChecks(this IServiceCollection services, IConfiguration configuration, bool testMode)
     {
-        services
+        var healthcheckBuilder = services
             .AddHealthChecks()
             .AddNpgSql(s =>
             {
                 return configuration.GetConnectionString("PostgresDb");
             });
 
+        // NOTE: Suppress healthcheck for OIDC if we are in test mode, as it's a fake endpoint that won't exist.
+        if (!testMode)
+        {
+            healthcheckBuilder.AddUrlGroup(s =>
+                {
+                    var config = configuration
+                        .GetRequiredSection("OpenIdConnect:OpenIdConfigUrl")
+                        .Value;
+
+                    return new Uri(config);
+
+                }, "OIDC Provider");
+        }
+
         return services;
     }
 
-    public static WebApplication UseAuthMiddleware(this WebApplication app) 
+    public static WebApplication ConfigureSwagger(this WebApplication app)
+    {
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseSwagger();
+            app.UseSwaggerUI();
+        }
+
+        return app;
+    }
+
+    public static WebApplication UseAuthMiddleware(this WebApplication app)
     {
         app.UseMiddleware<AuthMiddleware>();
         return app;
@@ -114,7 +139,7 @@ public static class ConfigurationExtensions
     public static WebApplication MapInstrumentationEndpoints(this WebApplication app)
     {
         app.UseHttpsRedirectionExcluding("/_system");
-        
+
         app.MapMetrics("_system/metrics");
         app.MapHealthChecks("/_system/ping", new HealthCheckOptions { Predicate = _ => false });
         app.MapHealthChecks("/_system/health", new HealthCheckOptions

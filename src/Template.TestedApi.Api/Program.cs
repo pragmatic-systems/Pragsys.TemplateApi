@@ -10,10 +10,12 @@ namespace Template.TestedApi.Api;
 public class Program
 {
     public static void Main(string[] args)
-    {
+    { 
         try
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            var testMode = builder.Environment.EnvironmentName == "IntegrationTest";
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -23,17 +25,11 @@ public class Program
             builder.Services.WithOpenIdConnect(builder.Configuration);
             builder.Services.WithAuthorizationPolicy();
             builder.Services.AddControllers();
-            builder.Services.AddAppHealthChecks(builder.Configuration);
+            builder.Services.AddAppHealthChecks(builder.Configuration, testMode);
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
-
+            app.ConfigureSwagger();
             app.UseMetricServer(); // https://github.com/prometheus-net/prometheus-net
             app.UseAuthMiddleware();
             app.UseRouting();
