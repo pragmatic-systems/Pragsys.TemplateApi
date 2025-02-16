@@ -26,7 +26,7 @@ Launch apps:
 ### Seq
 Url: https://localhost:5030
 
-### Postgres (PgAdmin)
+### Postgres (+ PgAdmin)
 Adminer: https://localhost:8443
 Username: user@local.com
 Password: password
@@ -87,17 +87,16 @@ password: {userpassword}
 ### Validate JWT
 For the configuration in your dotnet application, you will need:
 
-Issuer: `https://localhost:8443/realms/{realm}`
-Audience: `{client-id}`
-Issuer: `https://localhost:8443/realms/{realm}/.well-known/openid-configuration`
+Issuer: `https://localhost:8443/realms/todolist-realm`
+Audience: `todolist-client`
+OpenIdConfigUrl: `https://localhost:8443/realms/todolist-realm/.well-known/openid-configuration`
 
-## TODO: Entra Setup
+## Azure EntraId Config
+* TODO
 
-TODO
+## AWS Cognito Config
+* TODO
 
-## TODO: AWS Setup
-
-TODO
 
 ## Docker Pack and Push
 
