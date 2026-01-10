@@ -23,7 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Template.TestedApi.Core\Template.TestedApi.Core.csproj" />
-    <ProjectReference Include="..\Template.TestedApi.DbUp\Template.TestedApi.DbUp.csproj" />
+    <ProjectReference Include="..\Template.TestedApi.DbUp\Template.TestedApi.Database.csproj" />
   </ItemGroup>
 
 </Project>

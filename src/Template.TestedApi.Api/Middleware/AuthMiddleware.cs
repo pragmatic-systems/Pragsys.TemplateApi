@@ -37,7 +37,6 @@ public class AuthMiddleware
 
     public async Task Invoke(HttpContext context)
     {
-
         try
         {
             var audience = _configuration

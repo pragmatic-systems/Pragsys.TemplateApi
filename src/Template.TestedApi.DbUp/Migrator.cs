@@ -3,6 +3,8 @@ using Npgsql;
 using Polly;
 using System.Reflection;
 
+namespace Template.TestedApi.Database;
+
 public static class Migrator
 {
     public static void Migrate(string connectionString)

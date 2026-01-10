@@ -16,7 +16,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "assets", "assets", "{BB8C3C
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Template.TestedApi.DbUp", "src\Template.TestedApi.DbUp\Template.TestedApi.DbUp.csproj", "{9E50A0DC-5C52-4556-B2AE-D9421F9F4F29}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Template.TestedApi.Database", "src\Template.TestedApi.DbUp\Template.TestedApi.Database.csproj", "{9E50A0DC-5C52-4556-B2AE-D9421F9F4F29}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Template.TestedApi.UnitTests", "test\Template.TestedApi.UnitTests\Template.TestedApi.UnitTests.csproj", "{EB6D2A08-EC3D-4BF8-9EC0-DF8EED0CF329}"
 EndProject
