@@ -1,5 +1,4 @@
 ﻿using BoDi;
-using Microsoft.Extensions.Configuration;
 
 namespace Template.TestedApi.IntegrationTests.Infrastructure;
 
@@ -20,11 +19,16 @@ public class ScenarioSetup
     public void ConfigureInjection()
     {
         TestRuntime = RuntimeSetup.TestRuntime;
-        TestContext = new TestContext();
-        TestContext.TestClient = TestRuntime.TargetApi.CreateClient();
+        TestContext = new TestContext(TestRuntime);
 
         objectContainer.RegisterInstanceAs(TestRuntime);
         objectContainer.RegisterInstanceAs(TestContext);
     }
 }
 
+public static class TestConstants
+{
+    public static string OpenIdConfigUrl { get; } = "https://i.do.not.exist/.well-known/openid-configuration";
+    public static string Issuer { get; } = $"ApiTest:Issuer";
+    public static string Audience { get; } = $"ApiTest:Audience";
+}

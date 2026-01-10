@@ -1,4 +1,7 @@
-﻿public static class Program
+﻿
+namespace Template.TestedApi.Database;
+
+public static class Program
 {
     static int Main(string[] args)
     {

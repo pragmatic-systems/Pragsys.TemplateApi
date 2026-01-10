@@ -26,7 +26,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Template.TestedApi.Api\Template.TestedApi.Api.csproj" />
     <ProjectReference Include="..\..\src\Template.TestedApi.Core\Template.TestedApi.Core.csproj" />
-    <ProjectReference Include="..\..\src\Template.TestedApi.DbUp\Template.TestedApi.DbUp.csproj" />
   </ItemGroup>
 
 </Project>

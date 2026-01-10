@@ -28,7 +28,7 @@ jobs:
           ContainerRegistryUserName: ${{ vars.CONTAINER_REGISTRY_USERNAME }}
 
       - name: Publish Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: TestedLibrary Artifacts
           path: ./artifacts/

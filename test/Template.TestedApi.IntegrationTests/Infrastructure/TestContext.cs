@@ -1,16 +1,26 @@
 ﻿using Polly;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Security.Claims;
+using Template.TestedApi.IntegrationTests.Infrastructure.Auth;
 
 namespace Template.TestedApi.IntegrationTests.Infrastructure;
 
 public class TestContext
 {
+    private TestRuntime TestRuntime;
+
+    public TestContext(TestRuntime testRuntime)
+    {
+        SigningCertificate = testRuntime.SigningCertificate;
+        TestRuntime = testRuntime;
+    }
+
     public dynamic NewTodoItem { get; set; }
 
     public List<dynamic> TaskList { get; set; }
 
-    public HttpClient TestClient { get;internal set; }
-
+    public Dictionary<string, TestUser> Users { get; private set; } = new Dictionary<string, TestUser>();
 
     public HttpResponseMessage LastResponse { get; set; }
 
@@ -18,23 +28,56 @@ public class TestContext
         .Handle<HttpRequestException>()
         .WaitAndRetryAsync(10, i => TimeSpan.FromSeconds(1));
 
+    public PemCertificate SigningCertificate { get; internal set; }
+
+    public TestUser CurrentUser { get; private set; }
+
     public async Task GetAsync(string path)
     {
+        using var client = TestRuntime.TargetApi.CreateClient();
         LastResponse = await RetryPolicy.ExecuteAsync(async () =>
         {
-            var result = await TestClient.GetAsync(path);
-            result.EnsureSuccessStatusCode();
+            if (CurrentUser != null)
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", CurrentUser.UserJwt);
+
+            var result = await client.GetAsync(path);
             return result;
         });
     }
 
     public async Task PostAsJsonAsync<T>(string path, T payload)
     {
+        using var client = TestRuntime.TargetApi.CreateClient();
         LastResponse = await RetryPolicy.ExecuteAsync(async () =>
         {
-            var result = await TestClient.PostAsJsonAsync(path, payload);
-            result.EnsureSuccessStatusCode();
+            if (CurrentUser != null)
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", CurrentUser.UserJwt);
+
+            var result = await client.PostAsJsonAsync(path, payload);
             return result;
         });
+    }
+
+    public void AddUser(string userName)
+    {
+        var user = new TestUser(userName);
+        Users.Add(userName, user);
+    }
+
+    public void AddUserClaims(string userName, IEnumerable<Claim> claims)
+    {
+        Users[userName].Claims.AddRange(claims);
+    }
+
+    public void SetCurrentUser(string userName)
+    {
+        var user = Users[userName];
+        CurrentUser = user;
+        CurrentUser.BuildJwt(SigningCertificate);
+    }
+
+    public void ClearCurrentUser()
+    {
+        CurrentUser = null;
     }
 }

@@ -1,4 +1,7 @@
-﻿using Template.TestedApi.IntegrationTests.Infrastructure;
+﻿using System.Net;
+using System.Security.Claims;
+using Template.TestedApi.Api;
+using Template.TestedApi.IntegrationTests.Infrastructure;
 
 namespace Template.TestedApi.IntegrationTests.StepDefinitions;
 
@@ -12,11 +15,6 @@ public class CommonStepDefinitions
         _testContext = testContext;
     }
 
-    [Given("We have a Application api")]
-    public void WeHaveAnApplicationApi()
-    {
-    }
-
     [Then("The response should be 200 OK")]
     public void TheResultShouldBeOk()
     {
@@ -24,5 +22,60 @@ public class CommonStepDefinitions
              .Should().NotBeNull()
              .And
              .Subject.EnsureSuccessStatusCode();
+    }
+
+    [Then("The response should be 401 Unauthorized")]
+    public void TheResultShouldBeUnauthroized()
+    {
+        _testContext.LastResponse
+             .Should().NotBeNull()
+             .And
+             .HaveStatusCode(HttpStatusCode.Unauthorized);
+    }
+
+    [Then("The response should be 403 Forbidden")]
+    public void TheResultShouldBeForbidden()
+    {
+        _testContext.LastResponse
+             .Should().NotBeNull()
+             .And
+             .HaveStatusCode(HttpStatusCode.Forbidden);
+    }
+
+    [Given("We have user '(.*)'")]
+    public async Task WeHaveUser(string userName)
+    {
+        _testContext.AddUser(userName);
+    }
+
+    [Given("User '(.*)' has claims '(.*)'")]
+    public async Task UserHasClaims(string userName, string claimSetName)
+    {
+        var claims = new List<Claim>();
+
+        if (claimSetName == "Read")
+        {
+            claims.Add(new Claim(ClaimTypes.Role, Roles.TodoListRead));
+        };
+
+        if (claimSetName == "ReadWrite")
+        {
+            claims.Add(new Claim(ClaimTypes.Role, Roles.TodoListRead));
+            claims.Add(new Claim(ClaimTypes.Role, Roles.TodoListWrite));
+        }
+
+        _testContext.AddUserClaims(userName, claims);
+    }
+
+    [When("We are connecting as '(.*)'")]
+    public async Task WeAreConnectingAsUser(string userName)
+    {
+        _testContext.SetCurrentUser(userName);
+    }
+
+    [When("We are connecting anonymously")]
+    public async Task WeAreConnectingAnonymously()
+    {
+        _testContext.ClearCurrentUser();
     }
 }
