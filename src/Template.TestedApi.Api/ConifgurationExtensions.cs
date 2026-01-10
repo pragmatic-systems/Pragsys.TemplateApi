@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -15,6 +16,8 @@ using System.Security.Claims;
 using Template.TestedApi.Api.HostedServices;
 using Template.TestedApi.Api.Middleware;
 using Template.TestedApi.Core;
+using Template.TestedApi.Core.Validators;
+using Template.TestedApi.Database;
 
 namespace Template.TestedApi.Api;
 public static class ConfigurationExtensions
@@ -30,18 +33,30 @@ public static class ConfigurationExtensions
 
     public static IServiceCollection WithMediatr(this IServiceCollection services)
     {
-        services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining(typeof(PostgresConnectionFactory)));
+        services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining(typeof(InsertTodoValidator)));
         return services;
     }
 
     public static IServiceCollection WithPostgres(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddSingleton<IConnectionFactory>(s =>
+        services.AddSingleton<DbContextOptions<ApplicationDbContext>>(s =>
         {
+            // Required for EF to support PG timezones
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
             var config = s.GetRequiredService<IConfiguration>();
-            return new PostgresConnectionFactory(
-                config.GetConnectionString("PostgresDb"),
-                config.GetConnectionString("PostgresDb"));
+            var conn = config.GetConnectionString("PostgresDb");
+
+            return new DbContextOptionsBuilder<ApplicationDbContext>()
+                .UseNpgsql(conn)
+                .EnableDetailedErrors()
+                .Options;
+        });
+
+        services.AddScoped<ApplicationDbContext>(s =>
+        {
+            var options = s.GetRequiredService<DbContextOptions<ApplicationDbContext>>();
+            return new ApplicationDbContext(options);
         });
 
         services.AddHostedService<PostgresInitService>();
