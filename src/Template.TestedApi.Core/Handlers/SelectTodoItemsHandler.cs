@@ -1,27 +1,24 @@
-﻿using Dapper;
-using MediatR;
-using Template.TestedApi.Core.Model;
+﻿using MediatR;
+using Microsoft.EntityFrameworkCore;
+using Template.TestedApi.Database;
+using Template.TestedApi.Database.Model;
 
 namespace Template.TestedApi.Core.Handlers;
 internal class SelectTodoItemsHandler : IRequestHandler<SelectTodo, IEnumerable<TodoRecord>>
 {
-    private readonly IConnectionFactory _connectionFactory;
+    private readonly ApplicationDbContext _dbContext;
 
-    public SelectTodoItemsHandler(IConnectionFactory connectionFactory)
+    public SelectTodoItemsHandler(ApplicationDbContext dbContext)
     {
-        _connectionFactory = connectionFactory;
+        _dbContext = dbContext;
     }
 
     public async Task<IEnumerable<TodoRecord>> Handle(SelectTodo request, CancellationToken cancellationToken)
     {
-        using var conn = _connectionFactory.CreateReadConnection();
-
-        var items = await conn.QueryAsync("SELECT item_id, title, description, due_date, open, closed_date FROM todo_list WHERE open = true;");
-
-        // NOTE: This will require pagination to scale.
-        return items
-            .Select(d => new TodoRecord(d.item_id, d.title, d.description, d.due_date, d.open, d.closed_date))
-            .ToList();
+        return await _dbContext
+            .TodoRecords
+            .Where(r => r.Open == true)
+            .ToListAsync();
     }
 }
 

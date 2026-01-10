@@ -1,28 +1,28 @@
-﻿using Dapper;
-using MediatR;
-using Template.TestedApi.Core.Model;
+﻿using MediatR;
+using Template.TestedApi.Database;
+using Template.TestedApi.Database.Model;
 
 namespace Template.TestedApi.Core.Handlers;
 internal class InsertTodoItemHandler : IRequestHandler<InsertTodo, TodoRecord>
 {
-    private readonly IConnectionFactory _connectionFactory;
+    private readonly ApplicationDbContext _applicationDbContext;
 
-    public InsertTodoItemHandler(IConnectionFactory connectionFactory)
+    public InsertTodoItemHandler(ApplicationDbContext applicationDbContext)
     {
-        _connectionFactory = connectionFactory;
+        _applicationDbContext = applicationDbContext;
     }
 
     public async Task<TodoRecord> Handle(InsertTodo request, CancellationToken cancellationToken)
     {
-        using var conn = _connectionFactory.CreateWriteConnection();
-
-        var recordId = await conn.ExecuteScalarAsync<Guid>("INSERT INTO todo_list (title, description, due_date) VALUES (@Title, @Description, @DueDate) RETURNING item_id;", request);
-
         var record = new TodoRecord(
-            recordId,
+            Guid.NewGuid(),
             request.Title,
             request.Description,
             request.DueDate);
+
+        _applicationDbContext.TodoRecords.Add(record);
+
+        await _applicationDbContext.SaveChangesAsync();
 
         return record;
     }
