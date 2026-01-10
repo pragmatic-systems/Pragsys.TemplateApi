@@ -59,7 +59,6 @@ Setup(context =>
 		var manifest = new BuildManifest
 		{
 			NugetPackages = new string[0],
-			DockerComposeFiles = System.IO.Directory.GetFiles(".", "docker-compose*.yml"),
 			DockerPackages = System.IO.Directory.GetFiles("./src/", "Dockerfile", SearchOption.AllDirectories),
 			Tests = System.IO.Directory.GetFiles(".", "*Tests.csproj", SearchOption.AllDirectories),
 			Benchmarks = System.IO.Directory.GetFiles(".", "*.Benchmark.csproj", SearchOption.AllDirectories),
@@ -315,7 +314,6 @@ public class BuildManifest
 {
 	public string[] NugetPackages { get; set; }
 	public string[] DockerPackages { get; set; }
-	public string[] DockerComposeFiles { get; set; }
 	public string[] Tests { get; set; }
 	public string[] Benchmarks { get; set; }
 	public Dictionary<string, string> ApiSpecs { get; set; }
