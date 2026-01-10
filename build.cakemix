@@ -4,8 +4,6 @@
     "./src/Template.TestedApi.Api/Dockerfile"
     //"./src/Template.TestedApi.DbUp/Dockerfile"
   ],
-  "DockerComposeFiles": [
-  ],
   "Tests": [
     "./test/Template.TestedApi.IntegrationTests/Template.TestedApi.IntegrationTests.csproj",
     "./test/Template.TestedApi.UnitTests/Template.TestedApi.UnitTests.csproj"
