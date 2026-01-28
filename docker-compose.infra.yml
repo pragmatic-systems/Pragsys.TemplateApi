@@ -29,6 +29,7 @@ services:
     container_name: local-seq
     ports:
       - "5030:80"
+      - "5341:5341"
     environment:
       - ACCEPT_EULA=Y
     networks:
