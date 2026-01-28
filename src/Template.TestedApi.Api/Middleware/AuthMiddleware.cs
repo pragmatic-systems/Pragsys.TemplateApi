@@ -26,17 +26,14 @@ public class AuthMiddleware
     private RequestDelegate _next;
     private IOptions<OAuthConfig> _authConfig;
     private IConfigurationManager<OpenIdConnectConfiguration> _configurationManager;
-    private IConfiguration _configuration;
 
     public AuthMiddleware(RequestDelegate next, 
         IConfigurationManager<OpenIdConnectConfiguration> configurationManager, 
-        IOptions<OAuthConfig> authConfig, 
-        IConfiguration configuration)
+        IOptions<OAuthConfig> authConfig)
     {
         _next = next;
         _authConfig = authConfig;
         _configurationManager = configurationManager;
-        _configuration = configuration;
     }
 
     public async Task Invoke(HttpContext context)
@@ -56,7 +53,6 @@ public class AuthMiddleware
 
                 var authHeader = headers[HeaderNames.Authorization].ToString();
                 var bearerToken = authHeader.Replace("Bearer", string.Empty).Trim();
-
                 var jwt = new JwtSecurityToken(bearerToken);
                 var config = await _configurationManager.GetConfigurationAsync(context.RequestAborted);
 

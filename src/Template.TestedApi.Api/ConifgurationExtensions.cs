@@ -16,7 +16,6 @@ using System.Linq;
 using System.Security.Claims;
 using Template.TestedApi.Api.HostedServices;
 using Template.TestedApi.Api.Middleware;
-using Template.TestedApi.Core;
 using Template.TestedApi.Core.Validators;
 using Template.TestedApi.Database;
 
