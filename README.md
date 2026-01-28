@@ -70,7 +70,7 @@ In your new client, go to `client Scopes` => `todolist-client-dedicated` and:
 Under Client Credentials, record the `clientsecret` for later.
 
 ### Create User
-Create an app user `todolist-user`. As we are creating a service to service role the account will need to be interaction free. Configure the user completely, including name and email (this is required to actually use a User account), set and record the password, ensure that it is not transient and there are no pending actions for the user.
+Create an app user `todolist-user`. As we are creating a service to service role the account will need to be interaction free. Configure the user completely, including first and last name and email (this is required to activate a User account), set and record the password, ensure that it is not transient and there are no pending actions for the user.
 Now add attributes (`roles`, `TodoList:Write`) and (`roles`, `TodoList:Read`) to the Attributes page.
 	
 ### Generate JWT
