@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
@@ -23,14 +24,17 @@ namespace Template.TestedApi.Api.Middleware;
 public class AuthMiddleware
 {
     private RequestDelegate _next;
+    private IOptions<OAuthConfig> _authConfig;
     private IConfigurationManager<OpenIdConnectConfiguration> _configurationManager;
     private IConfiguration _configuration;
 
     public AuthMiddleware(RequestDelegate next, 
         IConfigurationManager<OpenIdConnectConfiguration> configurationManager, 
+        IOptions<OAuthConfig> authConfig, 
         IConfiguration configuration)
     {
         _next = next;
+        _authConfig = authConfig;
         _configurationManager = configurationManager;
         _configuration = configuration;
     }
@@ -39,13 +43,8 @@ public class AuthMiddleware
     {
         try
         {
-            var audience = _configuration
-                .GetRequiredSection("OpenIdConnect:Audience")
-                .Value;
-
-            var issuer = _configuration
-                .GetRequiredSection("OpenIdConnect:Issuer")
-                .Value;
+            var audience = _authConfig.Value.Audience;
+            var issuer = _authConfig.Value.Issuer;
 
             if (!SkipAuth(context))
             {
@@ -118,4 +117,11 @@ public class AuthMiddleware
 
         return path.StartsWith("/_system");
     }
+}
+
+public class OAuthConfig
+{
+    public string Issuer { get; set; }
+    public string Audience { get; set; }
+    public string OpenIdConfigUrl { get; set; }
 }

@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Prometheus;
@@ -66,11 +67,13 @@ public static class ConfigurationExtensions
 
     public static IServiceCollection WithOpenIdConnect(this IServiceCollection services, IConfiguration configuration)
     {
+        services.Configure<OAuthConfig>(
+            configuration.GetSection("OpenIdConnect"));
+
         services.AddSingleton<IConfigurationManager<OpenIdConnectConfiguration>>(s =>
         {
-            var config = configuration
-                .GetRequiredSection("OpenIdConnect:OpenIdConfigUrl")
-                .Value;
+            var options = s.GetRequiredService<IOptions<OAuthConfig>>();
+            var config = options.Value.OpenIdConfigUrl;
 
             return new ConfigurationManager<OpenIdConnectConfiguration>(config, new OpenIdConnectConfigurationRetriever());
         });
