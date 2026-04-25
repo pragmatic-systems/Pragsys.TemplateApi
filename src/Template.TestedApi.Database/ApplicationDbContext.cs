@@ -7,7 +7,8 @@ public class ApplicationDbContext : DbContext
 {
     public ApplicationDbContext() { }
 
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        : base(options) { }
 
     public virtual DbSet<TodoRecord> TodoRecords { get; set; }
 

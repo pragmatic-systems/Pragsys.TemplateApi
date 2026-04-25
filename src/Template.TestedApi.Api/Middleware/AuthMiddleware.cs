@@ -27,8 +27,9 @@ public class AuthMiddleware
     private IOptions<OAuthConfig> _authConfig;
     private IConfigurationManager<OpenIdConnectConfiguration> _configurationManager;
 
-    public AuthMiddleware(RequestDelegate next, 
-        IConfigurationManager<OpenIdConnectConfiguration> configurationManager, 
+    public AuthMiddleware(
+        RequestDelegate next,
+        IConfigurationManager<OpenIdConnectConfiguration> configurationManager,
         IOptions<OAuthConfig> authConfig)
     {
         _next = next;
@@ -75,7 +76,7 @@ public class AuthMiddleware
 
             await _next.Invoke(context);
         }
-        catch(SecurityTokenException ex)
+        catch (SecurityTokenException ex)
         {
             context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
             await context.Response.CompleteAsync();
@@ -100,6 +101,7 @@ public class AuthMiddleware
         {
             identity.AddClaim(new Claim(ClaimTypes.Role, claim));
         }
+
         context.User.AddIdentity(identity);
     }
 

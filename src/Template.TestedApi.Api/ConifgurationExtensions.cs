@@ -174,10 +174,10 @@ public static class ConfigurationExtensions
                             Health = x.Value.Status.ToString(),
                             Name = x.Key,
                         }),
-                    Duration = r.TotalDuration
+                    Duration = r.TotalDuration,
                 };
                 await c.Response.WriteAsJsonAsync(response);
-            }
+            },
         });
 
         return app;
