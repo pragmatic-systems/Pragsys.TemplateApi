@@ -25,8 +25,7 @@ public sealed class MockOpenIdProviderMessageHandler : HttpMessageHandler
         return SendAsync(request, cancellationToken).ConfigureAwait(false).GetAwaiter().GetResult();
     }
 
-    protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
-        CancellationToken cancellationToken)
+    protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
         if (request == null) throw new ArgumentNullException(nameof(request));
         if (request.RequestUri == null) throw new ArgumentNullException(nameof(request.RequestUri));
@@ -42,7 +41,6 @@ public sealed class MockOpenIdProviderMessageHandler : HttpMessageHandler
 
     private Task<HttpResponseMessage> GetOpenIdConfigurationHttpResponseMessage()
     {
-
         var httpResponseMessage = new HttpResponseMessage();
 
         httpResponseMessage.StatusCode = HttpStatusCode.OK;

@@ -1,7 +1,7 @@
-﻿using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
+﻿using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using System.Security.Cryptography;
+using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 
 namespace Template.TestedApi.IntegrationTests.Infrastructure.Auth;
 
@@ -26,7 +26,7 @@ public sealed record PemCertificate(string Certificate, string PrivateKey, strin
         {
             { "e", e },
             { "kty", "RSA" },
-            { "n", n }
+            { "n", n },
         };
         var hash = SHA256.Create();
         byte[] hashBytes =
@@ -36,7 +36,7 @@ public sealed record PemCertificate(string Certificate, string PrivateKey, strin
             Kid = Base64UrlEncoder.Encode(hashBytes),
             Kty = "RSA",
             E = e,
-            N = n
+            N = n,
         };
         JsonWebKeySet jsonWebKeySet = new JsonWebKeySet();
         jsonWebKeySet.Keys.Add(jsonWebKey);
@@ -52,17 +52,22 @@ public sealed record PemCertificate(string Certificate, string PrivateKey, strin
             rsa.KeySize = 2048;
 
             // Create a new self signed certificate
-            CertificateRequest request = new CertificateRequest("cn=i.do.not.exist", rsa, HashAlgorithmName.SHA256,
+            CertificateRequest request = new CertificateRequest(
+                "cn=i.do.not.exist",
+                rsa,
+                HashAlgorithmName.SHA256,
                 RSASignaturePadding.Pkcs1);
 
             // Set the validity period of the certificate
             request.CertificateExtensions.Add(new X509BasicConstraintsExtension(true, false, 0, true));
-            request.CertificateExtensions.Add(new X509EnhancedKeyUsageExtension(new OidCollection
-            {
-                new Oid("1.3.6.1.5.5.7.3.1")
-            }, false));
+            request.CertificateExtensions.Add(new X509EnhancedKeyUsageExtension(
+                new OidCollection
+                {
+                    new Oid("1.3.6.1.5.5.7.3.1"),
+                }, false));
 
-            X509Certificate2 cert = request.CreateSelfSigned(new DateTimeOffset(DateTime.UtcNow.AddDays(-1)),
+            X509Certificate2 cert = request.CreateSelfSigned(
+                new DateTimeOffset(DateTime.UtcNow.AddDays(-1)),
                 new DateTimeOffset(DateTime.UtcNow.AddDays(3650)));
 
             // Export the certificate to a PEM file
@@ -77,12 +82,10 @@ public sealed record PemCertificate(string Certificate, string PrivateKey, strin
             char[] pubKeyPem = PemEncoding.Write("PUBLIC KEY", pubKeyBytes);
             char[] privKeyPem = PemEncoding.Write("PRIVATE KEY", privKeyBytes);
 
-
             var pemCertificate = new PemCertificate(
                 Certificate: new string(certificatePem),
                 PublicKey: new string(pubKeyPem),
-                PrivateKey: new string(privKeyPem)
-            );
+                PrivateKey: new string(privKeyPem));
 
             return pemCertificate;
         }

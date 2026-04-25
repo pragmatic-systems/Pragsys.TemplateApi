@@ -1,9 +1,8 @@
-﻿
-namespace Template.TestedApi.Database;
+﻿namespace Template.TestedApi.Database;
 
 public static class Program
 {
-    static int Main(string[] args)
+    public static int Main(string[] args)
     {
         var connectionString =
             args.FirstOrDefault()
@@ -16,19 +15,17 @@ public static class Program
         {
             Migrator.Migrate(connectionString);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine(ex);
             Console.ResetColor();
             return -1;
         }
-        
+
         Console.ForegroundColor = ConsoleColor.Green;
         Console.WriteLine("Success!");
         Console.ResetColor();
         return 0;
     }
-
-
 }

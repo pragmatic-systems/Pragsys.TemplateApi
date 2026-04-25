@@ -43,20 +43,20 @@ public class CommonStepDefinitions
     }
 
     [Given("We have user '(.*)'")]
-    public async Task WeHaveUser(string userName)
+    public void WeHaveUser(string userName)
     {
         _testContext.AddUser(userName);
     }
 
     [Given("User '(.*)' has claims '(.*)'")]
-    public async Task UserHasClaims(string userName, string claimSetName)
+    public void UserHasClaims(string userName, string claimSetName)
     {
         var claims = new List<Claim>();
 
         if (claimSetName == "Read")
         {
             claims.Add(new Claim(ClaimTypes.Role, Roles.TodoListRead));
-        };
+        }
 
         if (claimSetName == "ReadWrite")
         {
@@ -68,13 +68,13 @@ public class CommonStepDefinitions
     }
 
     [When("We are connecting as '(.*)'")]
-    public async Task WeAreConnectingAsUser(string userName)
+    public void WeAreConnectingAsUser(string userName)
     {
         _testContext.SetCurrentUser(userName);
     }
 
     [When("We are connecting anonymously")]
-    public async Task WeAreConnectingAnonymously()
+    public void WeAreConnectingAnonymously()
     {
         _testContext.ClearCurrentUser();
     }

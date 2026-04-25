@@ -84,11 +84,12 @@ public static class ConfigurationExtensions
 
     public static IServiceCollection WithAuthorizationPolicy(this IServiceCollection services)
     {
-        services.AddAuthorization(authorizationOptions => {
-
-            authorizationOptions.AddPolicy(Roles.TodoListRead, policy => policy.RequireClaim(ClaimTypes.Role, Roles.TodoListRead));
-            authorizationOptions.AddPolicy(Roles.TodoListWrite, policy => policy.RequireClaim(ClaimTypes.Role, Roles.TodoListWrite));
-        });
+        services.AddAuthorization(
+            authorizationOptions =>
+            {
+                authorizationOptions.AddPolicy(Roles.TodoListRead, policy => policy.RequireClaim(ClaimTypes.Role, Roles.TodoListRead));
+                authorizationOptions.AddPolicy(Roles.TodoListWrite, policy => policy.RequireClaim(ClaimTypes.Role, Roles.TodoListWrite));
+            });
 
         return services;
     }
@@ -124,15 +125,16 @@ public static class ConfigurationExtensions
         // NOTE: Suppress healthcheck for OIDC if we are in test mode, as it's a fake endpoint that won't exist.
         if (!testMode)
         {
-            healthcheckBuilder.AddUrlGroup(s =>
+            healthcheckBuilder.AddUrlGroup(
+                s =>
                 {
                     var config = configuration
                         .GetRequiredSection("OpenIdConnect:OpenIdConfigUrl")
                         .Value;
 
                     return new Uri(config);
-
-                }, "OIDC Provider");
+                },
+                "OIDC Provider");
         }
 
         return services;

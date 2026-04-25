@@ -7,13 +7,14 @@ public class ScenarioSetup
 {
     private readonly IObjectContainer objectContainer;
 
-    public TestRuntime TestRuntime { get; private set; }
-    public TestContext TestContext { get; private set; }
-
     public ScenarioSetup(IObjectContainer objectContainer)
     {
         this.objectContainer = objectContainer;
     }
+
+    public TestRuntime? TestRuntime { get; private set; }
+
+    public TestContext? TestContext { get; private set; }
 
     [BeforeScenario]
     public void ConfigureInjection()
@@ -29,6 +30,8 @@ public class ScenarioSetup
 public static class TestConstants
 {
     public static string OpenIdConfigUrl { get; } = "https://i.do.not.exist/.well-known/openid-configuration";
+
     public static string Issuer { get; } = $"ApiTest:Issuer";
+
     public static string Audience { get; } = $"ApiTest:Audience";
 }

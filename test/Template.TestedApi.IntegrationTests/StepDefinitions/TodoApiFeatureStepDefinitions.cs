@@ -24,7 +24,7 @@ public sealed class TodoApiFeatureStepDefinitions
         {
             Title = text,
             Description = text,
-            DueDate = DateTime.Today
+            DueDate = DateTime.Today,
         };
 
         await _testContext.PostAsJsonAsync("TodoList", payload);

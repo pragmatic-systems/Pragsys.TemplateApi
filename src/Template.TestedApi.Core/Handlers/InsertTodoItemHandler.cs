@@ -28,4 +28,5 @@ internal class InsertTodoItemHandler : IRequestHandler<InsertTodo, TodoRecord>
     }
 }
 
-public record InsertTodo(string Title, string Description, DateTime DueDate) : IRequest<TodoRecord>;
+public record InsertTodo(string? Title, string? Description, DateTime DueDate)
+    : IRequest<TodoRecord>;

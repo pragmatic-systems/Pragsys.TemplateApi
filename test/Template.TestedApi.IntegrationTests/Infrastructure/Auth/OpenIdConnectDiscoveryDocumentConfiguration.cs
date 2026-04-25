@@ -1,4 +1,4 @@
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace Template.TestedApi.IntegrationTests.Infrastructure.Auth;
 
@@ -24,8 +24,11 @@ public record OpenIdConnectDiscoveryDocumentConfiguration(
 {
     public static OpenIdConnectDiscoveryDocumentConfiguration ForIssuer(string issuer)
     {
+#pragma warning disable SA1118 // Parameter should not span multiple lines
+#pragma warning disable CA1861 // Avoid constant arrays as arguments
+#pragma warning disable SA1009 // Closing parenthesis should be spaced correctly
+#pragma warning disable SA1111 // Closing parenthesis should be on line of last parameter
         var discoveryDocument = new OpenIdConnectDiscoveryDocumentConfiguration(
-
             Issuer: issuer,
             AuthorizationEndpoint: "http://i.do.not.exist/authorize",
             TokenEndpoint: "http://i.do.not.exist/oauth/token",
@@ -40,7 +43,7 @@ public record OpenIdConnectDiscoveryDocumentConfiguration(
                 "openid",
                 "profile",
                 "offline_access",
-                "weatherforecast:read"
+                "weatherforecast:read",
             },
             ResponseTypesSupported: new[]
             {
@@ -50,32 +53,32 @@ public record OpenIdConnectDiscoveryDocumentConfiguration(
                 "code token",
                 "code id_token",
                 "token id_token",
-                "code token id_token"
+                "code token id_token",
             },
             CodeChallengeMethodsSupported: new[]
             {
                 "S256",
-                "plain"
+                "plain",
             },
             ResponseModesSupported: new[]
             {
                 "query",
                 "fragment",
-                "form_post"
+                "form_post",
             },
             SubjectTypesSupported: new[]
             {
-                "public"
+                "public",
             },
             IdTokenSigningAlgValuesSupported: new[]
             {
                 "HS256",
-                "RS256"
+                "RS256",
             },
             TokenEndpointAuthMethodsSupported: new[]
             {
                 "client_secret_basic",
-                "client_secret_post"
+                "client_secret_post",
             },
             ClaimsSupported: new[]
             {
@@ -86,10 +89,14 @@ public record OpenIdConnectDiscoveryDocumentConfiguration(
                 "sub",
                 "nbf",
                 "scope",
-                "country"
+                "country",
             },
             RequestUriParameterSupported: false
         );
+#pragma warning restore SA1111 // Closing parenthesis should be on line of last parameter
+#pragma warning restore SA1009 // Closing parenthesis should be spaced correctly
+#pragma warning restore CA1861 // Avoid constant arrays as arguments
+#pragma warning restore SA1118 // Parameter should not span multiple lines
 
         return discoveryDocument;
     }

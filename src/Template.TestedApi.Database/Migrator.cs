@@ -14,7 +14,9 @@ public static class Migrator
 
         var retryPolicy = Policy
             .Handle<NpgsqlException>()
-            .WaitAndRetry(10, i => TimeSpan.FromSeconds(2),
+            .WaitAndRetry(
+                10,
+                i => TimeSpan.FromSeconds(2),
                 (e, t) => Console.WriteLine("Retrying... Waiting for database"));
 
         retryPolicy.Execute(() =>
