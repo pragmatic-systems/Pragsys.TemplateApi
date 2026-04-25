@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System;
+using System.Linq;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -11,9 +14,6 @@ using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Prometheus;
 using Serilog;
-using System;
-using System.Linq;
-using System.Security.Claims;
 using Template.TestedApi.Api.HostedServices;
 using Template.TestedApi.Api.Middleware;
 using Template.TestedApi.Core.Validators;

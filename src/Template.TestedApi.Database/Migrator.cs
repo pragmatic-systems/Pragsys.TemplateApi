@@ -1,7 +1,7 @@
-﻿using DbUp;
+﻿using System.Reflection;
+using DbUp;
 using Npgsql;
 using Polly;
-using System.Reflection;
 
 namespace Template.TestedApi.Database;
 

@@ -1,4 +1,4 @@
-using FluentAssertions;
+﻿using FluentAssertions;
 using Template.TestedApi.Core.Handlers;
 using Template.TestedApi.Core.Validators;
 
