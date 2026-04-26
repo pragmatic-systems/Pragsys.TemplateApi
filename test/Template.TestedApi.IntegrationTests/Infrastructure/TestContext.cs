@@ -1,40 +1,40 @@
-﻿using Polly;
-using System.Net.Http.Headers;
+﻿using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Security.Claims;
+using Polly;
 using Template.TestedApi.IntegrationTests.Infrastructure.Auth;
 
 namespace Template.TestedApi.IntegrationTests.Infrastructure;
 
 public class TestContext
 {
-    private TestRuntime TestRuntime;
+    private readonly TestRuntime _testRuntime;
 
     public TestContext(TestRuntime testRuntime)
     {
         SigningCertificate = testRuntime.SigningCertificate;
-        TestRuntime = testRuntime;
+        _testRuntime = testRuntime;
     }
 
     public dynamic NewTodoItem { get; set; }
 
-    public List<dynamic> TaskList { get; set; }
+    public List<dynamic>? TaskList { get; set; }
 
     public Dictionary<string, TestUser> Users { get; private set; } = new Dictionary<string, TestUser>();
 
-    public HttpResponseMessage LastResponse { get; set; }
+    public HttpResponseMessage? LastResponse { get; set; }
 
     public AsyncPolicy RetryPolicy { get; } = Policy
         .Handle<HttpRequestException>()
         .WaitAndRetryAsync(10, i => TimeSpan.FromSeconds(1));
 
-    public PemCertificate SigningCertificate { get; internal set; }
+    public PemCertificate? SigningCertificate { get; internal set; }
 
-    public TestUser CurrentUser { get; private set; }
+    public TestUser? CurrentUser { get; private set; }
 
     public async Task GetAsync(string path)
     {
-        using var client = TestRuntime.TargetApi.CreateClient();
+        using var client = _testRuntime.TargetApi.CreateClient();
         LastResponse = await RetryPolicy.ExecuteAsync(async () =>
         {
             if (CurrentUser != null)
@@ -47,7 +47,7 @@ public class TestContext
 
     public async Task PostAsJsonAsync<T>(string path, T payload)
     {
-        using var client = TestRuntime.TargetApi.CreateClient();
+        using var client = _testRuntime.TargetApi.CreateClient();
         LastResponse = await RetryPolicy.ExecuteAsync(async () =>
         {
             if (CurrentUser != null)

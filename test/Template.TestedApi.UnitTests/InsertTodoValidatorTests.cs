@@ -1,4 +1,4 @@
-using FluentAssertions;
+﻿using FluentAssertions;
 using Template.TestedApi.Core.Handlers;
 using Template.TestedApi.Core.Validators;
 
@@ -6,23 +6,23 @@ namespace Template.TestedApi.UnitTests;
 
 public class InsertTodoValidatorTests
 {
-    readonly InsertTodoValidator validator = new InsertTodoValidator();
+    private readonly InsertTodoValidator _validator = new InsertTodoValidator();
 
     [Fact]
     public void CanPassValidRecord()
     {
         var args = new InsertTodo("Title", "Desc", DateTime.UtcNow.Date);
-        var result = validator.Validate(args);
+        var result = _validator.Validate(args);
         result.IsValid.Should().BeTrue();
     }
 
     [Theory]
     [InlineData(null)]
     [InlineData("")]
-    public void TitleCannotBeEmpty(string value)
+    public void TitleCannotBeEmpty(string? value)
     {
         var args = new InsertTodo(value, "Desc", DateTime.UtcNow.Date.AddDays(1));
-        var result = validator.Validate(args);
+        var result = _validator.Validate(args);
         result.IsValid.Should().BeFalse();
 
         var error = result.Errors.Single();
@@ -35,7 +35,7 @@ public class InsertTodoValidatorTests
     {
         var longString = new string('a', 129);
         var args = new InsertTodo(longString, "Desc", DateTime.UtcNow.Date.AddDays(1));
-        var result = validator.Validate(args);
+        var result = _validator.Validate(args);
         result.IsValid.Should().BeFalse();
 
         var error = result.Errors.Single();
@@ -46,10 +46,10 @@ public class InsertTodoValidatorTests
     [Theory]
     [InlineData(null)]
     [InlineData("")]
-    public void DescriptionCannotBeEmpty(string value)
+    public void DescriptionCannotBeEmpty(string? value)
     {
         var args = new InsertTodo("Title", value, DateTime.UtcNow.Date.AddDays(1));
-        var result = validator.Validate(args);
+        var result = _validator.Validate(args);
         result.IsValid.Should().BeFalse();
 
         var error = result.Errors.Single();
@@ -62,7 +62,7 @@ public class InsertTodoValidatorTests
     {
         var longString = new string('a', 513);
         var args = new InsertTodo("Title", longString, DateTime.UtcNow.Date.AddDays(1));
-        var result = validator.Validate(args);
+        var result = _validator.Validate(args);
         result.IsValid.Should().BeFalse();
 
         var error = result.Errors.Single();
@@ -74,7 +74,7 @@ public class InsertTodoValidatorTests
     public void DueDateCannotBeInPast()
     {
         var args = new InsertTodo("Title", "Desc", DateTime.UtcNow.Date.AddDays(-1));
-        var result = validator.Validate(args);
+        var result = _validator.Validate(args);
         result.IsValid.Should().BeFalse();
 
         var error = result.Errors.Single();

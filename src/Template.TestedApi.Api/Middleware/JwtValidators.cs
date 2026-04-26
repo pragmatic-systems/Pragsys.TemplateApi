@@ -1,10 +1,10 @@
-﻿using Microsoft.IdentityModel.Abstractions;
-using Microsoft.IdentityModel.Logging;
-using Microsoft.IdentityModel.Tokens;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using Microsoft.IdentityModel.Abstractions;
+using Microsoft.IdentityModel.Logging;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Template.TestedApi.Api.Middleware;
 
@@ -20,7 +20,7 @@ public static class TokenValidators
             if (clientId != null)
                 audiences = audiences.Union([clientId.Value]);
         }
-        
+
         IEnumerable<string> validationParametersAudiences;
 
         if (validationParameters.ValidAudiences == null)
@@ -60,13 +60,14 @@ public static class TokenValidators
 
     private static bool AudiencesMatch(TokenValidationParameters validationParameters, string tokenAudience, string validAudience)
     {
-        if (validAudience.Length == tokenAudience.Length)
+        if (validAudience.Length == tokenAudience.Length && string.Equals(validAudience, tokenAudience))
         {
-            if (string.Equals(validAudience, tokenAudience))
-                return true;
+            return true;
         }
         else if (validationParameters.IgnoreTrailingSlashWhenValidatingAudience && AudiencesMatchIgnoringTrailingSlash(tokenAudience, validAudience))
+        {
             return true;
+        }
 
         return false;
     }

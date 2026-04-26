@@ -1,16 +1,15 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Net;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Net;
-using System.Security.Claims;
-using System.Threading;
-using System.Threading.Tasks;
+using Serilog;
 
 namespace Template.TestedApi.Api.Middleware;
 
@@ -20,20 +19,23 @@ namespace Template.TestedApi.Api.Middleware;
 
 // For mocking:
 // https://xebia.com/blog/mock-your-openid-connect-provider/
-
 public class AuthMiddleware
 {
     private RequestDelegate _next;
     private IOptions<OAuthConfig> _authConfig;
     private IConfigurationManager<OpenIdConnectConfiguration> _configurationManager;
+    private ILogger _logger;
 
-    public AuthMiddleware(RequestDelegate next, 
-        IConfigurationManager<OpenIdConnectConfiguration> configurationManager, 
-        IOptions<OAuthConfig> authConfig)
+    public AuthMiddleware(
+        RequestDelegate next,
+        IConfigurationManager<OpenIdConnectConfiguration> configurationManager,
+        IOptions<OAuthConfig> authConfig,
+        ILogger logger)
     {
         _next = next;
         _authConfig = authConfig;
         _configurationManager = configurationManager;
+        _logger = logger;
     }
 
     public async Task Invoke(HttpContext context)
@@ -64,7 +66,7 @@ public class AuthMiddleware
 
                     // NOTE: This is only nescessary to suppor AWS Cognito as the client_id is the aud.
                     // If you are not using Cognito, you can remove this.
-                    AudienceValidator = TokenValidators.ValidateAudienceOrClientId
+                    AudienceValidator = TokenValidators.ValidateAudienceOrClientId,
                 };
 
                 context.User = new JwtSecurityTokenHandler()
@@ -75,10 +77,11 @@ public class AuthMiddleware
 
             await _next.Invoke(context);
         }
-        catch(SecurityTokenException ex)
+        catch (SecurityTokenException ex)
         {
             context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
             await context.Response.CompleteAsync();
+            _logger.Warning(ex, "Auth Error");
         }
     }
 
@@ -89,17 +92,17 @@ public class AuthMiddleware
         // hard coding these values.
 
         // If we integrate with IAM, we can use Roles.
-
         var claims = context.User.Claims
             .Where(c => c.Type == "scope")
             .SelectMany(c => c.Value.Split(" "))
-            .Select(c => c.Replace("todolist-permissions/", ""));
+            .Select(c => c.Replace("todolist-permissions/", string.Empty));
 
         var identity = new ClaimsIdentity();
         foreach (var claim in claims)
         {
             identity.AddClaim(new Claim(ClaimTypes.Role, claim));
         }
+
         context.User.AddIdentity(identity);
     }
 
@@ -117,7 +120,9 @@ public class AuthMiddleware
 
 public class OAuthConfig
 {
-    public string Issuer { get; set; }
-    public string Audience { get; set; }
-    public string OpenIdConfigUrl { get; set; }
+    public string? Issuer { get; set; }
+
+    public string? Audience { get; set; }
+
+    public string? OpenIdConfigUrl { get; set; }
 }

@@ -1,4 +1,4 @@
-using Template.TestedApi.IntegrationTests.Infrastructure;
+﻿using Template.TestedApi.IntegrationTests.Infrastructure;
 
 namespace Template.TestedApi.IntegrationTests.StepDefinitions;
 
@@ -6,7 +6,6 @@ namespace Template.TestedApi.IntegrationTests.StepDefinitions;
 public sealed class HealthcheckStepDefinitions
 {
     // For additional details on SpecFlow step definitions see https://go.specflow.org/doc-stepdef
-
     private readonly TestContext _testContext;
 
     public HealthcheckStepDefinitions(TestContext testContext)

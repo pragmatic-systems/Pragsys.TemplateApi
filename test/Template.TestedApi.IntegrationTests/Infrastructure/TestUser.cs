@@ -5,16 +5,16 @@ namespace Template.TestedApi.IntegrationTests.Infrastructure;
 
 public class TestUser
 {
-    public string UserName { get; private set; }
-
-    public List<Claim> Claims { get; private set; } = new List<Claim>();
-
-    public string UserJwt { get; private set; }
-
     public TestUser(string userName)
     {
         UserName = userName;
     }
+
+    public string UserName { get; private set; }
+
+    public List<Claim> Claims { get; private set; } = new List<Claim>();
+
+    public string? UserJwt { get; private set; }
 
     public void BuildJwt(PemCertificate certificate)
     {

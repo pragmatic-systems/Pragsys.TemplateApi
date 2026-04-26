@@ -1,7 +1,7 @@
-﻿using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Template.TestedApi.IntegrationTests.Infrastructure.Auth;
 
@@ -15,8 +15,8 @@ public record AccessToken
         Claims = new List<Claim>(claims);
     }
 
-    public AccessToken(string audience, string issuer, X509Certificate2 certificate, IEnumerable<Claim> claims) :
-        this(audience, issuer, certificate, claims.ToArray())
+    public AccessToken(string audience, string issuer, X509Certificate2 certificate, IEnumerable<Claim> claims)
+        : this(audience, issuer, certificate, claims.ToArray())
     {
     }
 

@@ -1,4 +1,4 @@
-using Microsoft.IdentityModel.Protocols;
+﻿using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 
 namespace Template.TestedApi.IntegrationTests.Infrastructure.Auth;
@@ -16,7 +16,8 @@ public class MockOpenIdConfigurationManagerBuilder
             new MockOpenIdProviderMessageHandler(config, signingCertificate, openIdConfigUrl));
 
         return new ConfigurationManager<OpenIdConnectConfiguration>(
-            openIdConfigUrl, new OpenIdConnectConfigurationRetriever(),
+            openIdConfigUrl,
+            new OpenIdConnectConfigurationRetriever(),
             new HttpDocumentRetriever(openIdHttpClient));
     }
 }

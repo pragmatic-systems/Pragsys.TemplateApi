@@ -27,7 +27,7 @@ Launch apps:
 Url: https://localhost:5030
 
 ### Postgres (+ PgAdmin)
-Adminer: https://localhost:8443
+Adminer: https://localhost:5434
 Username: user@local.com
 Password: password
 
@@ -96,7 +96,6 @@ OpenIdConfigUrl: `https://localhost:8443/realms/todolist-realm/.well-known/openi
 
 ## AWS Cognito Config
 * TODO
-
 
 ## Docker Pack and Push
 

@@ -22,4 +22,5 @@ internal class SelectTodoItemsHandler : IRequestHandler<SelectTodo, IEnumerable<
     }
 }
 
-public record SelectTodo() : IRequest<IEnumerable<TodoRecord>>;
+public record SelectTodo()
+    : IRequest<IEnumerable<TodoRecord>>;

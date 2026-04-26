@@ -1,16 +1,16 @@
+﻿using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Prometheus;
 using Serilog;
-using System;
 
 namespace Template.TestedApi.Api;
 
 public class Program
 {
     public static void Main(string[] args)
-    { 
+    {
         try
         {
             var builder = WebApplication.CreateBuilder(args);
@@ -43,7 +43,7 @@ public class Program
 
             app.Run();
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             Log.Logger.Error(ex, "Error Starting Application");
         }

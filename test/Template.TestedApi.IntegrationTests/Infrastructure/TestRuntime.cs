@@ -12,15 +12,15 @@ namespace Template.TestedApi.IntegrationTests.Infrastructure;
 
 public class TestRuntime : IAsyncDisposable
 {
-    public PostgreSqlContainer PostgresContainer { get; private set; }
-    //public WireMockContainer WireMockContainer { get; private set; }
+    // public WireMockContainer WireMockContainer { get; private set; }
+    public PostgreSqlContainer? PostgresContainer { get; private set; }
 
-    public WebApplicationFactory<Template.TestedApi.Api.Program> TargetApi { get; private set; }
+    public WebApplicationFactory<Template.TestedApi.Api.Program>? TargetApi { get; private set; }
 
     /// <summary>
     /// Certificate used for signing the JWT used by the API.
     /// </summary>
-    public PemCertificate SigningCertificate { get; private set; }
+    public PemCertificate? SigningCertificate { get; private set; }
 
     public async ValueTask DisposeAsync()
     {
@@ -53,11 +53,13 @@ public class TestRuntime : IAsyncDisposable
                     // Override config settings for connection strings / service urls here.
                     config.InitialData = new Dictionary<string, string?>
                     {
+                        // Connection Strings
                         { "ConnectionStrings:PostgresDb", PostgresContainer.GetConnectionString() },
 
+                        // OIDC
                         { "OpenIdConnect:OpenIdConfigUrl", TestConstants.OpenIdConfigUrl },
                         { "OpenIdConnect:Audience", TestConstants.Audience },
-                        { "OpenIdConnect:Issuer", TestConstants.Issuer }
+                        { "OpenIdConnect:Issuer", TestConstants.Issuer },
                     };
 
                     b.Add(config);
