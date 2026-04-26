@@ -74,7 +74,7 @@ dotnet_diagnostic.SA1633.severity = none
 dotnet_diagnostic.SA1502.severity = suggestion
 dotnet_diagnostic.SA1313.severity = suggestion
 dotnet_diagnostic.SA1309.severity = none
-dotnet_diagnostic.SA1518.severity = none
+dotnet_diagnostic.SA1518.severity = warning
 
 [*.{cs,vb}]
 #### Naming styles ####
