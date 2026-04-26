@@ -4,6 +4,7 @@ using Template.TestedApi.Database;
 using Template.TestedApi.Database.Model;
 
 namespace Template.TestedApi.Core.Handlers;
+
 internal class SelectTodoItemsHandler : IRequestHandler<SelectTodo, IEnumerable<TodoRecord>>
 {
     private readonly ApplicationDbContext _dbContext;

@@ -2,6 +2,7 @@
 using Template.TestedApi.Core.Handlers;
 
 namespace Template.TestedApi.Core.Validators;
+
 public class InsertTodoValidator : AbstractValidator<InsertTodo>
 {
     public InsertTodoValidator()

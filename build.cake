@@ -2,7 +2,7 @@
 // ADDINS
 ///////////////////////////////////////////////////////////////////////////////
 #addin nuget:?package=Cake.Json&version=7.0.1
-#addin nuget:?package=Cake.Docker&version=1.2.0
+#addin nuget:?package=Cake.Docker&version=1.3.0
 
 ///////////////////////////////////////////////////////////////////////////////
 // TOOLS
@@ -284,6 +284,7 @@ Task("__DockerPush")
 	});
 
 Task("BuildAndTest")
+	.IsDependentOn("__LintCheck")
 	.IsDependentOn("__UnitTest");
 
 Task("BuildAndBenchmark")
