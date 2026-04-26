@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Template.TestedApi.Database.Model;
 
 namespace Template.TestedApi.Database.Configurations;
+
 public class TodoRecordConfiguration : IEntityTypeConfiguration<TodoRecord>
 {
     public void Configure(EntityTypeBuilder<TodoRecord> entity)

@@ -3,6 +3,7 @@ using Template.TestedApi.Database.Configurations;
 using Template.TestedApi.Database.Model;
 
 namespace Template.TestedApi.Database;
+
 public class ApplicationDbContext : DbContext
 {
     public ApplicationDbContext() { }

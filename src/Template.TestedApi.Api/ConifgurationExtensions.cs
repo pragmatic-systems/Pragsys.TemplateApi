@@ -20,6 +20,7 @@ using Template.TestedApi.Core.Validators;
 using Template.TestedApi.Database;
 
 namespace Template.TestedApi.Api;
+
 public static class ConfigurationExtensions
 {
     public static IApplicationBuilder UseHttpsRedirectionExcluding(this IApplicationBuilder builder, string excluding)

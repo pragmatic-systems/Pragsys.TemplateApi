@@ -3,6 +3,7 @@ using Template.TestedApi.Database;
 using Template.TestedApi.Database.Model;
 
 namespace Template.TestedApi.Core.Handlers;
+
 internal class InsertTodoItemHandler : IRequestHandler<InsertTodo, TodoRecord>
 {
     private readonly ApplicationDbContext _applicationDbContext;
