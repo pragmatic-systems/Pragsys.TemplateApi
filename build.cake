@@ -284,6 +284,7 @@ Task("__DockerPush")
 	});
 
 Task("BuildAndTest")
+	.IsDependentOn("__LintCheck")
 	.IsDependentOn("__UnitTest");
 
 Task("BuildAndBenchmark")
