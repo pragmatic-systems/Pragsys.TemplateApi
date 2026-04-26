@@ -149,6 +149,19 @@ Task("__Benchmark")
 		}
 	});
 
+Task("__LintCheck")
+    .Does(() =>
+    {
+        Information("Running lint check with dotnet format...");
+        // Run `dotnet format --verify-no-changes`
+        var result = StartProcess("dotnet", "format --verify-no-changes");
+        if (result != 0)
+        {
+            throw new Exception("Lint check failed: code formatting violations detected. Run `dotnet format`");
+        }
+        Information("Lint check passed – no formatting changes required.");
+    });
+
 Task("__VersionInfo")
 	.Does(() => {
 
@@ -279,6 +292,7 @@ Task("BuildAndBenchmark")
 Task("NugetPackAndPush")
 	.IsDependentOn("__NugetArgsCheck")
 	.IsDependentOn("__VersionInfo")
+	.IsDependentOn("__LintCheck")
 	.IsDependentOn("__UnitTest")
 	.IsDependentOn("__Benchmark")
 	.IsDependentOn("__NugetPack")
@@ -287,7 +301,9 @@ Task("NugetPackAndPush")
 Task("DockerPackAndPush")
 	.IsDependentOn("__ContainerArgsCheck")
 	.IsDependentOn("__VersionInfo")
+	.IsDependentOn("__LintCheck")
 	.IsDependentOn("__UnitTest")
+	.IsDependentOn("__Benchmark")
 	.IsDependentOn("__DockerLogin")
 	.IsDependentOn("__DockerPack")
 	.IsDependentOn("__DockerPush");
@@ -296,6 +312,7 @@ Task("FullPackAndPush")
 	.IsDependentOn("__NugetArgsCheck")
 	.IsDependentOn("__ContainerArgsCheck")
 	.IsDependentOn("__VersionInfo")
+	.IsDependentOn("__LintCheck")
 	.IsDependentOn("__UnitTest")
 	.IsDependentOn("__Benchmark")
 	.IsDependentOn("__NugetPack")
@@ -305,6 +322,7 @@ Task("FullPackAndPush")
 	.IsDependentOn("__DockerPush");
 
 Task("Default")
+	.IsDependentOn("__LintCheck")
 	.IsDependentOn("__UnitTest")
 	.IsDependentOn("__Benchmark");
 
