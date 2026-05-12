@@ -3,6 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 #addin nuget:?package=Cake.Json&version=7.0.1
 #addin nuget:?package=Cake.Docker&version=1.3.0
+#addin nuget:?package=Cake.SonarQube&version=4.0.0
 
 ///////////////////////////////////////////////////////////////////////////////
 // TOOLS
@@ -16,6 +17,7 @@ var target = Argument("target", "Default");
 
 var configuration = Argument("configuration", "Release");
 
+// Nuget Params
 var nugetPackageSource = Argument<string>("Source", null)			// Input from cmd args to Cake 
 	?? EnvironmentVariable<string>("INPUT_SOURCE", null);			// Input from GHA to Cake
 
@@ -25,17 +27,29 @@ var nugetApiKey = Argument<string>("ApiKey", null)					// Input from cmd args to
 var versionNumber = Argument<string>("VersionOverride", null)		// Input from cmd args to Cake 
 	?? EnvironmentVariable<string>("INPUT_VERSIONOVERRIDE", null);	// Input from GHA to Cake
 	
-var containerRegistry = 
-	Argument<string>("ContainerRegistry", null) ?? 
-	EnvironmentVariable<string>("INPUT_CONTAINERREGISTRY", null);
+// Container Params
+var containerRegistry = Argument<string>("ContainerRegistry", null) 
+	?? EnvironmentVariable<string>("INPUT_CONTAINERREGISTRY", null);
+	
+var containerRegistryToken = Argument<string>("ContainerRegistryToken", null) 
+	?? EnvironmentVariable<string>("INPUT_CONTAINERREGISTRYTOKEN", null);
 
-var containerRegistryToken = 
-	Argument<string>("ContainerRegistryToken", null) ?? 
-	EnvironmentVariable<string>("INPUT_CONTAINERREGISTRYTOKEN", null);
+var containerRegistryUserName = Argument<string>("ContainerRegistryUserName", null)
+	?? EnvironmentVariable<string>("INPUT_CONTAINERREGISTRYUSERNAME", null);
 
-var containerRegistryUserName = 
-	Argument<string>("ContainerRegistryUserName", null) ?? 
-	EnvironmentVariable<string>("INPUT_CONTAINERREGISTRYUSERNAME", null);
+// Sonar Params
+var sonarProjectKey = Argument<string>("SonarProjectKey", null)
+    ?? EnvironmentVariable<string>("INPUT_SONARPROJECTKEY", null);
+
+var sonarProjectName = Argument<string>("SonarProjectName", null)
+    ?? EnvironmentVariable<string>("INPUT_SONARPROJECTNAME", null);
+
+var sonarHostUrl = Argument<string>("SonarHostUrl", null)
+    ?? EnvironmentVariable<string>("INPUT_SONARHOSTURL", null)
+		?? "http://localhost:9000";
+
+var sonarToken = Argument<string>("SonarToken", null)
+    ?? EnvironmentVariable<string>("INPUT_SONARTOKEN", null);
 
 var artifactsFolder = "./artifacts";
 var packagesFolder = System.IO.Path.Combine(artifactsFolder, "packages");
@@ -100,6 +114,18 @@ Task("__ContainerArgsCheck")
 			
 		if (string.IsNullOrEmpty(containerRegistry))
 			throw new ArgumentException("ContainerRegistry is required");
+	});
+
+Task("__SonarArgsCheck")
+	.Does(() => {
+		if (string.IsNullOrEmpty(sonarProjectKey))
+			throw new ArgumentException("SonarProjectKey is required");
+			
+		if (string.IsNullOrEmpty(sonarProjectName))
+			throw new ArgumentException("SonarProjectName is required");
+			
+		if (string.IsNullOrEmpty(sonarToken))
+			throw new ArgumentException("SonarToken is required");
 	});
 
 Task("__UnitTest")
@@ -173,6 +199,26 @@ Task("__VersionInfo")
 		}
 
 		Information("Version Number: " + versionNumber);
+	});
+
+Task("__SonarQubeAnalysis")
+	.Does(() => {
+		Information("Running SonarQube analysis...");
+
+      var sonarSettings = new SonarQubeSettings
+      {
+          ProjectKey = sonarProjectKey,
+          ProjectName = sonarProjectName,
+          SourceEncoding = "UTF-8",
+					HostUrl = sonarHostUrl,
+					Token = sonarToken
+      };
+
+      foreach (var project in buildManifest.NugetPackages)
+      {
+          Information($"Analyzing {project}...");
+          SonarQubeAnalysis(project, sonarSettings);
+      }
 	});
 
 Task("__NugetPack")
@@ -294,6 +340,7 @@ Task("NugetPackAndPush")
 	.IsDependentOn("__NugetArgsCheck")
 	.IsDependentOn("__VersionInfo")
 	.IsDependentOn("__LintCheck")
+	.IsDependentOn("__SonarQubeAnalysis")
 	.IsDependentOn("__UnitTest")
 	.IsDependentOn("__Benchmark")
 	.IsDependentOn("__NugetPack")
@@ -303,6 +350,7 @@ Task("DockerPackAndPush")
 	.IsDependentOn("__ContainerArgsCheck")
 	.IsDependentOn("__VersionInfo")
 	.IsDependentOn("__LintCheck")
+	.IsDependentOn("__SonarQubeAnalysis")
 	.IsDependentOn("__UnitTest")
 	.IsDependentOn("__Benchmark")
 	.IsDependentOn("__DockerLogin")
@@ -314,6 +362,7 @@ Task("FullPackAndPush")
 	.IsDependentOn("__ContainerArgsCheck")
 	.IsDependentOn("__VersionInfo")
 	.IsDependentOn("__LintCheck")
+	.IsDependentOn("__SonarQubeAnalysis")
 	.IsDependentOn("__UnitTest")
 	.IsDependentOn("__Benchmark")
 	.IsDependentOn("__NugetPack")
@@ -324,6 +373,7 @@ Task("FullPackAndPush")
 
 Task("Default")
 	.IsDependentOn("__LintCheck")
+	.IsDependentOn("__SonarQubeAnalysis")
 	.IsDependentOn("__UnitTest")
 	.IsDependentOn("__Benchmark");
 

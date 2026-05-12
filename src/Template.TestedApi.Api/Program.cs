@@ -29,6 +29,7 @@ public class Program
 
             var app = builder.Build();
 
+            app.MapInstrumentationEndpoints();
             app.ConfigureSwagger();
             app.UseMetricServer(); // https://github.com/prometheus-net/prometheus-net
             app.UseAuthMiddleware();
@@ -37,7 +38,6 @@ public class Program
             app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();
-            app.MapInstrumentationEndpoints();
 
             Log.Logger.Information("Starting Application");
 
@@ -46,6 +46,7 @@ public class Program
         catch (Exception ex)
         {
             Log.Logger.Error(ex, "Error Starting Application");
+            throw;
         }
     }
 }
