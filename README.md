@@ -21,6 +21,11 @@ Run `docker compose -f docker-compose.infra.yml up`
 Launch apps:
 * Template.TestedApi.API
 
+## Formatting
+The project needs to be correctly formatted to pass the build. To format the project using the dotnet format tool - 
+
+Run `dotnet format`
+
 ## Local Services
 
 ### Seq
