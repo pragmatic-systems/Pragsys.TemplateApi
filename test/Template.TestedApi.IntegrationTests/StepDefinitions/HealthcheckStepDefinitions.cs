@@ -1,4 +1,5 @@
-﻿using Template.TestedApi.IntegrationTests.Infrastructure;
+﻿using Reqnroll;
+using Template.TestedApi.IntegrationTests.Infrastructure;
 
 namespace Template.TestedApi.IntegrationTests.StepDefinitions;
 

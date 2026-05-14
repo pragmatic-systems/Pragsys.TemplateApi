@@ -1,7 +1,6 @@
-﻿using System.Security.Claims;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Template.TestedApi.Api;
+using Reqnroll;
 using Template.TestedApi.IntegrationTests.Infrastructure;
 
 namespace Template.TestedApi.IntegrationTests.StepDefinitions;

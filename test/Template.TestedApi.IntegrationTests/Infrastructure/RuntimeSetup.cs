@@ -1,4 +1,6 @@
-﻿namespace Template.TestedApi.IntegrationTests.Infrastructure;
+﻿using Reqnroll;
+
+namespace Template.TestedApi.IntegrationTests.Infrastructure;
 
 [Binding]
 public class RuntimeSetup

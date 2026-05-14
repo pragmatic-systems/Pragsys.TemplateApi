@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Security.Claims;
+using Reqnroll;
 using Template.TestedApi.Api;
 using Template.TestedApi.IntegrationTests.Infrastructure;
 
