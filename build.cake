@@ -3,12 +3,13 @@
 ///////////////////////////////////////////////////////////////////////////////
 #addin nuget:?package=Cake.Json&version=7.0.1
 #addin nuget:?package=Cake.Docker&version=1.3.0
-#addin nuget:?package=Cake.SonarQube&version=4.0.0
+#addin nuget:?package=Cake.SonarQube&version=5.0.0
 
 ///////////////////////////////////////////////////////////////////////////////
 // TOOLS
 ///////////////////////////////////////////////////////////////////////////////
 #tool dotnet:?package=GitVersion.Tool&version=5.12.0
+#tool nuget:?package=MSBuild.SonarQube.Runner.Tool&version=4.8.0
 
 ///////////////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -38,6 +39,12 @@ var containerRegistryUserName = Argument<string>("ContainerRegistryUserName", nu
 	?? EnvironmentVariable<string>("INPUT_CONTAINERREGISTRYUSERNAME", null);
 
 // Sonar Params
+var sonarOrg = Argument<string>("sonarOrg", null)
+    ?? EnvironmentVariable<string>("INPUT_SONARORG", null);
+		
+var sonarToken = Argument<string>("SonarToken", null)
+    ?? EnvironmentVariable<string>("INPUT_SONARTOKEN", null);
+
 var sonarProjectKey = Argument<string>("SonarProjectKey", null)
     ?? EnvironmentVariable<string>("INPUT_SONARPROJECTKEY", null);
 
@@ -47,9 +54,6 @@ var sonarProjectName = Argument<string>("SonarProjectName", null)
 var sonarHostUrl = Argument<string>("SonarHostUrl", null)
     ?? EnvironmentVariable<string>("INPUT_SONARHOSTURL", null)
 		?? "http://localhost:9000";
-
-var sonarToken = Argument<string>("SonarToken", null)
-    ?? EnvironmentVariable<string>("INPUT_SONARTOKEN", null);
 
 var artifactsFolder = "./artifacts";
 var packagesFolder = System.IO.Path.Combine(artifactsFolder, "packages");
@@ -74,7 +78,6 @@ Setup(context =>
 		{
 			NugetPackages = new string[0],
 			DockerPackages = System.IO.Directory.GetFiles("./src/", "Dockerfile", SearchOption.AllDirectories),
-			Tests = System.IO.Directory.GetFiles(".", "*Tests.csproj", SearchOption.AllDirectories),
 			Benchmarks = System.IO.Directory.GetFiles(".", "*.Benchmark.csproj", SearchOption.AllDirectories),
 		};
 		SerializeJsonToPrettyFile(cakeMixFile, manifest);
@@ -118,39 +121,40 @@ Task("__ContainerArgsCheck")
 
 Task("__SonarArgsCheck")
 	.Does(() => {
+		if (string.IsNullOrEmpty(sonarOrg))
+			throw new ArgumentException("SonarOrg is required");
+		
+		if (string.IsNullOrEmpty(sonarToken))
+			throw new ArgumentException("SonarToken is required");
+
 		if (string.IsNullOrEmpty(sonarProjectKey))
 			throw new ArgumentException("SonarProjectKey is required");
 			
 		if (string.IsNullOrEmpty(sonarProjectName))
 			throw new ArgumentException("SonarProjectName is required");
 			
-		if (string.IsNullOrEmpty(sonarToken))
-			throw new ArgumentException("SonarToken is required");
 	});
 
-Task("__UnitTest")
+Task("__Test")
 	.Does(() => {
 
-		foreach(var test in buildManifest.Tests)
-		{
-			Information($"Testing {test}...");
+		var testSettings = new DotNetTestSettings {
+      NoBuild = true,
+			Configuration = configuration,
+			ResultsDirectory = artifactsFolder,
+      ArgumentCustomization = args => {
 
-			var testName = System.IO.Path.GetFileNameWithoutExtension(test);
+				args
+					.Append("/p:CollectCoverage=true")
+					.Append("/p:CoverletOutputFormat=cobertura")
+					.Append($"/p:CoverletOutput=./coverage/coverage.cobertura.xml")
+					.Append("--results-directory ./coverage");
 
-			var settings = new DotNetTestSettings
-			{
-				Configuration = configuration,
-				ResultsDirectory = artifactsFolder
-			};
+				return args;
+			}
+    };
 
-			// Console log for build agent
-			settings.Loggers.Add("console;verbosity=normal");
-		
-			// Logging for trx test report artifact
-			settings.Loggers.Add($"trx;logfilename={testName}.trx");
-
-			DotNetTest(test, settings);
-		}
+    DotNetTest("Template.TestedApi.sln", testSettings);
 	});
 
 Task("__Benchmark")
@@ -188,6 +192,31 @@ Task("__LintCheck")
         Information("Lint check passed – no formatting changes required.");
     });
 
+Task("__BeginSonarScan")
+		.Does(() =>
+		{
+        SonarBegin(new SonarBeginSettings
+        {
+            Key = sonarProjectKey,
+            Name = sonarProjectName,
+            Login = sonarToken,
+						Organization = sonarOrg,
+            Url = sonarHostUrl,
+        });
+
+				DotNetBuild("Template.TestedApi.sln");
+		});
+
+Task("__EndSonarScan")
+		.Does(() =>
+		{
+        SonarEnd(new SonarEndSettings
+        {
+            Login = sonarToken,
+        });
+        Information("Sonar analysis completed successfully.");
+		});
+
 Task("__VersionInfo")
 	.Does(() => {
 
@@ -199,26 +228,6 @@ Task("__VersionInfo")
 		}
 
 		Information("Version Number: " + versionNumber);
-	});
-
-Task("__SonarQubeAnalysis")
-	.Does(() => {
-		Information("Running SonarQube analysis...");
-
-      var sonarSettings = new SonarQubeSettings
-      {
-          ProjectKey = sonarProjectKey,
-          ProjectName = sonarProjectName,
-          SourceEncoding = "UTF-8",
-					HostUrl = sonarHostUrl,
-					Token = sonarToken
-      };
-
-      foreach (var project in buildManifest.NugetPackages)
-      {
-          Information($"Analyzing {project}...");
-          SonarQubeAnalysis(project, sonarSettings);
-      }
 	});
 
 Task("__NugetPack")
@@ -336,12 +345,18 @@ Task("BuildAndTest")
 Task("BuildAndBenchmark")
 	.IsDependentOn("__Benchmark");
 
+Task("SonarScan")
+	.IsDependentOn("__SonarArgsCheck")
+	.IsDependentOn("__BeginSonarScan")
+	.IsDependentOn("__Test")
+	.IsDependentOn("__Benchmark")
+	.IsDependentOn("__EndSonarScan");
+
 Task("NugetPackAndPush")
 	.IsDependentOn("__NugetArgsCheck")
 	.IsDependentOn("__VersionInfo")
 	.IsDependentOn("__LintCheck")
-	.IsDependentOn("__SonarQubeAnalysis")
-	.IsDependentOn("__UnitTest")
+	.IsDependentOn("__Test")
 	.IsDependentOn("__Benchmark")
 	.IsDependentOn("__NugetPack")
 	.IsDependentOn("__NugetPush");
@@ -350,8 +365,7 @@ Task("DockerPackAndPush")
 	.IsDependentOn("__ContainerArgsCheck")
 	.IsDependentOn("__VersionInfo")
 	.IsDependentOn("__LintCheck")
-	.IsDependentOn("__SonarQubeAnalysis")
-	.IsDependentOn("__UnitTest")
+	.IsDependentOn("__Test")
 	.IsDependentOn("__Benchmark")
 	.IsDependentOn("__DockerLogin")
 	.IsDependentOn("__DockerPack")
@@ -362,8 +376,7 @@ Task("FullPackAndPush")
 	.IsDependentOn("__ContainerArgsCheck")
 	.IsDependentOn("__VersionInfo")
 	.IsDependentOn("__LintCheck")
-	.IsDependentOn("__SonarQubeAnalysis")
-	.IsDependentOn("__UnitTest")
+	.IsDependentOn("__Test")
 	.IsDependentOn("__Benchmark")
 	.IsDependentOn("__NugetPack")
 	.IsDependentOn("__DockerLogin")
@@ -373,8 +386,7 @@ Task("FullPackAndPush")
 
 Task("Default")
 	.IsDependentOn("__LintCheck")
-	.IsDependentOn("__SonarQubeAnalysis")
-	.IsDependentOn("__UnitTest")
+	.IsDependentOn("__Test")
 	.IsDependentOn("__Benchmark");
 
 RunTarget(target);
@@ -383,7 +395,6 @@ public class BuildManifest
 {
 	public string[] NugetPackages { get; set; }
 	public string[] DockerPackages { get; set; }
-	public string[] Tests { get; set; }
 	public string[] Benchmarks { get; set; }
 	public Dictionary<string, string> ApiSpecs { get; set; }
 }

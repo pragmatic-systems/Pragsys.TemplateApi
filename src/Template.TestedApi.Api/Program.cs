@@ -7,10 +7,13 @@ using Serilog;
 
 namespace Template.TestedApi.Api;
 
+#pragma warning disable S1118
 public class Program
+#pragma warning restore S1118
 {
     public static void Main(string[] args)
     {
+#pragma warning disable S2139
         try
         {
             var builder = WebApplication.CreateBuilder(args);
@@ -48,5 +51,6 @@ public class Program
             Log.Logger.Error(ex, "Error Starting Application");
             throw;
         }
+#pragma warning restore S2139
     }
 }

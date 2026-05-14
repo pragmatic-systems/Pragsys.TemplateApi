@@ -14,6 +14,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "assets", "assets", "{BB8C3C
 		build.cake = build.cake
 		build.cakemix = build.cakemix
 		Directory.Build.props = Directory.Build.props
+		docker-compose.infra.yml = docker-compose.infra.yml
 		README.md = README.md
 	EndProjectSection
 EndProject

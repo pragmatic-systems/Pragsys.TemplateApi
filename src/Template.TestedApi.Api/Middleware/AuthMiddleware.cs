@@ -21,10 +21,10 @@ namespace Template.TestedApi.Api.Middleware;
 // https://xebia.com/blog/mock-your-openid-connect-provider/
 public class AuthMiddleware
 {
-    private RequestDelegate _next;
-    private IOptions<OAuthConfig> _authConfig;
-    private IConfigurationManager<OpenIdConnectConfiguration> _configurationManager;
-    private ILogger _logger;
+    private readonly RequestDelegate _next;
+    private readonly IOptions<OAuthConfig> _authConfig;
+    private readonly IConfigurationManager<OpenIdConnectConfiguration> _configurationManager;
+    private readonly ILogger _logger;
 
     public AuthMiddleware(
         RequestDelegate next,
@@ -55,7 +55,6 @@ public class AuthMiddleware
 
                 var authHeader = headers[HeaderNames.Authorization].ToString();
                 var bearerToken = authHeader.Replace("Bearer", string.Empty).Trim();
-                var jwt = new JwtSecurityToken(bearerToken);
                 var config = await _configurationManager.GetConfigurationAsync(context.RequestAborted);
 
                 var validationParams = new TokenValidationParameters
@@ -70,7 +69,7 @@ public class AuthMiddleware
                 };
 
                 context.User = new JwtSecurityTokenHandler()
-                    .ValidateToken(bearerToken, validationParams, out var thing);
+                    .ValidateToken(bearerToken, validationParams, out var _);
 
                 BuildAwsIamClaimMap(context);
             }
@@ -106,7 +105,7 @@ public class AuthMiddleware
         context.User.AddIdentity(identity);
     }
 
-    private bool SkipAuth(HttpContext context)
+    private static bool SkipAuth(HttpContext context)
     {
         var path = context.Request.Path.Value ?? string.Empty;
         path = path.ToLower();
