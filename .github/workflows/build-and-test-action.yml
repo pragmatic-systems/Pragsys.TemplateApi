@@ -27,6 +27,7 @@ jobs:
         with:
           name: Test Results
           path: artifacts/*.trx
+          pull-request-report: true
           reporter: dotnet-trx
           token: ${{ secrets.GITHUB_TOKEN }}
 
