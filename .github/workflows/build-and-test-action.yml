@@ -27,6 +27,15 @@ jobs:
           script-path: build.cake
           target: BuildAndTest
 
+      - name: Publish Test Report with Pull Request Comment
+        uses: ctrf-io/github-test-reporter@v1
+        with:
+          report-path: './artifacts/*.trx'
+          pull-request-report: true
+        if: always()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Publish Test Results
         uses: dorny/test-reporter@v3
         with:
