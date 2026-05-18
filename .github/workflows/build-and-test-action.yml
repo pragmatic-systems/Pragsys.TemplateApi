@@ -23,7 +23,7 @@ jobs:
           target: BuildAndTest
 
       - name: Publish Test Results
-        uses: dorny/test-reporter@v2
+        uses: dorny/test-reporter@v3
         with:
           name: Test Results
           path: artifacts/*.trx
