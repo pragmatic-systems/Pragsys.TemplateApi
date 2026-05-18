@@ -22,8 +22,16 @@ jobs:
           script-path: build.cake
           target: BuildAndTest
 
+      - name: Publish Test Results
+        uses: dorny/test-reporter@v2
+        with:
+          name: Test Results
+          path: artifacts/*.trx
+          reporter: dotnet-trx
+          token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Publish Artifacts
         uses: actions/upload-artifact@v7
         with:
-          name: TestedLibrary Artifacts
+          name: Artifacts
           path: ./artifacts/
