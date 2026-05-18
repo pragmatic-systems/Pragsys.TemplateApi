@@ -7,6 +7,11 @@ on:
     branches:    
       - main
 
+permissions:
+  contents: read
+  actions: read
+  checks: write
+
 jobs:
   Build-And-Test:
     runs-on: ubuntu-latest
@@ -27,7 +32,6 @@ jobs:
         with:
           name: Test Results
           path: artifacts/*.trx
-          pull-request-report: true
           reporter: dotnet-trx
           token: ${{ secrets.GITHUB_TOKEN }}
 
