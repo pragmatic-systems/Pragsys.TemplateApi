@@ -39,7 +39,7 @@ var containerRegistryUserName = Argument<string>("ContainerRegistryUserName", nu
 	?? EnvironmentVariable<string>("INPUT_CONTAINERREGISTRYUSERNAME", null);
 
 // Sonar Params
-var sonarOrg = Argument<string>("sonarOrg", null)
+var sonarOrg = Argument<string>("SonarOrg", null)
     ?? EnvironmentVariable<string>("INPUT_SONARORG", null);
 		
 var sonarToken = Argument<string>("SonarToken", null)
@@ -138,23 +138,14 @@ Task("__SonarArgsCheck")
 Task("__Test")
 	.Does(() => {
 
-		var testSettings = new DotNetTestSettings {
-      NoBuild = true,
-			Configuration = configuration,
-			ResultsDirectory = artifactsFolder,
-      ArgumentCustomization = args => {
-
-				args
-					.Append("/p:CollectCoverage=true")
-					.Append("/p:CoverletOutputFormat=cobertura")
-					.Append($"/p:CoverletOutput=./coverage/coverage.cobertura.xml")
-					.Append("--results-directory ./coverage");
-
-				return args;
-			}
-    };
-
-    DotNetTest("Template.TestedApi.sln", testSettings);
+		// NOTE: New dotnet test model moves the relative path to inside the local app.
+		Information("Testing....");
+		var result = StartProcess("dotnet", "test -- \"--results-directory ..\\..\\artifacts --report-xunit-trx --coverage --coverage-output-format xml\"");
+        if (result != 0)
+        {
+            throw new Exception("Tests failed");
+        }
+        Information("Tests pass");
 	});
 
 Task("__Benchmark")
@@ -195,26 +186,31 @@ Task("__LintCheck")
 Task("__BeginSonarScan")
 		.Does(() =>
 		{
-        SonarBegin(new SonarBeginSettings
-        {
-            Key = sonarProjectKey,
-            Name = sonarProjectName,
-            Login = sonarToken,
-						Organization = sonarOrg,
-            Url = sonarHostUrl,
-        });
+			var reportPaths = System.IO.Directory.GetFiles(artifactsFolder, "*.xml", SearchOption.AllDirectories)
+					.Select(p => p.Replace('\\', '/'))
+					.Aggregate((a, b) => a + "," + b);
 
-				DotNetBuild("Template.TestedApi.sln");
+			SonarBegin(new SonarBeginSettings
+			{
+				Key = sonarProjectKey,
+				Name = sonarProjectName,
+				Login = sonarToken,
+				Organization = sonarOrg,
+				Url = sonarHostUrl,
+				VsCoverageReportsPath = reportPaths,
+			});
+
+			DotNetBuild("Template.TestedApi.sln");
 		});
 
 Task("__EndSonarScan")
 		.Does(() =>
 		{
-        SonarEnd(new SonarEndSettings
-        {
-            Login = sonarToken,
-        });
-        Information("Sonar analysis completed successfully.");
+			SonarEnd(new SonarEndSettings
+			{
+				Login = sonarToken,
+			});
+			Information("Sonar analysis completed successfully.");
 		});
 
 Task("__VersionInfo")
@@ -347,9 +343,9 @@ Task("BuildAndBenchmark")
 
 Task("SonarScan")
 	.IsDependentOn("__SonarArgsCheck")
-	.IsDependentOn("__BeginSonarScan")
 	.IsDependentOn("__Test")
 	.IsDependentOn("__Benchmark")
+	.IsDependentOn("__BeginSonarScan")
 	.IsDependentOn("__EndSonarScan");
 
 Task("NugetPackAndPush")
