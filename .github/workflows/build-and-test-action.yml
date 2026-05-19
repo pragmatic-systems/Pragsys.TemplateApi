@@ -30,10 +30,10 @@ jobs:
           # TODO: MAKE REPORT SHOW IN PR!!!
       - name: Publish Test Report with Pull Request Comment
         uses: ctrf-io/github-test-reporter@v1
+        if: ${{ !cancelled() }}       # run this step even if previous step failed
         with:
           report-path: './artifacts/*.ctrf'
           pull-request-report: true
-        if: always()
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
