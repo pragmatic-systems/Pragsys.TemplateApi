@@ -4,13 +4,13 @@ using Template.TestedApi.Database.Model;
 
 namespace Template.TestedApi.Core.Handlers;
 
-internal class InsertTodoItemHandler : IRequestHandler<InsertTodo, TodoRecord>
+public class InsertTodoItemHandler : IRequestHandler<InsertTodo, TodoRecord>
 {
-    private readonly ApplicationDbContext _applicationDbContext;
+    private readonly ApplicationDbContext _dbContext;
 
-    public InsertTodoItemHandler(ApplicationDbContext applicationDbContext)
+    public InsertTodoItemHandler(ApplicationDbContext dbContext)
     {
-        _applicationDbContext = applicationDbContext;
+        _dbContext = dbContext;
     }
 
     public async Task<TodoRecord> Handle(InsertTodo request, CancellationToken cancellationToken)
@@ -21,9 +21,9 @@ internal class InsertTodoItemHandler : IRequestHandler<InsertTodo, TodoRecord>
             request.Description,
             request.DueDate);
 
-        _applicationDbContext.TodoRecords.Add(record);
+        _dbContext.TodoRecords.Add(record);
 
-        await _applicationDbContext.SaveChangesAsync();
+        await _dbContext.SaveChangesAsync();
 
         return record;
     }

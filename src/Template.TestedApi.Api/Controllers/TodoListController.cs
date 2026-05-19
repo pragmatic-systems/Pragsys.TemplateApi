@@ -12,9 +12,9 @@ public class TodoListController : ControllerBase
 {
     private readonly IMediator _mediator;
 
-    public TodoListController(IMediator store)
+    public TodoListController(IMediator mediator)
     {
-        _mediator = store;
+        _mediator = mediator;
     }
 
     [HttpGet]
