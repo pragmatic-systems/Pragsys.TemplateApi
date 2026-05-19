@@ -27,10 +27,11 @@ jobs:
           script-path: build.cake
           target: BuildAndTest
 
+          # TODO: MAKE REPORT SHOW IN PR!!!
       - name: Publish Test Report with Pull Request Comment
         uses: ctrf-io/github-test-reporter@v1
         with:
-          report-path: './artifacts/*.trx'
+          report-path: './artifacts/*.ctrf'
           pull-request-report: true
         if: always()
         env:
@@ -38,6 +39,7 @@ jobs:
 
       - name: Publish Test Results
         uses: dorny/test-reporter@v3
+        if: ${{ !cancelled() }}       # run this step even if previous step failed
         with:
           name: Test Results
           path: artifacts/*.trx

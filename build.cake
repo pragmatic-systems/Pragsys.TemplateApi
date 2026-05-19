@@ -140,7 +140,7 @@ Task("__Test")
 
 		// NOTE: New dotnet test model moves the relative path to inside the local app.
 		Information("Testing....");
-		var result = StartProcess("dotnet", "test -- \"--results-directory ..\\..\\artifacts --report-xunit-trx --coverage --coverage-output-format xml\"");
+		var result = StartProcess("dotnet", "test -- \"--results-directory ..\\..\\artifacts --report-xunit-trx --report-ctrf --coverage --coverage-output-format xml\"");
         if (result != 0)
         {
             throw new Exception("Tests failed");
