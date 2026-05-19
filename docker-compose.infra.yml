@@ -1,9 +1,7 @@
-version: '3.4'
-
 services:
 
   local-postgres:
-    image: postgres
+    image: postgres:17.9
     container_name: local-postgres
     restart: always
     environment:
@@ -14,7 +12,7 @@ services:
       - local
 
   local-pgadmin:
-    image: dpage/pgadmin4
+    image: dpage/pgadmin4:9.15.0
     container_name: local-pgadmin
     ports:
       - 5434:80
@@ -25,18 +23,19 @@ services:
       - local
 
   local-seq:
-    image: datalust/seq
+    image: datalust/seq:2025.2
     container_name: local-seq
     ports:
       - "5030:80"
       - "5341:5341"
     environment:
       - ACCEPT_EULA=Y
+      - SEQ_FIRSTRUN_NOAUTHENTICATION=true
     networks:
       - local
 
   local-keycloak:
-    image: quay.io/keycloak/keycloak:latest
+    image: quay.io/keycloak/keycloak:26.6
     container_name: local-keycloak
     ports:
       - "8443:8443"
@@ -53,6 +52,20 @@ services:
     networks:
       - local
     command: [ "start-dev" ]
+
+  local-sonarqube:
+    image: sonarqube
+    container_name: local-sonarqube
+    ports:
+      - "9000:9000"
+    networks:
+      - local
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:9000/api/system/info"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 60s
 
 networks:
     local:

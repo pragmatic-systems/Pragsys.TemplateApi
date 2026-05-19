@@ -1,4 +1,5 @@
-﻿using BoDi;
+﻿using Reqnroll;
+using Reqnroll.BoDi;
 
 namespace Template.TestedApi.IntegrationTests.Infrastructure;
 

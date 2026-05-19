@@ -18,7 +18,7 @@ internal class SelectTodoItemsHandler : IRequestHandler<SelectTodo, IEnumerable<
     {
         return await _dbContext
             .TodoRecords
-            .Where(r => r.Open == true)
+            .Where(r => r.Open)
             .ToListAsync();
     }
 }
