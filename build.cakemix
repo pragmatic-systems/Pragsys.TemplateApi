@@ -2,7 +2,7 @@
   "NugetPackages": [],
   "DockerPackages": [
     "./src/Template.TestedApi.Api/Dockerfile"
-    //"./src/Template.TestedApi.DbUp/Dockerfile"
+    //"./src/Template.TestedApi.Database/Dockerfile"
   ],
   "Tests": [
     "./test/Template.TestedApi.IntegrationTests/Template.TestedApi.IntegrationTests.csproj",

@@ -2,7 +2,7 @@
   "profiles": {
     "Template.TestedApi.DbUp": {
       "commandName": "Project",
-      "commandLineArgs": "Host=localhost;Port=5432;Username=postgres;Password=example;Database=shop;"
+      "commandLineArgs": "Host=localhost;Port=5432;Username=postgres;Password=example;Database=my-app-db;"
     }
   }
 }
