@@ -8,7 +8,7 @@ services:
       - "8080:8080"
     environment:
       - ASPNETCORE_URLS=http://+:8080
-      - ConnectionStrings__PostgresDb=Host=local-postgres;Port=5432;Username=postgres;Password=password;Database=shop;
+      - ConnectionStrings__PostgresDb=Host=local-postgres;Port=5432;Username=postgres;Password=password;Database=my-app-db;
       - OpenIdConnect__Issuer=https://localhost:8443/realms/todolist-realm
       - OpenIdConnect__Audience=todolist-client
       - OpenIdConnect__OpenIdConfigUrl=https://localhost:8443/realms/todolist-realm/.well-known/openid-configuration
@@ -19,7 +19,7 @@ services:
     image: ghcr.io/tristanrhodes/template.testedapi.database:latest
     container_name: template.testedapi.database
     environment:
-      - DbConnectionString=Host=local-postgres;Port=5432;Username=postgres;Password=password;Database=shop;
+      - DbConnectionString=Host=local-postgres;Port=5432;Username=postgres;Password=password;Database=my-app-db;
     networks:
       - local
 
