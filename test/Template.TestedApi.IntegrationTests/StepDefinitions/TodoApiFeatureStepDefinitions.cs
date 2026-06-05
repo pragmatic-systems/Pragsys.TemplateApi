@@ -37,7 +37,7 @@ public sealed class TodoApiFeatureStepDefinitions
 
         ((string)_testContext.NewTodoItem
             .itemId.Value)
-            .Should().NotBeNull();
+            .ShouldNotBeNull();
     }
 
     [When("We get our TodoList")]
@@ -64,6 +64,6 @@ public sealed class TodoApiFeatureStepDefinitions
         var match = _testContext.TaskList
             .SingleOrDefault(i => i.itemId == id);
 
-        ((object)match).Should().NotBeNull();
+        ((object)match).ShouldNotBeNull();
     }
 }

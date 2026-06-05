@@ -19,28 +19,22 @@ public class CommonStepDefinitions
     [Then("The response should be 200 OK")]
     public void TheResultShouldBeOk()
     {
-        _testContext.LastResponse
-             .Should().NotBeNull()
-             .And
-             .Subject.EnsureSuccessStatusCode();
+        _testContext.LastResponse.ShouldNotBeNull();
+        _testContext.LastResponse.EnsureSuccessStatusCode();
     }
 
     [Then("The response should be 401 Unauthorized")]
     public void TheResultShouldBeUnauthroized()
     {
-        _testContext.LastResponse
-             .Should().NotBeNull()
-             .And
-             .HaveStatusCode(HttpStatusCode.Unauthorized);
+        _testContext.LastResponse.ShouldNotBeNull();
+        _testContext.LastResponse.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Then("The response should be 403 Forbidden")]
     public void TheResultShouldBeForbidden()
     {
-        _testContext.LastResponse
-             .Should().NotBeNull()
-             .And
-             .HaveStatusCode(HttpStatusCode.Forbidden);
+        _testContext.LastResponse.ShouldNotBeNull();
+        _testContext.LastResponse.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     [Given("We have user '(.*)'")]
