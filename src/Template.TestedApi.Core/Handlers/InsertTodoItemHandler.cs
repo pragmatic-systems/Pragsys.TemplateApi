@@ -1,4 +1,4 @@
-﻿using MediatR;
+﻿using Pragsys.CQRS;
 using Template.TestedApi.Database;
 using Template.TestedApi.Database.Model;
 

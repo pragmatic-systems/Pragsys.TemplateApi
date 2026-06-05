@@ -14,6 +14,7 @@ using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Prometheus;
 using Serilog;
+using Pragsys.CQRS;
 using Template.TestedApi.Api.HostedServices;
 using Template.TestedApi.Api.Middleware;
 using Template.TestedApi.Core.Validators;
@@ -34,6 +35,8 @@ public static class ConfigurationExtensions
 
     public static IServiceCollection WithMediatr(this IServiceCollection services)
     {
+        var types = typeof(InsertTodoValidator).Assembly.GetExportedTypes();
+
         services.AddMediatR(cfg =>
         {
             cfg.RegisterServicesFromAssemblies(

@@ -1,4 +1,5 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+﻿using System;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
@@ -54,7 +55,7 @@ public class AuthMiddleware
                 }
 
                 var authHeader = headers[HeaderNames.Authorization].ToString();
-                var bearerToken = authHeader.Replace("Bearer", string.Empty).Trim();
+                var bearerToken = authHeader.Replace(Constants.Bearer, string.Empty, StringComparison.InvariantCultureIgnoreCase).Trim();
                 var config = await _configurationManager.GetConfigurationAsync(context.RequestAborted);
 
                 var validationParams = new TokenValidationParameters
@@ -78,9 +79,15 @@ public class AuthMiddleware
         }
         catch (SecurityTokenException ex)
         {
+            _logger.Warning(ex, "Auth Error");
             context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
             await context.Response.CompleteAsync();
-            _logger.Warning(ex, "Auth Error");
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex, "Error");
+            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            await context.Response.CompleteAsync();
         }
     }
 
