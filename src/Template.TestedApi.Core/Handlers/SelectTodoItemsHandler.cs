@@ -1,5 +1,5 @@
-﻿using Pragsys.CQRS;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Pragsys.CQRS;
 using Template.TestedApi.Database;
 using Template.TestedApi.Database.Model;
 
