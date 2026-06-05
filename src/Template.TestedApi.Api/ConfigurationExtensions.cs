@@ -35,9 +35,7 @@ public static class ConfigurationExtensions
 
     public static IServiceCollection WithMediatr(this IServiceCollection services)
     {
-        var types = typeof(InsertTodoValidator).Assembly.GetExportedTypes();
-
-        services.AddMediatR(cfg =>
+        services.AddCqrs(cfg =>
         {
             cfg.RegisterServicesFromAssemblies(
                 typeof(InsertTodoValidator).Assembly);
