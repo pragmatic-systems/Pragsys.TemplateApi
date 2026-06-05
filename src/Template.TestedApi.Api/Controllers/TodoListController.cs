@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
-using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Pragsys.CQRS;
 using Template.TestedApi.Core.Handlers;
 
 namespace Template.TestedApi.Api.Controllers;
