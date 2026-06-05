@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Template.TestedApi.Core.Handlers;
 using Template.TestedApi.Core.Validators;
 
@@ -13,7 +13,7 @@ public class InsertTodoValidatorTests
     {
         var args = new InsertTodo("Title", "Desc", DateTime.UtcNow.Date);
         var result = _validator.Validate(args);
-        result.IsValid.Should().BeTrue();
+        result.IsValid.ShouldBeTrue();
     }
 
     [Theory]
@@ -23,11 +23,11 @@ public class InsertTodoValidatorTests
     {
         var args = new InsertTodo(value, "Desc", DateTime.UtcNow.Date.AddDays(1));
         var result = _validator.Validate(args);
-        result.IsValid.Should().BeFalse();
+        result.IsValid.ShouldBeFalse();
 
         var error = result.Errors.Single();
-        error.PropertyName.Should().Be("Title");
-        error.ErrorCode.Should().Be("NotEmptyValidator");
+        error.PropertyName.ShouldBe("Title");
+        error.ErrorCode.ShouldBe("NotEmptyValidator");
     }
 
     [Fact]
@@ -36,11 +36,11 @@ public class InsertTodoValidatorTests
         var longString = new string('a', 129);
         var args = new InsertTodo(longString, "Desc", DateTime.UtcNow.Date.AddDays(1));
         var result = _validator.Validate(args);
-        result.IsValid.Should().BeFalse();
+        result.IsValid.ShouldBeFalse();
 
         var error = result.Errors.Single();
-        error.PropertyName.Should().Be("Title");
-        error.ErrorCode.Should().Be("MaximumLengthValidator");
+        error.PropertyName.ShouldBe("Title");
+        error.ErrorCode.ShouldBe("MaximumLengthValidator");
     }
 
     [Theory]
@@ -50,11 +50,11 @@ public class InsertTodoValidatorTests
     {
         var args = new InsertTodo("Title", value, DateTime.UtcNow.Date.AddDays(1));
         var result = _validator.Validate(args);
-        result.IsValid.Should().BeFalse();
+        result.IsValid.ShouldBeFalse();
 
         var error = result.Errors.Single();
-        error.PropertyName.Should().Be("Description");
-        error.ErrorCode.Should().Be("NotEmptyValidator");
+        error.PropertyName.ShouldBe("Description");
+        error.ErrorCode.ShouldBe("NotEmptyValidator");
     }
 
     [Fact]
@@ -63,11 +63,11 @@ public class InsertTodoValidatorTests
         var longString = new string('a', 513);
         var args = new InsertTodo("Title", longString, DateTime.UtcNow.Date.AddDays(1));
         var result = _validator.Validate(args);
-        result.IsValid.Should().BeFalse();
+        result.IsValid.ShouldBeFalse();
 
         var error = result.Errors.Single();
-        error.PropertyName.Should().Be("Description");
-        error.ErrorCode.Should().Be("MaximumLengthValidator");
+        error.PropertyName.ShouldBe("Description");
+        error.ErrorCode.ShouldBe("MaximumLengthValidator");
     }
 
     [Fact]
@@ -75,10 +75,10 @@ public class InsertTodoValidatorTests
     {
         var args = new InsertTodo("Title", "Desc", DateTime.UtcNow.Date.AddDays(-1));
         var result = _validator.Validate(args);
-        result.IsValid.Should().BeFalse();
+        result.IsValid.ShouldBeFalse();
 
         var error = result.Errors.Single();
-        error.PropertyName.Should().Be("DueDate");
-        error.ErrorMessage.Should().Be("DueDate cannot be in the past.");
+        error.PropertyName.ShouldBe("DueDate");
+        error.ErrorMessage.ShouldBe("DueDate cannot be in the past.");
     }
 }
