@@ -69,10 +69,10 @@ In realm settings, set Unmanaged Attributes to `Only administrators can write`. 
 In your new Realm, create a new client for your application `todolist-client`, ensuring you have enabled `Client authentication` and `Client authorization` and `Direct access grants`.
 
 In your new client, go to `client Scopes` => `todolist-client-dedicated` and:
-* add a custom attribute mapping for user attribute `roles`, and set `Multivalued` = true. This will take any user attributes called `roles` and include them in the JWT token when loaded.
+* add a custom attribute mapping for user attribute `roles`. `Add mapper by configuration` => `User Attribute`. Name: `roles-mapper`, User Attribute: `roles`, Token Claim Name: `roles` and set `Multivalued` = true. This will take any user attributes called `roles` and include them in the JWT token when loaded.
 * add a custom attribute mapping for audience and include the client name.
 
-Under Client Credentials, record the `clientsecret` for later.
+Under `Client > Client Details > Credentials`, record the `clientsecret` for later.
 
 ### Create User
 Create an app user `todolist-user`. As we are creating a service to service role the account will need to be interaction free. Configure the user completely, including first and last name and email (this is required to activate a User account), set and record the password, ensure that it is not transient and there are no pending actions for the user.
