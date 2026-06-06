@@ -14,7 +14,6 @@ public class Program
     public static void Main(string[] args)
     {
 #pragma warning disable S2139
-
         try
         {
             var builder = WebApplication.CreateBuilder(args);
