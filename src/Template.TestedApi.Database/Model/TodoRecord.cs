@@ -2,16 +2,7 @@
 
 public class TodoRecord
 {
-    public TodoRecord(Guid itemId, string title, string description, DateTimeOffset dueDate, bool open = true, DateTimeOffset? closedDate = null, long version = 0)
-    {
-        ItemId = itemId;
-        Title = title;
-        Description = description;
-        DueDate = dueDate;
-        Open = open;
-        ClosedDate = closedDate;
-        Version = version;
-    }
+    public TodoRecord() { }
 
     public Guid ItemId { get; set; }
 
@@ -26,4 +17,18 @@ public class TodoRecord
     public DateTimeOffset? ClosedDate { get; set; }
 
     public long Version { get; set; }
+
+    public static TodoRecord Create(Guid itemId, string title, string description, DateTimeOffset dueDate, bool open = true, DateTimeOffset? closedDate = null, long version = 0)
+    {
+        return new TodoRecord
+        {
+            ItemId = itemId,
+            Title = title,
+            Description = description,
+            DueDate = dueDate,
+            Open = open,
+            ClosedDate = closedDate,
+            Version = version,
+        };
+    }
 }
