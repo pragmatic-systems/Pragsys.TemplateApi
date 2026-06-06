@@ -14,6 +14,9 @@ public class Program
     public static void Main(string[] args)
     {
 #pragma warning disable S2139
+        // Required for EF to support PG timezones
+        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
         try
         {
             var builder = WebApplication.CreateBuilder(args);

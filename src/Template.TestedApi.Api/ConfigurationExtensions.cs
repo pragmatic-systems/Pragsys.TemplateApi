@@ -45,25 +45,15 @@ public static class ConfigurationExtensions
 
     public static IServiceCollection WithPostgres(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddSingleton<DbContextOptions<ApplicationDbContext>>(s =>
+        services.AddDbContext<ApplicationDbContext>((s, options) =>
         {
-            // Required for EF to support PG timezones
-            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-
             var config = s.GetRequiredService<IConfiguration>();
             var conn = config.GetConnectionString("PostgresDb");
 
-            return new DbContextOptionsBuilder<ApplicationDbContext>()
+            options
                 .UseNpgsql(conn)
                 .UseSnakeCaseNamingConvention()
-                .EnableDetailedErrors()
-                .Options;
-        });
-
-        services.AddScoped<ApplicationDbContext>(s =>
-        {
-            var options = s.GetRequiredService<DbContextOptions<ApplicationDbContext>>();
-            return new ApplicationDbContext(options);
+                .EnableDetailedErrors();
         });
 
         services.AddHostedService<PostgresInitService>();
@@ -84,7 +74,9 @@ public static class ConfigurationExtensions
             return new ConfigurationManager<OpenIdConnectConfiguration>(config, new OpenIdConnectConfigurationRetriever());
         });
 
-        services.AddAuthentication().AddJwtBearer();
+        services
+            .AddAuthentication()
+            .AddJwtBearer();
 
         return services;
     }
