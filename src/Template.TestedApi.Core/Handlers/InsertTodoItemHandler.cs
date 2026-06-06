@@ -23,7 +23,7 @@ public class InsertTodoItemHandler : IRequestHandler<InsertTodo, TodoRecord>
 
         _dbContext.TodoRecords.Add(record);
 
-        await _dbContext.SaveChangesAsync();
+        await _dbContext.SaveChangesAsync(cancellationToken);
 
         return record;
     }
