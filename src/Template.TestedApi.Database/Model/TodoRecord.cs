@@ -2,7 +2,7 @@
 
 public class TodoRecord
 {
-    public TodoRecord(Guid itemId, string title, string description, DateTime dueDate, bool open = true, DateTime? closedDate = null, long version = 0)
+    public TodoRecord(Guid itemId, string title, string description, DateTimeOffset dueDate, bool open = true, DateTimeOffset? closedDate = null, long version = 0)
     {
         ItemId = itemId;
         Title = title;
@@ -19,11 +19,11 @@ public class TodoRecord
 
     public string Description { get; set; }
 
-    public DateTime DueDate { get; set; }
+    public DateTimeOffset DueDate { get; set; }
 
     public bool Open { get; set; }
 
-    public DateTime? ClosedDate { get; set; }
+    public DateTimeOffset? ClosedDate { get; set; }
 
     public long Version { get; set; }
 }

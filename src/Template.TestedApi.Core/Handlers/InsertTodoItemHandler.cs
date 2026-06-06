@@ -19,7 +19,7 @@ public class InsertTodoItemHandler : IRequestHandler<InsertTodo, TodoRecord>
             Guid.NewGuid(),
             request.Title,
             request.Description,
-            request.DueDate);
+            request.DueDate.ToUniversalTime());
 
         _dbContext.TodoRecords.Add(record);
 
