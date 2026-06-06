@@ -55,6 +55,7 @@ public static class ConfigurationExtensions
 
             return new DbContextOptionsBuilder<ApplicationDbContext>()
                 .UseNpgsql(conn)
+                .UseSnakeCaseNamingConvention()
                 .EnableDetailedErrors()
                 .Options;
         });

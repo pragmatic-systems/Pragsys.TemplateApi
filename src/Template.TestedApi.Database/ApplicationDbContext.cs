@@ -11,15 +11,6 @@ public class ApplicationDbContext : DbContext
 
     public virtual DbSet<TodoRecord> TodoRecords { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder
-            .UseNpgsql()
-            .UseSnakeCaseNamingConvention();
-
-        base.OnConfiguring(optionsBuilder);
-    }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new TodoRecordConfiguration());
