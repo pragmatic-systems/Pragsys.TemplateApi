@@ -83,12 +83,6 @@ public class AuthMiddleware
             context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
             await context.Response.CompleteAsync();
         }
-        catch (Exception ex)
-        {
-            _logger.Error(ex, "Error");
-            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-            await context.Response.CompleteAsync();
-        }
     }
 
     private static void BuildAwsIamClaimMap(HttpContext context)
