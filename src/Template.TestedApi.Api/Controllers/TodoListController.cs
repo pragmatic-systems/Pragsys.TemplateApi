@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Pragsys.CQRS;
 using Template.TestedApi.Core.Handlers;
 
@@ -19,6 +20,7 @@ public class TodoListController : ControllerBase
 
     [HttpGet]
     [Authorize(Policy = Roles.TodoListRead)]
+    [EnableRateLimiting("Basic")]
     public async Task<IActionResult> GetItems()
     {
         var result = await _mediator.Send(new SelectTodo());
@@ -27,6 +29,7 @@ public class TodoListController : ControllerBase
 
     [HttpPost]
     [Authorize(Policy = Roles.TodoListWrite)]
+    [EnableRateLimiting("Basic")]
     public async Task<IActionResult> InsertItem(InsertTodo insert)
     {
         var result = await _mediator.Send(insert);
