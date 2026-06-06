@@ -1,6 +1,7 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using System.Net.Http.Json;
+using Newtonsoft.Json;
 using Reqnroll;
+using Template.TestedApi.Database.Model;
 using Template.TestedApi.IntegrationTests.Infrastructure;
 
 namespace Template.TestedApi.IntegrationTests.StepDefinitions;
@@ -32,12 +33,9 @@ public sealed class TodoApiFeatureStepDefinitions
     [Then("The response should contain a new RecordId")]
     public async Task TheResponseShouldContainANewRecordId()
     {
-        var json = await _testContext.LastResponse.Content.ReadAsStringAsync();
-        _testContext.NewTodoItem = JsonConvert.DeserializeObject<dynamic>(json);
-
-        ((string)_testContext.NewTodoItem
-            .itemId.Value)
-            .ShouldNotBeNull();
+        _testContext.NewTodoItem = await _testContext.LastResponse.Content.ReadFromJsonAsync<TodoRecord>();
+        _testContext.NewTodoItem.ShouldNotBeNull();
+        _testContext.NewTodoItem.ItemId.ShouldNotBe(Guid.Empty);
     }
 
     [When("We get our TodoList")]
@@ -49,20 +47,18 @@ public sealed class TodoApiFeatureStepDefinitions
     [Then("The response should contain a Todo List")]
     public async Task TheResponseShouldContainATodoList()
     {
-        var json = await _testContext.LastResponse.Content.ReadAsStringAsync();
-        _testContext.TaskList = ((JArray)JsonConvert.DeserializeObject<dynamic>(json))
-            .Select(j => (dynamic)j)
-            .ToList();
+        _testContext.TaskList = await _testContext.LastResponse.Content.ReadFromJsonAsync<List<TodoRecord>>();
+        _testContext.TaskList.ShouldNotBeNull();
     }
 
     [Then("The result contains the created recordId")]
     public void TheResultsContainsTheCreatedItemId()
     {
         var item = _testContext.NewTodoItem;
-        var id = item.itemId;
+        var id = item.ItemId;
 
         var match = _testContext.TaskList
-            .SingleOrDefault(i => i.itemId == id);
+            .SingleOrDefault(i => i.ItemId == id);
 
         ((object)match).ShouldNotBeNull();
     }
