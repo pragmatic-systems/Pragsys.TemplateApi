@@ -15,9 +15,9 @@ public class TodoRecord
 
     public Guid ItemId { get; set; }
 
-    public string Title { get; set; }
+    required public string Title { get; set; }
 
-    public string Description { get; set; }
+    required public string Description { get; set; }
 
     public DateTimeOffset DueDate { get; set; }
 
