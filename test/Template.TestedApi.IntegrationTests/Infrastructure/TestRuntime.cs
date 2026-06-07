@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration.Memory;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Template.TestedApi.IntegrationTests.Infrastructure.Auth;
@@ -44,6 +45,14 @@ public class TestRuntime : IAsyncDisposable
             {
                 // Override this so we don't inherit any default config.
                 builder.UseEnvironment("IntegrationTest");
+
+                builder.UseKestrel(kestrel =>
+                {
+                    kestrel.ListenAnyIP(5001, listenOptions =>
+                    {
+                        listenOptions.UseHttps();
+                    });
+                });
 
                 // Configure overrides for application
                 builder.ConfigureAppConfiguration((c, b) =>

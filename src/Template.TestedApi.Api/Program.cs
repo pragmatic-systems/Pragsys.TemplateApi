@@ -36,7 +36,6 @@ public class Program
             app.MapInstrumentationEndpoints();
             app.ConfigureSwagger();
             app.UseMetricServer(); // https://github.com/prometheus-net/prometheus-net
-            app.UseAuthMiddleware();
             app.UseRouting();
             app.UseHttpMetrics();
             app.UseAuthentication();
