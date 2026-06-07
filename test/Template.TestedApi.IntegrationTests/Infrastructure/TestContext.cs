@@ -2,6 +2,7 @@
 using System.Net.Http.Json;
 using System.Security.Claims;
 using Polly;
+using Template.TestedApi.Database.Model;
 using Template.TestedApi.IntegrationTests.Infrastructure.Auth;
 
 namespace Template.TestedApi.IntegrationTests.Infrastructure;
@@ -16,9 +17,9 @@ public class TestContext
         _testRuntime = testRuntime;
     }
 
-    public dynamic NewTodoItem { get; set; }
+    public TodoRecord NewTodoItem { get; set; }
 
-    public List<dynamic>? TaskList { get; set; }
+    public List<TodoRecord>? TaskList { get; set; }
 
     public Dictionary<string, TestUser> Users { get; private set; } = new Dictionary<string, TestUser>();
 

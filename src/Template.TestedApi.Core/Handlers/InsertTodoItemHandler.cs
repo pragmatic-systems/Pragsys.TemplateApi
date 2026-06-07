@@ -15,15 +15,15 @@ public class InsertTodoItemHandler : IRequestHandler<InsertTodo, TodoRecord>
 
     public async Task<TodoRecord> Handle(InsertTodo request, CancellationToken cancellationToken)
     {
-        var record = new TodoRecord(
+        var record = TodoRecord.Create(
             Guid.NewGuid(),
             request.Title,
             request.Description,
-            request.DueDate);
+            request.DueDate.ToUniversalTime());
 
         _dbContext.TodoRecords.Add(record);
 
-        await _dbContext.SaveChangesAsync();
+        await _dbContext.SaveChangesAsync(cancellationToken);
 
         return record;
     }

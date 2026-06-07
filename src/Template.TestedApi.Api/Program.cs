@@ -22,6 +22,7 @@ public class Program
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.Services.WithIngressConfig();
             builder.Services.WithSerilog(builder.Configuration, "Template.TestedApi API");
             builder.Services.WithPostgres(builder.Configuration);
             builder.Services.WithMediatr();

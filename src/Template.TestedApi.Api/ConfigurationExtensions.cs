@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,6 +36,29 @@ public static class ConfigurationExtensions
         return builder;
     }
 
+    public static IServiceCollection WithIngressConfig(this IServiceCollection services)
+    {
+        services.AddRateLimiter(options =>
+        {
+            // NOTE: Evaluate alternative rate limiting policies appropriate for your application.
+            // AddTokenBucketLimiter / AddSlidingWindowLimiter, etc.
+            options.AddFixedWindowLimiter(policyName: "Basic", options =>
+            {
+                options.PermitLimit = 10;          // Allow 10 requests
+                options.Window = TimeSpan.FromSeconds(10); // per 10-second window
+                options.QueueLimit = 5;            // Queue up to 5 requests
+                options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+            });
+        });
+
+        services.Configure<KestrelServerOptions>(options =>
+        {
+            // 1mb request size
+            options.Limits.MaxRequestBodySize = 1024 * 1024;
+        });
+        return services;
+    }
+
     public static IServiceCollection WithMediatr(this IServiceCollection services)
     {
         services.AddCqrs(cfg =>
@@ -45,24 +71,15 @@ public static class ConfigurationExtensions
 
     public static IServiceCollection WithPostgres(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddSingleton<DbContextOptions<ApplicationDbContext>>(s =>
+        services.AddDbContext<ApplicationDbContext>((s, options) =>
         {
-            // Required for EF to support PG timezones
-            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-
             var config = s.GetRequiredService<IConfiguration>();
             var conn = config.GetConnectionString("PostgresDb");
 
-            return new DbContextOptionsBuilder<ApplicationDbContext>()
+            options
                 .UseNpgsql(conn)
-                .EnableDetailedErrors()
-                .Options;
-        });
-
-        services.AddScoped<ApplicationDbContext>(s =>
-        {
-            var options = s.GetRequiredService<DbContextOptions<ApplicationDbContext>>();
-            return new ApplicationDbContext(options);
+                .UseSnakeCaseNamingConvention()
+                .EnableDetailedErrors();
         });
 
         services.AddHostedService<PostgresInitService>();
@@ -83,7 +100,9 @@ public static class ConfigurationExtensions
             return new ConfigurationManager<OpenIdConnectConfiguration>(config, new OpenIdConnectConfigurationRetriever());
         });
 
-        services.AddAuthentication().AddJwtBearer();
+        services
+            .AddAuthentication()
+            .AddJwtBearer();
 
         return services;
     }
