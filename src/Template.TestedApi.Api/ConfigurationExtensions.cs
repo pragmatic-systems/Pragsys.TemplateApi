@@ -15,12 +15,14 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Protocols;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using Pragsys.CQRS;
 using Prometheus;
 using Serilog;
+using Template.TestedApi.Api.Auth;
 using Template.TestedApi.Api.HostedServices;
-using Template.TestedApi.Api.Middleware;
 using Template.TestedApi.Core.Validators;
 using Template.TestedApi.Database;
 
@@ -91,7 +93,6 @@ public static class ConfigurationExtensions
     public static IServiceCollection WithOpenIdConnect(this IServiceCollection services, IConfiguration configuration)
     {
         var authSection = configuration.GetSection("OpenIdConnect");
-        services.Configure<OAuthConfig>(authSection);
 
         services
             .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -99,11 +100,10 @@ public static class ConfigurationExtensions
             {
                 options.Authority = authSection.GetValue<string>("Issuer");
 
-                // TODO: Make this conditional based on test run mode
-                options.RequireHttpsMetadata = false;
-
-                // TODO: Inject this with the test mechanism somehow.
-                options.ConfigurationManager = null;
+                // NOTE: This uses any pre-loaded IConfigurationManager<OpenIdConnectConfiguration> which can be supplied by test runners.
+                options.ConfigurationManager = services
+                    .BuildServiceProvider()
+                    .GetService<IConfigurationManager<OpenIdConnectConfiguration>>();
 
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
@@ -232,13 +232,4 @@ public static class ConfigurationExtensions
 
         return app;
     }
-}
-
-public class OAuthConfig
-{
-    public string? Issuer { get; set; }
-
-    public string? Audience { get; set; }
-
-    public string? OpenIdConfigUrl { get; set; }
 }

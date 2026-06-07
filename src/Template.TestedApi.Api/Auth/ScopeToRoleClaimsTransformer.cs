@@ -1,9 +1,9 @@
-using System.Linq;
+﻿using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 
-namespace Template.TestedApi.Api.Middleware;
+namespace Template.TestedApi.Api.Auth;
 
 // Transforms AWS Cognito "scope" claims into ClaimTypes.Role claims so that
 // policy-based authorization (e.g. [Authorize(Policy = Roles.TodoListRead)]) works.

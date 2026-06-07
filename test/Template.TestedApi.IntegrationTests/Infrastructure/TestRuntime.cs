@@ -46,14 +46,6 @@ public class TestRuntime : IAsyncDisposable
                 // Override this so we don't inherit any default config.
                 builder.UseEnvironment("IntegrationTest");
 
-                builder.UseKestrel(kestrel =>
-                {
-                    kestrel.ListenAnyIP(5001, listenOptions =>
-                    {
-                        listenOptions.UseHttps();
-                    });
-                });
-
                 // Configure overrides for application
                 builder.ConfigureAppConfiguration((c, b) =>
                 {
@@ -66,7 +58,6 @@ public class TestRuntime : IAsyncDisposable
                         { "ConnectionStrings:PostgresDb", PostgresContainer.GetConnectionString() },
 
                         // OIDC
-                        { "OpenIdConnect:OpenIdConfigUrl", TestConstants.OpenIdConfigUrl },
                         { "OpenIdConnect:Audience", TestConstants.Audience },
                         { "OpenIdConnect:Issuer", TestConstants.Issuer },
                     };
@@ -81,7 +72,8 @@ public class TestRuntime : IAsyncDisposable
                         TestConstants.OpenIdConfigUrl,
                         SigningCertificate);
 
-                    // Inject test override services
+                    // We are overriding the OIDC Config provider here.
+                    // This supports injecting self signed JWTs.
                     services.AddSingleton<IConfigurationManager<OpenIdConnectConfiguration>>(config);
                 });
 
