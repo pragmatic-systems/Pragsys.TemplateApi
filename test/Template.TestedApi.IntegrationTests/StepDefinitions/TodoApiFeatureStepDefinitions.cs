@@ -27,7 +27,7 @@ public sealed class TodoApiFeatureStepDefinitions
             DueDate = DateTime.Today,
         };
 
-        await _testContext.PostAsJsonAsync("TodoList", payload);
+        await _testContext.PostAsJsonAsync("todo-list/v1", payload);
     }
 
     [Then("The response should contain a new RecordId")]
@@ -41,7 +41,7 @@ public sealed class TodoApiFeatureStepDefinitions
     [When("We get our TodoList")]
     public async Task WeGetOurTodoList()
     {
-        await _testContext.GetAsync("TodoList");
+        await _testContext.GetAsync("todo-list/v1");
     }
 
     [Then("The response should contain a Todo List")]

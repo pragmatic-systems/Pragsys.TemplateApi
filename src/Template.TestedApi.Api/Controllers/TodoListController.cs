@@ -8,7 +8,7 @@ using Template.TestedApi.Core.Handlers;
 namespace Template.TestedApi.Api.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("todo-list")]
 public class TodoListController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -18,7 +18,7 @@ public class TodoListController : ControllerBase
         _mediator = mediator;
     }
 
-    [HttpGet]
+    [HttpGet("v1")]
     [Authorize(Policy = Roles.TodoListRead)]
     [EnableRateLimiting("Basic")]
     public async Task<IActionResult> GetItems()
@@ -27,7 +27,7 @@ public class TodoListController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPost]
+    [HttpPost("v1")]
     [Authorize(Policy = Roles.TodoListWrite)]
     [EnableRateLimiting("Basic")]
     public async Task<IActionResult> InsertItem(InsertTodo insert)
