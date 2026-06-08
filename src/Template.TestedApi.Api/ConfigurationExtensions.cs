@@ -2,6 +2,9 @@
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.RateLimiting;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Http;
@@ -12,14 +15,14 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.IdentityModel.Tokens;
 using Pragsys.CQRS;
 using Prometheus;
 using Serilog;
+using Template.TestedApi.Api.Auth;
 using Template.TestedApi.Api.HostedServices;
-using Template.TestedApi.Api.Middleware;
 using Template.TestedApi.Core.Validators;
 using Template.TestedApi.Database;
 
@@ -89,20 +92,48 @@ public static class ConfigurationExtensions
 
     public static IServiceCollection WithOpenIdConnect(this IServiceCollection services, IConfiguration configuration)
     {
-        services.Configure<OAuthConfig>(
-            configuration.GetSection("OpenIdConnect"));
-
-        services.AddSingleton<IConfigurationManager<OpenIdConnectConfiguration>>(s =>
-        {
-            var options = s.GetRequiredService<IOptions<OAuthConfig>>();
-            var config = options.Value.OpenIdConfigUrl;
-
-            return new ConfigurationManager<OpenIdConnectConfiguration>(config, new OpenIdConnectConfigurationRetriever());
-        });
+        var authSection = configuration.GetSection("OpenIdConnect");
 
         services
-            .AddAuthentication()
-            .AddJwtBearer();
+            .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                // By setting the issuer as the Authority - the JWT bearer will load the OIDC Config from this location.
+                options.Authority = authSection.GetValue<string>("Issuer");
+
+                // NOTE: This uses any pre-loaded IConfigurationManager<OpenIdConnectConfiguration> which can be supplied by test runners.
+                // If none is supplied, then it remains null and will be auto-initialized based off Authority.
+                options.ConfigurationManager = services
+                    .BuildServiceProvider()
+                    .GetService<IConfigurationManager<OpenIdConnectConfiguration>>();
+
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidAudience = authSection.GetValue<string>("Audience"),
+
+                    // NOTE: Custom audience validator to support AWS Cognito where client_id is the aud.
+                    // Remove if you are not using Cognito.
+                    AudienceValidator = TokenValidators.ValidateAudienceOrClientId,
+                };
+
+                options.Events = new JwtBearerEvents
+                {
+                    OnChallenge = context =>
+                    {
+                        context.HandleResponse();
+                        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                        return Task.CompletedTask;
+                    },
+                    OnForbidden = context =>
+                    {
+                        context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                        return Task.CompletedTask;
+                    },
+                };
+            });
+
+        // Transform AWS Cognito scope claims into role claims for policy-based authorization.
+        services.AddSingleton<IClaimsTransformation, CognitoScopeToRoleClaimsTransformer>();
 
         return services;
     }
@@ -173,12 +204,6 @@ public static class ConfigurationExtensions
             app.UseSwaggerUI();
         }
 
-        return app;
-    }
-
-    public static WebApplication UseAuthMiddleware(this WebApplication app)
-    {
-        app.UseMiddleware<AuthMiddleware>();
         return app;
     }
 

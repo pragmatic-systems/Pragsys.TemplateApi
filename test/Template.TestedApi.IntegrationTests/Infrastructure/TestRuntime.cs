@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration.Memory;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Template.TestedApi.IntegrationTests.Infrastructure.Auth;
@@ -57,7 +58,6 @@ public class TestRuntime : IAsyncDisposable
                         { "ConnectionStrings:PostgresDb", PostgresContainer.GetConnectionString() },
 
                         // OIDC
-                        { "OpenIdConnect:OpenIdConfigUrl", TestConstants.OpenIdConfigUrl },
                         { "OpenIdConnect:Audience", TestConstants.Audience },
                         { "OpenIdConnect:Issuer", TestConstants.Issuer },
                     };
@@ -72,7 +72,8 @@ public class TestRuntime : IAsyncDisposable
                         TestConstants.OpenIdConfigUrl,
                         SigningCertificate);
 
-                    // Inject test override services
+                    // We are overriding the OIDC Config provider here.
+                    // This supports injecting self signed JWTs.
                     services.AddSingleton<IConfigurationManager<OpenIdConnectConfiguration>>(config);
                 });
 

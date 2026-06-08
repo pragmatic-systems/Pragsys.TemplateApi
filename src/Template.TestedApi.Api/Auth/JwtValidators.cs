@@ -6,7 +6,7 @@ using Microsoft.IdentityModel.Abstractions;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Template.TestedApi.Api.Middleware;
+namespace Template.TestedApi.Api.Auth;
 
 public static class TokenValidators
 {
