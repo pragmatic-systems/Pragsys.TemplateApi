@@ -1,11 +1,19 @@
-## Template Project Header
-This project is a template. 
+# Template Project Header
+This project is a template published by https://github.com/pragmatic-systems
 
 To Install: 
 * Clone Repo
 * Run `dotnet new install {repo-folder}`
 
 To Run: `dotnet new Pragsys.TemplateApi --ProjectName:MyAppName`
+
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=pragmatic-systems_Pragsys.Template.Api-PR&metric=alert_status&token=074fab60e916deacf8a7f1128994df7d3364dde2)](https://sonarcloud.io/summary/new_code?id=pragmatic-systems_Pragsys.Template.Api-PR)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=pragmatic-systems_Pragsys.Template.Api-PR&metric=security_rating&token=074fab60e916deacf8a7f1128994df7d3364dde2)](https://sonarcloud.io/summary/new_code?id=pragmatic-systems_Pragsys.Template.Api-PR)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=pragmatic-systems_Pragsys.Template.Api-PR&metric=reliability_rating&token=074fab60e916deacf8a7f1128994df7d3364dde2)](https://sonarcloud.io/summary/new_code?id=pragmatic-systems_Pragsys.Template.Api-PR)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=pragmatic-systems_Pragsys.Template.Api-PR&metric=sqale_rating&token=074fab60e916deacf8a7f1128994df7d3364dde2)](https://sonarcloud.io/summary/new_code?id=pragmatic-systems_Pragsys.Template.Api-PR)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=pragmatic-systems_Pragsys.Template.Api-PR&metric=coverage&token=074fab60e916deacf8a7f1128994df7d3364dde2)](https://sonarcloud.io/summary/new_code?id=pragmatic-systems_Pragsys.Template.Api-PR)
+
+## End Template Project Header
 
 ## Overview
 
@@ -100,7 +108,6 @@ For the configuration in your dotnet application, you will need:
 
 Issuer: `https://localhost:8443/realms/todolist-realm`
 Audience: `todolist-client`
-OpenIdConfigUrl: `https://localhost:8443/realms/todolist-realm/.well-known/openid-configuration`
 
 ## Azure EntraId Config
 * TODO
