@@ -203,7 +203,8 @@ Task("__SonarScan")
 				Organization = sonarOrg,
 				Url = sonarHostUrl,
 				VsCoverageReportsPath = reportPaths,
-				Branch = sonarBranch
+				Branch = sonarBranch,
+				Exclusions = new[] { "**/Tests/**", "**/ConfigurationExtensions.cs" }
 			});
 
 			var sln = GetFiles("*.sln")
