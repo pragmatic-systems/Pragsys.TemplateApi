@@ -1,17 +1,17 @@
 {
   "NugetPackages": [],
   "DockerPackages": [
-    "./src/Template.TestedApi.Api/Dockerfile"
-    //"./src/Template.TestedApi.Database/Dockerfile"
+    "./src/Pragsys.TemplateApi.Api/Dockerfile"
+    //"./src/Pragsys.TemplateApi.Database/Dockerfile"
   ],
   "Tests": [
-    "./test/Template.TestedApi.IntegrationTests/Template.TestedApi.IntegrationTests.csproj",
-    "./test/Template.TestedApi.UnitTests/Template.TestedApi.UnitTests.csproj"
+    "./test/Pragsys.TemplateApi.IntegrationTests/Pragsys.TemplateApi.IntegrationTests.csproj",
+    "./test/Pragsys.TemplateApi.UnitTests/Pragsys.TemplateApi.UnitTests.csproj"
   ],
   "Benchmarks": [
-    //"./test/Template.TestedApi.Benchmark/Template.TestedApi.Benchmark.csproj"
+    //"./test/Pragsys.TemplateApi.Benchmark/Pragsys.TemplateApi.Benchmark.csproj"
   ],
   "ApiSpecs": {
-    "Template.TestedApi.Api": "http://localhost:5080"
+    "Pragsys.TemplateApi.Api": "http://localhost:5080"
   }
 }

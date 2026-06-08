@@ -1,5 +1,19 @@
-## Template Project
-This project was created from a template.
+# Template Project Header
+This project is a template published by https://github.com/pragmatic-systems
+
+To Install: 
+* Clone Repo
+* Run `dotnet new install {repo-folder}`
+
+To Run: `dotnet new Pragsys.TemplateApi --ProjectName:MyAppName`
+
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=pragmatic-systems_Pragsys.Template.Api&metric=alert_status&token=6047a2bbb68224d6ef02044a0b82b9aae2f68067)](https://sonarcloud.io/summary/new_code?id=pragmatic-systems_Pragsys.Template.Api)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=pragmatic-systems_Pragsys.Template.Api&metric=security_rating&token=6047a2bbb68224d6ef02044a0b82b9aae2f68067)](https://sonarcloud.io/summary/new_code?id=pragmatic-systems_Pragsys.Template.Api)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=pragmatic-systems_Pragsys.Template.Api&metric=reliability_rating&token=6047a2bbb68224d6ef02044a0b82b9aae2f68067)](https://sonarcloud.io/summary/new_code?id=pragmatic-systems_Pragsys.Template.Api)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=pragmatic-systems_Pragsys.Template.Api&metric=sqale_rating&token=6047a2bbb68224d6ef02044a0b82b9aae2f68067)](https://sonarcloud.io/summary/new_code?id=pragmatic-systems_Pragsys.Template.Api)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=pragmatic-systems_Pragsys.Template.Api&metric=coverage&token=6047a2bbb68224d6ef02044a0b82b9aae2f68067)](https://sonarcloud.io/summary/new_code?id=pragmatic-systems_Pragsys.Template.Api)
+
+## End Template Project Header
 
 ## Overview
 
@@ -19,7 +33,7 @@ Currently we run migrations on app-start, this simplifies startup and developmen
 
 Run `docker compose -f docker-compose.infra.yml up` 
 Launch apps:
-* Template.TestedApi.API
+* Pragsys.TemplateApi.API
 
 ## Formatting
 The project needs to be correctly formatted to pass the build. To format the project using the dotnet format tool - 
@@ -94,7 +108,6 @@ For the configuration in your dotnet application, you will need:
 
 Issuer: `https://localhost:8443/realms/todolist-realm`
 Audience: `todolist-client`
-OpenIdConfigUrl: `https://localhost:8443/realms/todolist-realm/.well-known/openid-configuration`
 
 ## Azure EntraId Config
 * TODO

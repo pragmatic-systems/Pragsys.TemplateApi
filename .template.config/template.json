@@ -2,10 +2,10 @@
   "$schema": "http://json.schemastore.org/template",
   "author": "Tristan Rhodes",
   "classifications": [ "DotNet Core", "Solution" ],
-  "identity": "Template.TestedApi",
+  "identity": "Pragsys.TemplateApi",
   "name": "Tested Api Template",
   "description": "Postgres database with API, comes with DbUp, packages as Api and containers.",
-  "shortName": "Template.TestedApi",
+  "shortName": "Pragsys.TemplateApi",
   "tags": {
     "language": "C#",
     "type": "solution"
@@ -20,13 +20,13 @@
       "type": "derived",
       "valueSource": "ProjectName",
       "valueTransform": "chain",
-      "replaces": "Template.TestedApi"
+      "replaces": "Pragsys.TemplateApi"
     },
     "RenameFiles": {
       "type": "derived",
       "valueSource": "ProjectName",
       "valueTransform": "chain",
-      "fileRename": "Template.TestedApi"
+      "fileRename": "Pragsys.TemplateApi"
     }
   },
   "sources": [
