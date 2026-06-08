@@ -9,7 +9,7 @@ namespace Pragsys.TemplateApi.UnitTests;
 
 public class CognitoScopeToRoleClaimsTransformerTests
 {
-    private readonly CognitoScopeToRoleClaimsTransformer _transformer = new ();
+    private readonly CognitoScopeToRoleClaimsTransformer _transformer = new();
 
     [Fact]
     public async Task UnauthenticatedPrincipal_IsReturnedUnchanged()
