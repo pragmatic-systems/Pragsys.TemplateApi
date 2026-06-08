@@ -360,7 +360,6 @@ MigrationBackup/
 .ionide/
 
 # Local Settings
-/.sonarqube
 /.github
 /.claude
 

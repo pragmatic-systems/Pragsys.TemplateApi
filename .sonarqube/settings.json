@@ -1,0 +1,9 @@
+{
+  "sonar.coverage.exclusions": [
+    "**/ConfigurationExtensions.cs",
+    "**/Tests/**"
+  ],
+  "sonar.exclusions": [
+    "**/Tests/**"
+  ]
+}
