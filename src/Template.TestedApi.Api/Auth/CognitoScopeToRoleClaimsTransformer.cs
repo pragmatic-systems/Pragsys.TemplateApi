@@ -10,7 +10,7 @@ namespace Template.TestedApi.Api.Auth;
 //
 // Scopes are expected to be space-separated and prefixed with "todolist-permissions/".
 // Example scope value: "todolist-permissions/TodoList:Read todolist-permissions/TodoList:Write"
-public class ScopeToRoleClaimsTransformer : IClaimsTransformation
+public class CognitoScopeToRoleClaimsTransformer : IClaimsTransformation
 {
     private const string ScopeType = "scope";
     private const string RolePrefix = "todolist-permissions/";

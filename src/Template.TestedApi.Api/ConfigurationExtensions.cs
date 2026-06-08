@@ -98,9 +98,11 @@ public static class ConfigurationExtensions
             .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {
+                // By setting the issuer as the Authority - the JWT bearer will load the OIDC Config from this location.
                 options.Authority = authSection.GetValue<string>("Issuer");
 
                 // NOTE: This uses any pre-loaded IConfigurationManager<OpenIdConnectConfiguration> which can be supplied by test runners.
+                // If none is supplied, then it remains null and will be auto-initialized based off Authority.
                 options.ConfigurationManager = services
                     .BuildServiceProvider()
                     .GetService<IConfigurationManager<OpenIdConnectConfiguration>>();
@@ -131,7 +133,7 @@ public static class ConfigurationExtensions
             });
 
         // Transform AWS Cognito scope claims into role claims for policy-based authorization.
-        services.AddSingleton<IClaimsTransformation, ScopeToRoleClaimsTransformer>();
+        services.AddSingleton<IClaimsTransformation, CognitoScopeToRoleClaimsTransformer>();
 
         return services;
     }
