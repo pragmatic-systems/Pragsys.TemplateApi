@@ -1,8 +1,8 @@
 ﻿using System.Net;
 using System.Security.Claims;
-using Reqnroll;
 using Pragsys.TemplateApi.Api;
 using Pragsys.TemplateApi.IntegrationTests.Infrastructure;
+using Reqnroll;
 
 namespace Pragsys.TemplateApi.IntegrationTests.StepDefinitions;
 

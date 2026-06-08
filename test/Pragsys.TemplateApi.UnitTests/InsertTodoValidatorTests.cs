@@ -1,6 +1,6 @@
-﻿using Shouldly;
-using Pragsys.TemplateApi.Core.Handlers;
+﻿using Pragsys.TemplateApi.Core.Handlers;
 using Pragsys.TemplateApi.Core.Validators;
+using Shouldly;
 
 namespace Pragsys.TemplateApi.UnitTests;
 

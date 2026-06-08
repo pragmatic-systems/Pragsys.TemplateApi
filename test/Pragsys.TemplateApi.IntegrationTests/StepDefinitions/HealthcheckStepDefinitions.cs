@@ -1,5 +1,5 @@
-﻿using Reqnroll;
-using Pragsys.TemplateApi.IntegrationTests.Infrastructure;
+﻿using Pragsys.TemplateApi.IntegrationTests.Infrastructure;
+using Reqnroll;
 
 namespace Pragsys.TemplateApi.IntegrationTests.StepDefinitions;
 

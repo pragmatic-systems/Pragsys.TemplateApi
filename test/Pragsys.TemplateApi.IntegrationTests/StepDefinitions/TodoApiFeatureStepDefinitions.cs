@@ -1,8 +1,8 @@
 ﻿using System.Net.Http.Json;
 using Newtonsoft.Json;
-using Reqnroll;
 using Pragsys.TemplateApi.Database.Model;
 using Pragsys.TemplateApi.IntegrationTests.Infrastructure;
+using Reqnroll;
 
 namespace Pragsys.TemplateApi.IntegrationTests.StepDefinitions;
 
