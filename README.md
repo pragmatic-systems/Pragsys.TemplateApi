@@ -1,5 +1,11 @@
-## Template Project
-This project was created from a template.
+## Template Project Header
+This project is a template. 
+
+To Install: 
+* Clone Repo
+* Run `dotnet new install {repo-folder}`
+
+To Run: `dotnet new Pragsys.TemplateApi --ProjectName:MyAppName`
 
 ## Overview
 
@@ -19,7 +25,7 @@ Currently we run migrations on app-start, this simplifies startup and developmen
 
 Run `docker compose -f docker-compose.infra.yml up` 
 Launch apps:
-* Template.TestedApi.API
+* Pragsys.TemplateApi.API
 
 ## Formatting
 The project needs to be correctly formatted to pass the build. To format the project using the dotnet format tool - 

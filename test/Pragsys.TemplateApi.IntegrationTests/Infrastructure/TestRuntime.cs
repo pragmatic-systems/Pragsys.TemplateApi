@@ -1,0 +1,87 @@
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Configuration.Memory;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.IdentityModel.Protocols;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Pragsys.TemplateApi.IntegrationTests.Infrastructure.Auth;
+using Testcontainers.PostgreSql;
+
+namespace Pragsys.TemplateApi.IntegrationTests.Infrastructure;
+
+public class TestRuntime : IAsyncDisposable
+{
+    // public WireMockContainer WireMockContainer { get; private set; }
+    public PostgreSqlContainer? PostgresContainer { get; private set; }
+
+    public WebApplicationFactory<Pragsys.TemplateApi.Api.Program>? TargetApi { get; private set; }
+
+    /// <summary>
+    /// Certificate used for signing the JWT used by the API.
+    /// </summary>
+    public PemCertificate? SigningCertificate { get; private set; }
+
+    public async ValueTask DisposeAsync()
+    {
+        await TargetApi.DisposeAsync();
+    }
+
+    public async Task InitializeAsync()
+    {
+        // Configure Postgres
+        PostgresContainer = new PostgreSqlBuilder()
+            .WithAutoRemove(true)
+            .Build();
+
+        await PostgresContainer.StartAsync();
+
+        // Create SSL Certificate
+        SigningCertificate = PemCertificate.Create();
+
+        TargetApi = new WebApplicationFactory<Api.Program>()
+            .WithWebHostBuilder(builder =>
+            {
+                // Override this so we don't inherit any default config.
+                builder.UseEnvironment("IntegrationTest");
+
+                // Configure overrides for application
+                builder.ConfigureAppConfiguration((c, b) =>
+                {
+                    var config = new MemoryConfigurationSource();
+
+                    // Override config settings for connection strings / service urls here.
+                    config.InitialData = new Dictionary<string, string?>
+                    {
+                        // Connection Strings
+                        { "ConnectionStrings:PostgresDb", PostgresContainer.GetConnectionString() },
+
+                        // OIDC
+                        { "OpenIdConnect:Audience", TestConstants.Audience },
+                        { "OpenIdConnect:Issuer", TestConstants.Issuer },
+                    };
+
+                    b.Add(config);
+                });
+
+                builder.ConfigureTestServices(services =>
+                {
+                    var config = MockOpenIdConfigurationManagerBuilder.Create(
+                        TestConstants.Issuer,
+                        TestConstants.OpenIdConfigUrl,
+                        SigningCertificate);
+
+                    // We are overriding the OIDC Config provider here.
+                    // This supports injecting self signed JWTs.
+                    services.AddSingleton<IConfigurationManager<OpenIdConnectConfiguration>>(config);
+                });
+
+                builder.UseDefaultServiceProvider(o =>
+                {
+                    // Force validation of DependencyInjection.
+                    o.ValidateOnBuild = true;
+                });
+            });
+    }
+}
