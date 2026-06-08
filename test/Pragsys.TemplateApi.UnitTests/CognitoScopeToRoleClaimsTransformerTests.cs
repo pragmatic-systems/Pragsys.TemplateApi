@@ -9,7 +9,7 @@ namespace Pragsys.TemplateApi.UnitTests;
 
 public class CognitoScopeToRoleClaimsTransformerTests
 {
-    private readonly CognitoScopeToRoleClaimsTransformer _transformer = new();
+    private readonly CognitoScopeToRoleClaimsTransformer _transformer = new ();
 
     [Fact]
     public async Task UnauthenticatedPrincipal_IsReturnedUnchanged()
@@ -31,7 +31,7 @@ public class CognitoScopeToRoleClaimsTransformerTests
             new[]
             {
                 new Claim("scope", "todolist-permissions/TodoList:Read"),
-                new Claim("scope", "todolist-permissions/TodoList:Write")
+                new Claim("scope", "todolist-permissions/TodoList:Write"),
             },
             "Cookies",
             "name",
