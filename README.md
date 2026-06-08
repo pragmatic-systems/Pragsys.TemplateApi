@@ -7,11 +7,11 @@ To Install:
 
 To Run: `dotnet new Pragsys.TemplateApi --ProjectName:MyAppName`
 
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=pragmatic-systems_Pragsys.Template.Api-PR&metric=alert_status&token=074fab60e916deacf8a7f1128994df7d3364dde2)](https://sonarcloud.io/summary/new_code?id=pragmatic-systems_Pragsys.Template.Api-PR)
-[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=pragmatic-systems_Pragsys.Template.Api-PR&metric=security_rating&token=074fab60e916deacf8a7f1128994df7d3364dde2)](https://sonarcloud.io/summary/new_code?id=pragmatic-systems_Pragsys.Template.Api-PR)
-[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=pragmatic-systems_Pragsys.Template.Api-PR&metric=reliability_rating&token=074fab60e916deacf8a7f1128994df7d3364dde2)](https://sonarcloud.io/summary/new_code?id=pragmatic-systems_Pragsys.Template.Api-PR)
-[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=pragmatic-systems_Pragsys.Template.Api-PR&metric=sqale_rating&token=074fab60e916deacf8a7f1128994df7d3364dde2)](https://sonarcloud.io/summary/new_code?id=pragmatic-systems_Pragsys.Template.Api-PR)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=pragmatic-systems_Pragsys.Template.Api-PR&metric=coverage&token=074fab60e916deacf8a7f1128994df7d3364dde2)](https://sonarcloud.io/summary/new_code?id=pragmatic-systems_Pragsys.Template.Api-PR)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=pragmatic-systems_Pragsys.Template.Api&metric=alert_status&token=6047a2bbb68224d6ef02044a0b82b9aae2f68067)](https://sonarcloud.io/summary/new_code?id=pragmatic-systems_Pragsys.Template.Api)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=pragmatic-systems_Pragsys.Template.Api&metric=security_rating&token=6047a2bbb68224d6ef02044a0b82b9aae2f68067)](https://sonarcloud.io/summary/new_code?id=pragmatic-systems_Pragsys.Template.Api)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=pragmatic-systems_Pragsys.Template.Api&metric=reliability_rating&token=6047a2bbb68224d6ef02044a0b82b9aae2f68067)](https://sonarcloud.io/summary/new_code?id=pragmatic-systems_Pragsys.Template.Api)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=pragmatic-systems_Pragsys.Template.Api&metric=sqale_rating&token=6047a2bbb68224d6ef02044a0b82b9aae2f68067)](https://sonarcloud.io/summary/new_code?id=pragmatic-systems_Pragsys.Template.Api)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=pragmatic-systems_Pragsys.Template.Api&metric=coverage&token=6047a2bbb68224d6ef02044a0b82b9aae2f68067)](https://sonarcloud.io/summary/new_code?id=pragmatic-systems_Pragsys.Template.Api)
 
 ## End Template Project Header
 
