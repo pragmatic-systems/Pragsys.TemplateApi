@@ -19,12 +19,12 @@ using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using Pragsys.CQRS;
-using Prometheus;
-using Serilog;
 using Pragsys.TemplateApi.Api.Auth;
 using Pragsys.TemplateApi.Api.HostedServices;
 using Pragsys.TemplateApi.Core.Validators;
 using Pragsys.TemplateApi.Database;
+using Prometheus;
+using Serilog;
 
 namespace Pragsys.TemplateApi.Api;
 
