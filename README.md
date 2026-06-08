@@ -1,11 +1,13 @@
-# Template Project Header
+# Pragsys .NET API Template Header
 This project is a template published by https://github.com/pragmatic-systems
 
 To Install: 
-* Clone Repo
-* Run `dotnet new install {repo-folder}`
+* Clone Repo to local folder, eg `c:\git\Pragsys.TemplateApi`
+* Run `dotnet new install c:\git\Pragsys.TemplateApi`
 
-To Run: `dotnet new Pragsys.TemplateApi --ProjectName:MyAppName`
+To Create a project: 
+* Navigate to your new empty project directory.
+* Run `dotnet new Pragsys.TemplateApi --ProjectName:MyAppName`
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=pragmatic-systems_Pragsys.Template.Api&metric=alert_status&token=6047a2bbb68224d6ef02044a0b82b9aae2f68067)](https://sonarcloud.io/summary/new_code?id=pragmatic-systems_Pragsys.Template.Api)
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=pragmatic-systems_Pragsys.Template.Api&metric=security_rating&token=6047a2bbb68224d6ef02044a0b82b9aae2f68067)](https://sonarcloud.io/summary/new_code?id=pragmatic-systems_Pragsys.Template.Api)
@@ -13,7 +15,7 @@ To Run: `dotnet new Pragsys.TemplateApi --ProjectName:MyAppName`
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=pragmatic-systems_Pragsys.Template.Api&metric=sqale_rating&token=6047a2bbb68224d6ef02044a0b82b9aae2f68067)](https://sonarcloud.io/summary/new_code?id=pragmatic-systems_Pragsys.Template.Api)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=pragmatic-systems_Pragsys.Template.Api&metric=coverage&token=6047a2bbb68224d6ef02044a0b82b9aae2f68067)](https://sonarcloud.io/summary/new_code?id=pragmatic-systems_Pragsys.Template.Api)
 
-## End Template Project Header
+## End Of Template Project Header
 
 ## Overview
 
@@ -26,8 +28,14 @@ This solution contains a postgres DB, a simple Todo List API, and a DB up projec
 * Unit Tests, Integration Tests and Benchmarks with packaged reports.
 * Test Server / Test Container based test suite with Specflow.
 
-### Database Migrations
-Currently we run migrations on app-start, this simplifies startup and development, but for more mature projects we can seperate the launch application and run this prior to deploying a cluster.
+### Prerequisites
+
+| Requirement | Version | Notes |
+|-------------|---------|-------|
+| **.NET SDK** | 8.0.401+ (rollForward: latestMinor) | [Download](https://dotnet.microsoft.com/download) |
+| **Docker Desktop** | Latest stable | Required for `docker compose` and all local services |
+| **Git** | Latest | Required for cloning and versioning |
+| **Cake CLI** | 4.x | `dotnet tool install --global Cake.Tool` — used for the build pipeline |
 
 ### To Run
 
@@ -39,6 +47,8 @@ Launch apps:
 The project needs to be correctly formatted to pass the build. To format the project using the dotnet format tool - 
 
 Run `dotnet format`
+
+Note that not all errors are auto resolvable and some require manual fixing.
 
 ## Local Services
 
@@ -59,6 +69,9 @@ Url: https://localhost:8443
 Username: admin
 Password: password
 
+### Database Migrations
+Currently we run migrations on app-start, this simplifies startup and development, but for more mature projects we can separate the launch application and run this prior to deploying a cluster.
+
 ### Authentication
 If you have an existing AWS Cognito or Azure Entra setup, you can skip local keycloak setup and register the application with them.
 
@@ -68,16 +81,16 @@ For full local development, you will need to configure Keycloak, which takes a b
 
 ### Keycloak SSL Setup
 
-For local keycloak to work properly as an OIDC server with another application, it needs to be running HTTPS with a valid, trusted certificate, otherwise you will recieve an SSL error at runtime. To support this, you will need to generate a certificate for localhost and add it to trusted root, and load this certificate into Keycloak.
+For local keycloak to work properly as an OIDC server with another application, it needs to be running HTTPS with a valid, trusted certificate, otherwise you will receive an SSL error at runtime. To support this, you will need to generate a certificate for localhost and add it to trusted root, and load this certificate into Keycloak.
 
-See the SSL Setup guide for local Keycloak here: https://github.com/TristanRhodes/docker-compose
+See the SSL Setup guide for local Keycloak in this repo: https://github.com/pragmatic-systems/Pragsys.DockerTools
 
 ### Keycloak Configuration
 
-### Create Relm
+### Create Realm
 Go to the dropdown `master` and create a new realm `todolist-realm`. It's worth bearing in mind that a Realm can represent all your users across multiple applications.
 
-In realm settings, set Unmanaged Attributes to `Only administrators can write`. This causes the Attributes table to be shown in User accounts, and will be where we add our custom role configruations.
+In realm settings, set Unmanaged Attributes to `Only administrators can write`. This causes the Attributes table to be shown in User accounts, and will be where we add our custom role configurations.
 
 ### Create Client
 In your new Realm, create a new client for your application `todolist-client`, ensuring you have enabled `Client authentication` and `Client authorization` and `Direct access grants`.
@@ -117,6 +130,4 @@ Audience: `todolist-client`
 
 ## Docker Pack and Push
 
-For the purpose of getting started, I am using `ghcr.io/TristanRhodes` and the default `USERNAME`
-
-`dotnet cake --Target=DockerPackAndPush --ContainerRegistry=ghcr.io/TristanRhodes --ContainerRegistryToken={token} --ContainerRegistryUserName=USERNAME`
+`dotnet cake --Target=DockerPackAndPush --ContainerRegistry={container-registry} --ContainerRegistryToken={token} --ContainerRegistryUserName={user}`
