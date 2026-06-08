@@ -28,7 +28,7 @@ public class CognitoScopeToRoleClaimsTransformerTests
     public async Task MultipleScopeClaims_ProducesAllRoleClaims()
     {
         var identity = new ClaimsIdentity(
-            new []
+            new[]
             {
                 new Claim("scope", "todolist-permissions/TodoList:Read"),
                 new Claim("scope", "todolist-permissions/TodoList:Write"),
