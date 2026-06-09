@@ -37,6 +37,7 @@ services:
   local-keycloak:
     image: quay.io/keycloak/keycloak:26.6
     container_name: local-keycloak
+    restart: always
     ports:
       - "8443:8443"
     environment:
