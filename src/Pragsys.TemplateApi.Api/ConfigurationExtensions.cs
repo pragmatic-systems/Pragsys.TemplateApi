@@ -3,6 +3,8 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.RateLimiting;
 using System.Threading.Tasks;
+using Hangfire;
+using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -184,11 +186,11 @@ public static class ConfigurationExtensions
             healthcheckBuilder.AddUrlGroup(
                 s =>
                 {
-                    var config = configuration
-                        .GetRequiredSection("OpenIdConnect:OpenIdConfigUrl")
+                    var issuer = configuration
+                        .GetRequiredSection("OpenIdConnect:Issuer")
                         .Value;
 
-                    return new Uri(config);
+                    return new Uri($"{issuer}/.well-known/openid-configuration");
                 },
                 "OIDC Provider");
         }
@@ -230,6 +232,32 @@ public static class ConfigurationExtensions
                 };
                 await c.Response.WriteAsJsonAsync(response);
             },
+        });
+
+        return app;
+    }
+
+    public static IServiceCollection WithHangfire(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddHangfire(hfConfig =>
+        {
+            hfConfig
+                .UsePostgreSqlStorage(configuration.GetConnectionString("PostgresDb"));
+        });
+
+        return services;
+    }
+
+    public static WebApplication UseHangfireDashboard(this WebApplication app)
+    {
+        app.UseHangfireDashboard("/jobs", new DashboardOptions
+        {
+            Authorization = new[]
+            {
+                new HangfireAuthorizationFilter(),
+            },
+            DisplayStorageConnectionString = false,
+            AppPath = null,
         });
 
         return app;

@@ -1,4 +1,5 @@
 ﻿using System;
+using Hangfire;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -28,6 +29,7 @@ public class Program
             builder.Services.WithMediatr();
             builder.Services.WithOpenIdConnect(builder.Configuration);
             builder.Services.WithAuthorizationPolicy();
+            builder.Services.WithHangfire(builder.Configuration);
             builder.Services.AddControllers();
             builder.Services.AddAppHealthChecks(builder.Configuration, testMode);
 
@@ -40,6 +42,7 @@ public class Program
             app.UseHttpMetrics();
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseHangfireDashboard();
             app.MapControllers();
 
             Log.Logger.Information("Starting Application");
@@ -50,6 +53,10 @@ public class Program
         {
             Log.Logger.Error(ex, "Error Starting Application");
             throw;
+        }
+        finally
+        {
+            Log.CloseAndFlush();
         }
 #pragma warning restore S2139
     }
