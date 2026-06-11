@@ -1,6 +1,6 @@
 ﻿using System.Net;
 using System.Security.Claims;
-using Pragsys.TemplateApi.Api;
+using Pragsys.TemplateApi.Instrumentation;
 using Pragsys.TemplateApi.IntegrationTests.Infrastructure;
 using Reqnroll;
 

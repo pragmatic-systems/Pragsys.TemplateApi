@@ -1,4 +1,4 @@
-﻿namespace Pragsys.TemplateApi.Api;
+namespace Pragsys.TemplateApi.Instrumentation;
 
 public static class Roles
 {

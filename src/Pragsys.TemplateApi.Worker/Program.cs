@@ -1,0 +1,52 @@
+﻿using System;
+using Hangfire;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Prometheus;
+using Serilog;
+using Pragsys.TemplateApi.Instrumentation;
+
+namespace Pragsys.TemplateApi.Worker;
+
+#pragma warning disable S1118
+public static class Program
+#pragma warning restore S1118
+{
+    public static void Main(string[] args)
+    {
+#pragma warning disable S2139
+        try
+        {
+            var builder = WebApplication.CreateBuilder(args);
+
+            builder.Services.WithSerilog(builder.Configuration, "Pragsys.TemplateApi Worker");
+            builder.Services.WithPostgres(builder.Configuration);
+            builder.Services.WithHangfire(builder.Configuration);
+            builder.Services.WithHangfireServer(builder.Configuration);
+
+            // Register background job processors
+            builder.Services.AddHostedService<BackgroundJobActivatorService>();
+
+            var app = builder.Build();
+
+            app.MapInstrumentationEndpoints();
+            app.UseMetricServer(); // https://github.com/prometheus-net/prometheus-net
+            app.UseRouting();
+            app.UseHttpMetrics();
+
+            Log.Logger.Information("Starting Worker");
+
+            app.Run();
+        }
+        catch (Exception ex)
+        {
+            Log.Logger.Fatal(ex, "Host terminated unexpectedly");
+        }
+        finally
+        {
+            Log.CloseAndFlush();
+        }
+#pragma warning restore S2139
+    }
+}

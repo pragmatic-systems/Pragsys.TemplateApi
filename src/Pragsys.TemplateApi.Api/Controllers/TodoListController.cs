@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Pragsys.CQRS;
 using Pragsys.TemplateApi.Core.Handlers;
+using Pragsys.TemplateApi.Instrumentation;
 
 namespace Pragsys.TemplateApi.Api.Controllers;
 

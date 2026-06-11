@@ -1,10 +1,11 @@
-﻿using System;
+using System;
 using Hangfire;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Prometheus;
 using Serilog;
+using Pragsys.TemplateApi.Instrumentation;
 
 namespace Pragsys.TemplateApi.Api;
 

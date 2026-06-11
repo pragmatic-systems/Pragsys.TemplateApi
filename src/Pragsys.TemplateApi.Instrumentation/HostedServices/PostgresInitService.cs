@@ -1,10 +1,10 @@
-﻿using System.Threading;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Pragsys.TemplateApi.Database;
 
-namespace Pragsys.TemplateApi.Api.HostedServices;
+namespace Pragsys.TemplateApi.Instrumentation.HostedServices;
 
 public class PostgresInitService : IHostedService
 {
