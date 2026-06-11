@@ -20,10 +20,13 @@ public static class Program
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            var testMode = builder.Environment.EnvironmentName == "IntegrationTest";
+
             builder.Services.WithSerilog(builder.Configuration, "Pragsys.TemplateApi Worker");
             builder.Services.WithPostgres(builder.Configuration);
             builder.Services.WithHangfire(builder.Configuration);
             builder.Services.WithHangfireServer(builder.Configuration);
+            builder.Services.AddAppHealthChecks(builder.Configuration, testMode);
 
             // Register background job processors
             builder.Services.AddHostedService<BackgroundJobActivatorService>();
