@@ -13,8 +13,7 @@ public class HangfireAuthorizationFilter : IDashboardAuthorizationFilter
 {
     public bool Authorize(DashboardContext context)
     {
-        // TODO: Get the context and validate JWT and permission for Hangfire.
-        // var httpContext = context.GetHttpContext();
+        // TODO: Get the context and validate JWT and run claim-check for Hangfire.
         return true;
     }
 }

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.RateLimiting;
 using System.Threading.Tasks;
+using DbUp;
 using Hangfire;
 using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Authentication;
@@ -20,6 +21,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
+using Npgsql;
+using Polly;
 using Pragsys.CQRS;
 using Pragsys.TemplateApi.Api.Auth;
 using Pragsys.TemplateApi.Api.HostedServices;
@@ -239,10 +242,18 @@ public static class ConfigurationExtensions
 
     public static IServiceCollection WithHangfire(this IServiceCollection services, IConfiguration configuration)
     {
+        // NOTE: There is no lazy load here for PostgreSQL - if the DB does not exist at this point it will fall over.
         services.AddHangfire(hfConfig =>
         {
+            var connection = configuration.GetConnectionString("PostgresDb");
+
+            ArgumentNullException.ThrowIfNull(connection, "PostgresDb Connection String");
+
             hfConfig
-                .UsePostgreSqlStorage(configuration.GetConnectionString("PostgresDb"));
+                .InitializeDatabase(connection);
+
+            hfConfig
+                .UsePostgreSqlStorage(connection);
         });
 
         return services;
@@ -261,5 +272,20 @@ public static class ConfigurationExtensions
         });
 
         return app;
+    }
+
+    public static IGlobalConfiguration InitializeDatabase(this IGlobalConfiguration configuration, string connectionString)
+    {
+        var retryPolicy = Policy
+            .Handle<NpgsqlException>()
+            .WaitAndRetry(
+                10,
+                i => TimeSpan.FromSeconds(2),
+                (e, t) => Console.WriteLine("Retrying... Waiting for database"));
+
+        retryPolicy.Execute(() =>
+            EnsureDatabase.For.PostgresqlDatabase(connectionString));
+
+        return configuration;
     }
 }
