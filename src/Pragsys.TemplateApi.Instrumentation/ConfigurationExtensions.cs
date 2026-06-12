@@ -105,8 +105,7 @@ public static class ConfigurationExtensions
 
             ArgumentNullException.ThrowIfNull(connection, "PostgresDb Connection String");
 
-            hfConfig
-                .InitializeDatabase(connection);
+            Migrator.EnsureDb(connection);
 
             hfConfig
                 .UsePostgreSqlStorage(connection);
@@ -119,10 +118,7 @@ public static class ConfigurationExtensions
     {
         var healthcheckBuilder = services
             .AddHealthChecks()
-            .AddNpgSql(s =>
-            {
-                return configuration.GetConnectionString("PostgresDb");
-            });
+            .AddNpgSql(s => configuration.GetConnectionString("PostgresDb"), name: "Database Provider");
 
         // NOTE: Suppress healthcheck for OIDC if we are in test mode, as it's a fake endpoint that won't exist.
         if (!testMode)
@@ -140,43 +136,6 @@ public static class ConfigurationExtensions
         }
 
         return services;
-    }
-
-
-    public static IServiceCollection WithHangfireServer(this IServiceCollection services, IConfiguration configuration)
-    {
-        services.AddHangfireServer(options =>
-        {
-            options.Queues = new[]
-            {
-                    "default",
-                    "jobs",
-                };
-
-            // Number of concurrent jobs per server
-            options.WorkerCount = 5;
-
-            // Queue poll interval
-            options.SchedulePollingInterval = TimeSpan.FromSeconds(15);
-        });
-
-        return services;
-    }
-
-    // NOTE: This step is required when launching locally and no existing DB is configured. There may be better ways to handle this for your local scenarios.
-    public static IGlobalConfiguration InitializeDatabase(this IGlobalConfiguration configuration, string connectionString)
-    {
-        var retryPolicy = Policy
-            .Handle<NpgsqlException>()
-            .WaitAndRetry(
-                10,
-                i => TimeSpan.FromSeconds(2),
-                (e, t) => Console.WriteLine("Retrying... Waiting for database"));
-
-        retryPolicy.Execute(() =>
-            EnsureDatabase.For.PostgresqlDatabase(connectionString));
-
-        return configuration;
     }
 
     public static IApplicationBuilder UseHttpsRedirectionExcluding(this IApplicationBuilder builder, string excluding)

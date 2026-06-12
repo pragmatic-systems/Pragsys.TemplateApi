@@ -1,7 +1,4 @@
-using Hangfire;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+﻿using Hangfire;
 
 namespace Pragsys.TemplateApi.Worker;
 
@@ -38,10 +35,10 @@ public class BackgroundJobActivatorService : BackgroundService
     private void RegisterRecurringJobs()
     {
         // Example: Add recurring jobs as needed
-        // _recurringJobManager.AddOrUpdate(
-        //     "cleanup-job",
-        //     job => MyCleanupJob.Execute(),
-        //     Cron.Daily);
+        //_recurringJobManager
+        //    .AddOrUpdate("cleanup-job",
+        //    () => Console.WriteLine("Processing..."),
+        //    Cron.Minutely);
         _logger.LogInformation("Recurring jobs registered.");
     }
 }

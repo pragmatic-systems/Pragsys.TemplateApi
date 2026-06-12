@@ -1,11 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
+using System.Security.Claims;
 using Hangfire.Dashboard;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
+using Pragsys.TemplateApi.Instrumentation;
 
 namespace Pragsys.TemplateApi.Api.Auth;
 
@@ -13,7 +8,10 @@ public class HangfireAuthorizationFilter : IDashboardAuthorizationFilter
 {
     public bool Authorize(DashboardContext context)
     {
-        // TODO: Get the context and validate JWT and run claim-check for Hangfire.
-        return true;
+        var httpContext = context.GetHttpContext();
+        var user = httpContext.User;
+
+        return user.Identity?.IsAuthenticated == true
+               && user.HasClaim(ClaimTypes.Role, Roles.HangfireDashboard);
     }
 }

@@ -1,4 +1,4 @@
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -18,8 +18,10 @@ public class PostgresInitService : IHostedService
     public Task StartAsync(CancellationToken cancellationToken)
     {
         var connection = _configuration.GetConnectionString("PostgresDb");
+        ArgumentException.ThrowIfNullOrEmpty(connection);
 
         // On Error: Check Db running :)
+        Migrator.EnsureDb(connection);
         Migrator.Migrate(connection);
 
         return Task.CompletedTask;

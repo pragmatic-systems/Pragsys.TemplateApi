@@ -7,22 +7,28 @@ namespace Pragsys.TemplateApi.Database;
 
 public static class Migrator
 {
-    public static void Migrate(string connectionString)
-    {
-        if (string.IsNullOrEmpty(connectionString))
-            throw new ArgumentException("connectionString is required.");
-
-        var retryPolicy = Policy
+    private static readonly Policy RetryPolicy = Policy
             .Handle<NpgsqlException>()
             .WaitAndRetry(
                 10,
                 i => TimeSpan.FromSeconds(2),
                 (e, t) => Console.WriteLine("Retrying... Waiting for database"));
 
-        retryPolicy.Execute(() =>
-            EnsureDatabase.For.PostgresqlDatabase(connectionString));
+    public static void EnsureDb(string connectionString)
+    {
+        if (string.IsNullOrEmpty(connectionString))
+            throw new ArgumentException("connectionString is required.");
 
-        retryPolicy.Execute(() =>
+        RetryPolicy.Execute(() =>
+            EnsureDatabase.For.PostgresqlDatabase(connectionString));
+    }
+
+    public static void Migrate(string connectionString)
+    {
+        if (string.IsNullOrEmpty(connectionString))
+            throw new ArgumentException("connectionString is required.");
+
+        RetryPolicy.Execute(() =>
             ExecuteMigration(connectionString));
     }
 
