@@ -23,8 +23,6 @@ public static class Program
             builder.Services.WithHangfireServer(builder.Configuration);
             builder.Services.AddAppHealthChecks(builder.Configuration, testMode);
 
-            // Register background job processors
-
             var app = builder.Build();
 
             app.MapInstrumentationEndpoints();

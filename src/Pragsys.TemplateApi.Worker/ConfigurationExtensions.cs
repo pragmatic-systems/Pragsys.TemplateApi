@@ -7,6 +7,7 @@ public static class ConfigurationExtensions
     public static IServiceCollection WithHangfireServer(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddHostedService<BackgroundJobActivatorService>();
+
         services.AddHangfireServer(options =>
         {
             options.Queues = new[]
