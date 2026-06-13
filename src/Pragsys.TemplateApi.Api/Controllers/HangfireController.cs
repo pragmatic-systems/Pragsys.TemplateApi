@@ -29,7 +29,6 @@ public class HangfireController : ControllerBase
                 return Forbid();
 
             await HttpContext.SignInAsync("HangfireCookie", transformedPrincipal);
-            return Ok();
             return Redirect("/hangfire");
         }
         catch

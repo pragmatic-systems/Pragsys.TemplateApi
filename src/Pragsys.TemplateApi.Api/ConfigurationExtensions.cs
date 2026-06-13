@@ -132,6 +132,8 @@ public static class ConfigurationExtensions
             {
                 options.ExpireTimeSpan = TimeSpan.FromHours(1);
                 options.SlidingExpiration = true;
+                options.Cookie.SameSite = SameSiteMode.Strict;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
             });
 
         // Transform AWS Cognito scope claims into role claims for policy-based authorization.
