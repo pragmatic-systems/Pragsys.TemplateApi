@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Threading.RateLimiting;
 using System.Threading.Tasks;
@@ -13,9 +12,11 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Pragsys.TemplateApi.Api.Auth;
 using Pragsys.TemplateApi.Instrumentation;
 
@@ -23,6 +24,40 @@ namespace Pragsys.TemplateApi.Api;
 
 public static class ConfigurationExtensions
 {
+    public static IServiceCollection WithSwaggerGen(this IServiceCollection services)
+    {
+        services.AddSwaggerGen(options =>
+        {
+            var securityScheme = new OpenApiSecurityScheme
+            {
+                Name = "Authorization",
+                Type = SecuritySchemeType.Http,
+                Scheme = "bearer",
+                BearerFormat = "JWT",
+                In = ParameterLocation.Header,
+                Description = "Enter a JWT token to authenticate.",
+            };
+
+            options.AddSecurityDefinition("Bearer", securityScheme);
+
+            var securityRequirement = new OpenApiSecurityRequirement();
+            securityRequirement.Add(
+                new OpenApiSecurityScheme
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer",
+                    },
+                },
+                new string[0]);
+
+            options.AddSecurityRequirement(securityRequirement);
+        });
+
+        return services;
+    }
+
     public static IServiceCollection WithIngressConfig(this IServiceCollection services)
     {
         services.AddRateLimiter(options =>
@@ -43,6 +78,7 @@ public static class ConfigurationExtensions
             // 1mb request size
             options.Limits.MaxRequestBodySize = 1024 * 1024;
         });
+
         return services;
     }
 
@@ -57,6 +93,7 @@ public static class ConfigurationExtensions
                 // By setting the issuer as the Authority - the JWT bearer will load the OIDC Config from this location.
                 options.Authority = authSection.GetValue<string>("Issuer");
 
+                //TODO: Only if develop - otherwise compile out.
                 // NOTE: This uses any pre-loaded IConfigurationManager<OpenIdConnectConfiguration> which can be supplied by test runners.
                 // If none is supplied, then it remains null and will be auto-initialized based off Authority.
                 options.ConfigurationManager = services
@@ -136,82 +173,6 @@ public static class ConfigurationExtensions
             },
             DisplayStorageConnectionString = false,
             AppPath = null,
-        });
-
-        return app;
-    }
-
-    public static WebApplication ConfigureAuthentication(this WebApplication app)
-    {
-        // Use authorization, excluding hangfire login paths.
-        app.UseWhen(
-                context => !context.IsHangfireLoginPath(),
-                builder => builder.UseAuthorization());
-
-        return app;
-    }
-
-    public static bool IsHangfireLoginPath(this HttpContext context)
-    {
-        return context.Request.Path.StartsWithSegments("/hangfire-login")
-            || context.Request.Path.StartsWithSegments("/hangfire-logout");
-    }
-
-    public static WebApplication ConfigureHangfireSessionManagement(this WebApplication app)
-    {
-        // POST - validate JWT, create cookie session
-        app.MapPost("/hangfire-login",
-            async (
-                HttpContext ctx,
-                IConfiguration config,
-                IClaimsTransformation claimsTransformer,
-                IConfigurationManager<OpenIdConnectConfiguration> oidcConfigManager)
-            =>
-        {
-            var token = ctx.Request.Form["token"].ToString();
-            if (string.IsNullOrWhiteSpace(token))
-                return Results.Unauthorized();
-
-            try
-            {
-                var issuer = config["OpenIdConnect:Issuer"];
-                var audience = config["OpenIdConnect:Audience"];
-
-                var oidcConfig = await oidcConfigManager.GetConfigurationAsync(default);
-                var handler = new JwtSecurityTokenHandler();
-
-                var validationParameters = new TokenValidationParameters
-                {
-                    ValidateAudience = true,
-                    ValidAudience = audience,
-                    ValidIssuer = issuer,
-                    ValidateLifetime = true,
-                    RequireExpirationTime = true,
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKeys = oidcConfig.SigningKeys,
-                    AudienceValidator = TokenValidators.ValidateAudienceOrClientId,
-                };
-
-                var principal = handler.ValidateToken(token, validationParameters, out _);
-                var transformedPrincipal = await claimsTransformer.TransformAsync(principal);
-
-                if (!transformedPrincipal.HasClaim(ClaimTypes.Role, Roles.HangfireDashboard))
-                    return Results.Forbid();
-
-                await ctx.SignInAsync("HangfireCookie", transformedPrincipal);
-                return Results.Redirect("/hangfire");
-            }
-            catch
-            {
-                return Results.Unauthorized();
-            }
-        });
-
-        // POST - logout
-        app.MapPost("/hangfire-logout", async (HttpContext ctx) =>
-        {
-            await ctx.SignOutAsync("HangfireCookie");
-            return Results.Ok(new { message = "Logged out" });
         });
 
         return app;

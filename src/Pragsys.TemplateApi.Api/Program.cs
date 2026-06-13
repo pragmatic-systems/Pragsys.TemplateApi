@@ -1,6 +1,8 @@
 ﻿using System;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OpenApi.Models;
 using Pragsys.TemplateApi.Instrumentation;
 using Prometheus;
 using Serilog;
@@ -21,7 +23,7 @@ public class Program
             var testMode = builder.Environment.EnvironmentName == "IntegrationTest";
 
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.WithSwaggerGen();
             builder.Services.WithIngressConfig();
             builder.Services.WithSerilog(builder.Configuration, "Pragsys.TemplateApi API");
             builder.Services.WithPostgres(builder.Configuration);
@@ -40,8 +42,7 @@ public class Program
             app.UseRouting();
             app.UseHttpMetrics();
             app.UseAuthentication();
-            app.ConfigureAuthentication();
-            app.ConfigureHangfireSessionManagement();
+            app.UseAuthorization();
             app.UseHangfireDashboard();
             app.MapControllers();
 
