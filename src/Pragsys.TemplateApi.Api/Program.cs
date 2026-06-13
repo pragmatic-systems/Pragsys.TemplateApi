@@ -40,7 +40,8 @@ public class Program
             app.UseRouting();
             app.UseHttpMetrics();
             app.UseAuthentication();
-            app.UseAuthorization();
+            app.ConfigureAuthentication();
+            app.ConfigureHangfireSessionManagement();
             app.UseHangfireDashboard();
             app.MapControllers();
 
