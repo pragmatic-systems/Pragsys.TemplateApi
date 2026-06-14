@@ -25,6 +25,8 @@ public class TestContext
 
     public HttpResponseMessage? LastResponse { get; set; }
 
+    public string? HangfireCookieValue { get; set; }
+
     public AsyncPolicy RetryPolicy { get; } = Policy
         .Handle<HttpRequestException>()
         .WaitAndRetryAsync(10, i => TimeSpan.FromSeconds(1));
@@ -80,5 +82,42 @@ public class TestContext
     public void ClearCurrentUser()
     {
         CurrentUser = null;
+    }
+
+    public async Task PostHangfireLoginAsync()
+    {
+        using var client = _testRuntime.SubjectApi.CreateClient();
+        LastResponse = await RetryPolicy.ExecuteAsync(async () =>
+        {
+            if (CurrentUser != null)
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", CurrentUser.UserJwt);
+
+            var result = await client.PostAsync("hangfire/login", null);
+            return result;
+        });
+    }
+
+    public async Task GetHangfireDashboardWithCookieAsync(string cookieValue)
+    {
+        using var client = _testRuntime.SubjectApi.CreateClient();
+        client.DefaultRequestHeaders.Add("Cookie", $"{Pragsys.TemplateApi.Api.Auth.HangfireCookieJwtMiddleware.CookieName}={cookieValue}");
+
+        LastResponse = await RetryPolicy.ExecuteAsync(async () =>
+        {
+            var result = await client.GetAsync("hangfire/dashboard");
+            return result;
+        });
+    }
+
+    public async Task PostHangfireLogoutWithCookieAsync(string cookieValue)
+    {
+        using var client = _testRuntime.SubjectApi.CreateClient();
+        client.DefaultRequestHeaders.Add("Cookie", $"{Pragsys.TemplateApi.Api.Auth.HangfireCookieJwtMiddleware.CookieName}={cookieValue}");
+
+        LastResponse = await RetryPolicy.ExecuteAsync(async () =>
+        {
+            var result = await client.PostAsync("hangfire/logout", null);
+            return result;
+        });
     }
 }

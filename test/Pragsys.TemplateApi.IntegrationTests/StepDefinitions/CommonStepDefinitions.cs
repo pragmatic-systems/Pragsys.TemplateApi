@@ -59,6 +59,11 @@ public class CommonStepDefinitions
             claims.Add(new Claim(ClaimTypes.Role, Roles.TodoListWrite));
         }
 
+        if (claimSetName == "HangfireDashboard")
+        {
+            claims.Add(new Claim(ClaimTypes.Role, Roles.HangfireDashboard));
+        }
+
         _testContext.AddUserClaims(userName, claims);
     }
 
