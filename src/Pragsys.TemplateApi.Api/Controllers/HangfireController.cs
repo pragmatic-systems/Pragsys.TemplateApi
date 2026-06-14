@@ -57,7 +57,6 @@ public class HangfireController : ControllerBase
     [HttpGet("login")]
     public async Task<IActionResult> LoginGet()
     {
-
         return Login();
     }
 

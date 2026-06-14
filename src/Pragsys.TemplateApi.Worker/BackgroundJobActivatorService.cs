@@ -35,7 +35,7 @@ public class BackgroundJobActivatorService : BackgroundService
     private void RegisterRecurringJobs()
     {
         // Example: Add recurring jobs as needed
-        //_recurringJobManager
+        // _recurringJobManager
         //    .AddOrUpdate("cleanup-job",
         //    () => Console.WriteLine("Processing..."),
         //    Cron.Minutely);

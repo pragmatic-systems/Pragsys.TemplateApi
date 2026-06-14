@@ -23,6 +23,7 @@ public class TestRuntime : IAsyncDisposable
     /// Certificate used for signing the JWT used by the API.
     /// </summary>
     public PemCertificate? SigningCertificate { get; private set; }
+
     public string JwtIssuer { get; private set; }
 
     public async ValueTask DisposeAsync()
