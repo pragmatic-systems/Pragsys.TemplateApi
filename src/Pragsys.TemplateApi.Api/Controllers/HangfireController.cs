@@ -1,6 +1,8 @@
-﻿using System.Security.Claims;
+﻿using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Pragsys.TemplateApi.Api.Auth;
 using Pragsys.TemplateApi.Instrumentation;
@@ -19,25 +21,35 @@ public class HangfireController : ControllerBase
         _claimsTransformer = claimsTransformer;
     }
 
-    // POST /hangfire/login - validate JWT (from Authorization header or HangfireCookieJwt cookie),
-    // create HangfireCookie session cookie for browser persistence
+    // POST /hangfire/login - pull raw bearer token from Authorization header,
+    // write it directly into the HangfireCookieJwt cookie for browser persistence
     [HttpPost("login")]
-    public async Task<IActionResult> Login()
+    public IActionResult Login()
     {
-        try
-        {
-            var transformedPrincipal = await _claimsTransformer.TransformAsync(User);
+        var authHeader = Request.Headers.Authorization.ToString();
 
-            if (!transformedPrincipal.HasClaim(ClaimTypes.Role, Roles.HangfireDashboard))
-                return Forbid();
-
-            await HttpContext.SignInAsync(HangfireCookieJwtMiddleware.CookieName, transformedPrincipal);
-            return Redirect("/hangfire/dashboard");
-        }
-        catch
-        {
+        if (string.IsNullOrWhiteSpace(authHeader))
             return Unauthorized();
-        }
+
+        var bearerToken = authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase)
+            ? authHeader["Bearer ".Length..]
+            : authHeader;
+
+        if (string.IsNullOrWhiteSpace(bearerToken))
+            return Unauthorized();
+
+        Response.Cookies.Append(
+            HangfireCookieJwtMiddleware.CookieName,
+            bearerToken,
+            new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Path = "/hangfire",
+            });
+
+        return Redirect("/hangfire/dashboard");
     }
 
     // GET /hangfire/login - convenience endpoint that sets the session cookie
@@ -45,20 +57,8 @@ public class HangfireController : ControllerBase
     [HttpGet("login")]
     public async Task<IActionResult> LoginGet()
     {
-        try
-        {
-            var transformedPrincipal = await _claimsTransformer.TransformAsync(User);
 
-            if (!transformedPrincipal.HasClaim(ClaimTypes.Role, Roles.HangfireDashboard))
-                return Forbid();
-
-            await HttpContext.SignInAsync(HangfireCookieJwtMiddleware.CookieName, transformedPrincipal);
-            return Redirect("/hangfire/dashboard");
-        }
-        catch
-        {
-            return Unauthorized();
-        }
+        return Login();
     }
 
     // POST /hangfire/logout - logout

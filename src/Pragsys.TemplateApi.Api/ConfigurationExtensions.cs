@@ -93,9 +93,8 @@ public static class ConfigurationExtensions
                 // By setting the issuer as the Authority - the JWT bearer will load the OIDC Config from this location.
                 options.Authority = authSection.GetValue<string>("Issuer");
 
-                //TODO: Only if develop - otherwise compile out.
                 // NOTE: This uses any pre-loaded IConfigurationManager<OpenIdConnectConfiguration> which can be supplied by test runners.
-                // If none is supplied, then it remains null and will be auto-initialized based off Authority.
+                // If none is supplied, then it remains null and will be auto-initialized based off Authority/Issuer.
                 options.ConfigurationManager = services
                     .BuildServiceProvider()
                     .GetService<IConfigurationManager<OpenIdConnectConfiguration>>();
@@ -123,18 +122,6 @@ public static class ConfigurationExtensions
                         return Task.CompletedTask;
                     },
                 };
-            })
-
-            // Cookie-based auth scheme for the Hangfire dashboard browser UI.
-            // Browsers don't send Authorization headers, so the login endpoint
-            // validates a pasted JWT and creates a session cookie.
-            .AddCookie(HangfireCookieJwtMiddleware.CookieName, options =>
-            {
-                options.ExpireTimeSpan = TimeSpan.FromHours(1);
-                options.SlidingExpiration = true;
-                options.Cookie.SameSite = SameSiteMode.Strict;
-                options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
-                options.Cookie.Path = "/hangfire";
             });
 
         // Transform AWS Cognito scope claims into role claims for policy-based authorization.
