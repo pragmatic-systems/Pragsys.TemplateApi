@@ -50,7 +50,7 @@ public class TestRuntime : IAsyncDisposable
 
         // Create SSL Certificate
         SigningCertificate = PemCertificate.Create();
-        JwtIssuer = WireMockContainer.GetPublicUrl();
+        JwtIssuer = WireMockContainer.GetPublicUrl().TrimEnd('/');
 
         SubjectApi = new WebApplicationFactory<Api.Program>()
             .WithWebHostBuilder(builder =>
@@ -86,6 +86,7 @@ public class TestRuntime : IAsyncDisposable
 
                     // We are overriding the OIDC Config provider here.
                     // This supports injecting self signed JWTs.
+                    // Without this - we have to configure Wiremock certificates to support HTTPS.
                     services.AddSingleton<IConfigurationManager<OpenIdConnectConfiguration>>(config);
                 });
 
@@ -97,6 +98,6 @@ public class TestRuntime : IAsyncDisposable
             });
 
         var wiremockAdmin = new WiremockConfigurationClient(WireMockContainer.CreateWireMockAdminClient());
-        await wiremockAdmin.ConfigureOIDCWellKnown();
+        await wiremockAdmin.ConfigureOIDCWellKnown(JwtIssuer);
     }
 }

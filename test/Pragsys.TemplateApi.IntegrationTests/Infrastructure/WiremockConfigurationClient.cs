@@ -1,4 +1,6 @@
-﻿using WireMock.Admin.Mappings;
+﻿using System.Text.Json;
+using Pragsys.TemplateApi.IntegrationTests.Infrastructure.Auth;
+using WireMock.Admin.Mappings;
 using WireMock.Client;
 
 namespace Pragsys.TemplateApi.IntegrationTests.Infrastructure;
@@ -18,8 +20,10 @@ public class WiremockConfigurationClient
     /// This ensures availability for the healthcheck.
     /// </summary>
     /// <returns></returns>
-    public async Task<WiremockConfigurationClient> ConfigureOIDCWellKnown()
+    public async Task<WiremockConfigurationClient> ConfigureOIDCWellKnown(string issuer)
     {
+        var discoveryDocument = OpenIdConnectDiscoveryDocumentConfiguration.ForIssuer(issuer);
+
         var mapping = new MappingModelBuilder()
             .WithRequest(request =>
             {
@@ -28,9 +32,9 @@ public class WiremockConfigurationClient
             .WithResponse(response =>
             {
                 response.WithStatusCode(200);
+                response.WithBody(JsonSerializer.Serialize(discoveryDocument));
             })
             .Build();
-
 
         await _wireMockAdminApi
             .PostMappingAsync(mapping);

@@ -118,18 +118,17 @@ public static class ConfigurationExtensions
     {
         var healthcheckBuilder = services
             .AddHealthChecks()
-            .AddNpgSql(s => configuration.GetConnectionString("PostgresDb"), name: "Database Provider");
+            .AddNpgSql(s => configuration.GetConnectionString("PostgresDb"), name: "Database Provider")
+            .AddUrlGroup(
+                s =>
+                {
+                    var issuer = configuration
+                        .GetRequiredSection("OpenIdConnect:Issuer")
+                        .Value;
 
-        healthcheckBuilder.AddUrlGroup(
-            s =>
-            {
-                var issuer = configuration
-                    .GetRequiredSection("OpenIdConnect:Issuer")
-                    .Value;
-
-                return new Uri($"{issuer}/.well-known/openid-configuration");
-            },
-            "OIDC Provider");
+                    return new Uri($"{issuer}/.well-known/openid-configuration");
+                },
+                "OIDC Provider");
 
         return services;
     }
