@@ -128,12 +128,13 @@ public static class ConfigurationExtensions
             // Cookie-based auth scheme for the Hangfire dashboard browser UI.
             // Browsers don't send Authorization headers, so the login endpoint
             // validates a pasted JWT and creates a session cookie.
-            .AddCookie("HangfireCookie", options =>
+            .AddCookie(HangfireCookieJwtMiddleware.CookieName, options =>
             {
                 options.ExpireTimeSpan = TimeSpan.FromHours(1);
                 options.SlidingExpiration = true;
                 options.Cookie.SameSite = SameSiteMode.Strict;
                 options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+                options.Cookie.Path = "/hangfire";
             });
 
         // Transform AWS Cognito scope claims into role claims for policy-based authorization.
@@ -167,7 +168,7 @@ public static class ConfigurationExtensions
 
     public static WebApplication UseHangfireDashboard(this WebApplication app)
     {
-        app.UseHangfireDashboard("/hangfire", new DashboardOptions
+        app.UseHangfireDashboard("/hangfire/dashboard", new DashboardOptions
         {
             Authorization = new[]
             {

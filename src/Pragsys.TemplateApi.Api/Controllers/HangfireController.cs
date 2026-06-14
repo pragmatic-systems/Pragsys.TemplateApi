@@ -2,11 +2,13 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
+using Pragsys.TemplateApi.Api.Auth;
 using Pragsys.TemplateApi.Instrumentation;
 
 namespace Pragsys.TemplateApi.Api.Controllers;
 
 [ApiController]
+[Route("hangfire")]
 public class HangfireController : ControllerBase
 {
     private readonly IClaimsTransformation _claimsTransformer;
@@ -17,8 +19,9 @@ public class HangfireController : ControllerBase
         _claimsTransformer = claimsTransformer;
     }
 
-    // POST /hangfire-login - validate JWT, create cookie session
-    [HttpPost("hangfire-login")]
+    // POST /hangfire/login - validate JWT (from Authorization header or HangfireCookieJwt cookie),
+    // create HangfireCookie session cookie for browser persistence
+    [HttpPost("login")]
     public async Task<IActionResult> Login()
     {
         try
@@ -28,8 +31,8 @@ public class HangfireController : ControllerBase
             if (!transformedPrincipal.HasClaim(ClaimTypes.Role, Roles.HangfireDashboard))
                 return Forbid();
 
-            await HttpContext.SignInAsync("HangfireCookie", transformedPrincipal);
-            return Redirect("/hangfire");
+            await HttpContext.SignInAsync(HangfireCookieJwtMiddleware.CookieName, transformedPrincipal);
+            return Redirect("/hangfire/dashboard");
         }
         catch
         {
@@ -37,11 +40,32 @@ public class HangfireController : ControllerBase
         }
     }
 
-    // POST /hangfire-logout - logout
-    [HttpPost("hangfire-logout")]
+    // GET /hangfire/login - convenience endpoint that sets the session cookie
+    // when the JWT is provided via the HangfireCookieJwt cookie (browser access)
+    [HttpGet("login")]
+    public async Task<IActionResult> LoginGet()
+    {
+        try
+        {
+            var transformedPrincipal = await _claimsTransformer.TransformAsync(User);
+
+            if (!transformedPrincipal.HasClaim(ClaimTypes.Role, Roles.HangfireDashboard))
+                return Forbid();
+
+            await HttpContext.SignInAsync(HangfireCookieJwtMiddleware.CookieName, transformedPrincipal);
+            return Redirect("/hangfire/dashboard");
+        }
+        catch
+        {
+            return Unauthorized();
+        }
+    }
+
+    // POST /hangfire/logout - logout
+    [HttpPost("logout")]
     public async Task<IActionResult> Logout()
     {
-        await HttpContext.SignOutAsync("HangfireCookie");
+        await HttpContext.SignOutAsync(HangfireCookieJwtMiddleware.CookieName);
         return Ok(new { message = "Logged out" });
     }
 }

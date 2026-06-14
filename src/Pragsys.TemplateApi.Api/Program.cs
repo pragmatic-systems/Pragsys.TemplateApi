@@ -1,8 +1,9 @@
 ﻿using System;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
+using Pragsys.TemplateApi.Api.Auth;
 using Pragsys.TemplateApi.Instrumentation;
 using Prometheus;
 using Serilog;
@@ -41,6 +42,7 @@ public class Program
             app.UseMetricServer(); // https://github.com/prometheus-net/prometheus-net
             app.UseRouting();
             app.UseHttpMetrics();
+            app.UseHangfireCookieJwt(); // Extract JWT from cookie and inject into Auth header BEFORE the JWT Bearer authentication handler runs.
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseHangfireDashboard();

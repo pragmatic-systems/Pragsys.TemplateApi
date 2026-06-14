@@ -12,9 +12,9 @@ public class HangfireAuthorizationFilter : IDashboardAuthorizationFilter
         var httpContext = context.GetHttpContext();
 
         // NOTE: We can't resolve the Synchronous check here as Hangfire does not expose an async Authorize endpoint.
-        var auth = httpContext.AuthenticateAsync("HangfireCookie").GetAwaiter().GetResult();
+        var user = httpContext.User;
 
-        return auth.Principal?.Identity.IsAuthenticated == true &&
-            auth.Principal?.HasClaim(ClaimTypes.Role, Roles.HangfireDashboard) == true;
+        return user?.Identity?.IsAuthenticated == true &&
+            user?.HasClaim(ClaimTypes.Role, Roles.HangfireDashboard) == true;
     }
 }
