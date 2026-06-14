@@ -64,7 +64,7 @@ public class HangfireController : ControllerBase
     [HttpPost("logout")]
     public async Task<IActionResult> Logout()
     {
-        await HttpContext.SignOutAsync(HangfireCookieJwtMiddleware.CookieName);
+        Response.Cookies.Delete(HangfireCookieJwtMiddleware.CookieName);
         return Ok(new { message = "Logged out" });
     }
 }

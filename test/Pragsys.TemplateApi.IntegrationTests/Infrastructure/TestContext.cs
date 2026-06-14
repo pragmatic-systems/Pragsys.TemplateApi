@@ -1,7 +1,9 @@
 ﻿using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Polly;
+using Pragsys.TemplateApi.Api.Auth;
 using Pragsys.TemplateApi.Database.Model;
 using Pragsys.TemplateApi.IntegrationTests.Infrastructure.Auth;
 
@@ -86,7 +88,9 @@ public class TestContext
 
     public async Task PostHangfireLoginAsync()
     {
-        using var client = _testRuntime.SubjectApi.CreateClient();
+        var noRedirectOptions = new WebApplicationFactoryClientOptions { AllowAutoRedirect = false };
+
+        using var client = _testRuntime.SubjectApi.CreateClient(noRedirectOptions);
         LastResponse = await RetryPolicy.ExecuteAsync(async () =>
         {
             if (CurrentUser != null)
@@ -100,7 +104,7 @@ public class TestContext
     public async Task GetHangfireDashboardWithCookieAsync(string cookieValue)
     {
         using var client = _testRuntime.SubjectApi.CreateClient();
-        client.DefaultRequestHeaders.Add("Cookie", $"{Pragsys.TemplateApi.Api.Auth.HangfireCookieJwtMiddleware.CookieName}={cookieValue}");
+        client.DefaultRequestHeaders.Add("Cookie", $"{HangfireCookieJwtMiddleware.CookieName}={cookieValue}");
 
         LastResponse = await RetryPolicy.ExecuteAsync(async () =>
         {
@@ -112,7 +116,7 @@ public class TestContext
     public async Task PostHangfireLogoutWithCookieAsync(string cookieValue)
     {
         using var client = _testRuntime.SubjectApi.CreateClient();
-        client.DefaultRequestHeaders.Add("Cookie", $"{Pragsys.TemplateApi.Api.Auth.HangfireCookieJwtMiddleware.CookieName}={cookieValue}");
+        client.DefaultRequestHeaders.Add("Cookie", $"{HangfireCookieJwtMiddleware.CookieName}={cookieValue}");
 
         LastResponse = await RetryPolicy.ExecuteAsync(async () =>
         {

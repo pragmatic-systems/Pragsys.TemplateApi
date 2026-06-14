@@ -1,4 +1,4 @@
-using System.Net;
+﻿using System.Net;
 using Pragsys.TemplateApi.Api.Auth;
 using Pragsys.TemplateApi.IntegrationTests.Infrastructure;
 using Reqnroll;
