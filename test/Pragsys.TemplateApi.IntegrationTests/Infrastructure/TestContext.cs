@@ -19,7 +19,7 @@ public class TestContext
 
     public TodoRecord NewTodoItem { get; set; }
 
-    public List<TodoRecord>? TaskList { get; set; }
+    public List<TodoRecord>? TodoList { get; set; }
 
     public Dictionary<string, TestUser> Users { get; private set; } = new Dictionary<string, TestUser>();
 
@@ -35,7 +35,7 @@ public class TestContext
 
     public async Task GetAsync(string path)
     {
-        using var client = _testRuntime.TargetApi.CreateClient();
+        using var client = _testRuntime.SubjectApi.CreateClient();
         LastResponse = await RetryPolicy.ExecuteAsync(async () =>
         {
             if (CurrentUser != null)
@@ -48,7 +48,7 @@ public class TestContext
 
     public async Task PostAsJsonAsync<T>(string path, T payload)
     {
-        using var client = _testRuntime.TargetApi.CreateClient();
+        using var client = _testRuntime.SubjectApi.CreateClient();
         LastResponse = await RetryPolicy.ExecuteAsync(async () =>
         {
             if (CurrentUser != null)
@@ -74,7 +74,7 @@ public class TestContext
     {
         var user = Users[userName];
         CurrentUser = user;
-        CurrentUser.BuildJwt(SigningCertificate);
+        CurrentUser.BuildJwt(SigningCertificate, _testRuntime.JwtIssuer);
     }
 
     public void ClearCurrentUser()

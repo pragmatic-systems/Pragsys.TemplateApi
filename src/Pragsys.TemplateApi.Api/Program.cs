@@ -21,8 +21,6 @@ public class Program
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            var testMode = builder.Environment.EnvironmentName == "IntegrationTest";
-
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.WithSwaggerGen();
             builder.Services.WithIngressConfig();
@@ -33,7 +31,7 @@ public class Program
             builder.Services.WithAuthorizationPolicy();
             builder.Services.WithHangfire(builder.Configuration);
             builder.Services.AddControllers();
-            builder.Services.AddAppHealthChecks(builder.Configuration, testMode);
+            builder.Services.AddAppHealthChecks(builder.Configuration);
 
             var app = builder.Build();
 

@@ -16,10 +16,9 @@ public class TestUser
 
     public string? UserJwt { get; private set; }
 
-    public void BuildJwt(PemCertificate certificate)
+    public void BuildJwt(PemCertificate certificate, string issuer)
     {
         var audience = TestConstants.Audience;
-        var issuer = TestConstants.Issuer;
         var signingCertificate = certificate.ToX509Certificate2();
 
         var accessTokenParameters = new AccessToken(audience, issuer, signingCertificate, Claims);

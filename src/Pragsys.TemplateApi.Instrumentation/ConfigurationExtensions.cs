@@ -114,26 +114,22 @@ public static class ConfigurationExtensions
         return services;
     }
 
-    public static IServiceCollection AddAppHealthChecks(this IServiceCollection services, IConfiguration configuration, bool testMode)
+    public static IServiceCollection AddAppHealthChecks(this IServiceCollection services, IConfiguration configuration)
     {
         var healthcheckBuilder = services
             .AddHealthChecks()
             .AddNpgSql(s => configuration.GetConnectionString("PostgresDb"), name: "Database Provider");
 
-        // NOTE: Suppress healthcheck for OIDC if we are in test mode, as it's a fake endpoint that won't exist.
-        if (!testMode)
-        {
-            healthcheckBuilder.AddUrlGroup(
-                s =>
-                {
-                    var issuer = configuration
-                        .GetRequiredSection("OpenIdConnect:Issuer")
-                        .Value;
+        healthcheckBuilder.AddUrlGroup(
+            s =>
+            {
+                var issuer = configuration
+                    .GetRequiredSection("OpenIdConnect:Issuer")
+                    .Value;
 
-                    return new Uri($"{issuer}/.well-known/openid-configuration");
-                },
-                "OIDC Provider");
-        }
+                return new Uri($"{issuer}/.well-known/openid-configuration");
+            },
+            "OIDC Provider");
 
         return services;
     }

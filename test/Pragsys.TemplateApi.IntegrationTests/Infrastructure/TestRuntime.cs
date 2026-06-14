@@ -3,29 +3,35 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration.Memory;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Pragsys.TemplateApi.IntegrationTests.Infrastructure.Auth;
 using Testcontainers.PostgreSql;
+using WireMock.Net.Testcontainers;
 
 namespace Pragsys.TemplateApi.IntegrationTests.Infrastructure;
 
 public class TestRuntime : IAsyncDisposable
 {
-    // public WireMockContainer WireMockContainer { get; private set; }
+    public WireMockContainer? WireMockContainer { get; private set; }
+
     public PostgreSqlContainer? PostgresContainer { get; private set; }
 
-    public WebApplicationFactory<Pragsys.TemplateApi.Api.Program>? TargetApi { get; private set; }
+    public WebApplicationFactory<Pragsys.TemplateApi.Api.Program>? SubjectApi { get; private set; }
 
     /// <summary>
     /// Certificate used for signing the JWT used by the API.
     /// </summary>
     public PemCertificate? SigningCertificate { get; private set; }
+    public string JwtIssuer { get; private set; }
 
     public async ValueTask DisposeAsync()
     {
-        await TargetApi.DisposeAsync();
+        if (WireMockContainer != null)
+            await WireMockContainer.DisposeAsync();
+
+        if (SubjectApi != null)
+            await SubjectApi.DisposeAsync();
     }
 
     public async Task InitializeAsync()
@@ -35,12 +41,18 @@ public class TestRuntime : IAsyncDisposable
             .WithAutoRemove(true)
             .Build();
 
+        WireMockContainer = new WireMockContainerBuilder()
+            .WithAutoRemove(true)
+            .Build();
+
         await PostgresContainer.StartAsync();
+        await WireMockContainer.StartAsync();
 
         // Create SSL Certificate
         SigningCertificate = PemCertificate.Create();
+        JwtIssuer = WireMockContainer.GetPublicUrl();
 
-        TargetApi = new WebApplicationFactory<Api.Program>()
+        SubjectApi = new WebApplicationFactory<Api.Program>()
             .WithWebHostBuilder(builder =>
             {
                 // Override this so we don't inherit any default config.
@@ -59,7 +71,7 @@ public class TestRuntime : IAsyncDisposable
 
                         // OIDC
                         { "OpenIdConnect:Audience", TestConstants.Audience },
-                        { "OpenIdConnect:Issuer", TestConstants.Issuer },
+                        { "OpenIdConnect:Issuer", JwtIssuer },
                     };
 
                     b.Add(config);
@@ -68,7 +80,7 @@ public class TestRuntime : IAsyncDisposable
                 builder.ConfigureTestServices(services =>
                 {
                     var config = MockOpenIdConfigurationManagerBuilder.Create(
-                        TestConstants.Issuer,
+                        JwtIssuer,
                         TestConstants.OpenIdConfigUrl,
                         SigningCertificate);
 
@@ -83,5 +95,8 @@ public class TestRuntime : IAsyncDisposable
                     o.ValidateOnBuild = true;
                 });
             });
+
+        var wiremockAdmin = new WiremockConfigurationClient(WireMockContainer.CreateWireMockAdminClient());
+        await wiremockAdmin.ConfigureOIDCWellKnown();
     }
 }

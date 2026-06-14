@@ -21,7 +21,7 @@ public static class Program
             builder.Services.WithPostgres(builder.Configuration);
             builder.Services.WithHangfire(builder.Configuration);
             builder.Services.WithHangfireServer(builder.Configuration);
-            builder.Services.AddAppHealthChecks(builder.Configuration, testMode);
+            builder.Services.AddAppHealthChecks(builder.Configuration);
 
             var app = builder.Build();
 

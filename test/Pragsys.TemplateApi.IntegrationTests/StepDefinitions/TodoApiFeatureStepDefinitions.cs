@@ -47,8 +47,8 @@ public sealed class TodoApiFeatureStepDefinitions
     [Then("The response should contain a Todo List")]
     public async Task TheResponseShouldContainATodoList()
     {
-        _testContext.TaskList = await _testContext.LastResponse.Content.ReadFromJsonAsync<List<TodoRecord>>();
-        _testContext.TaskList.ShouldNotBeNull();
+        _testContext.TodoList = await _testContext.LastResponse.Content.ReadFromJsonAsync<List<TodoRecord>>();
+        _testContext.TodoList.ShouldNotBeNull();
     }
 
     [Then("The result contains the created recordId")]
@@ -57,7 +57,7 @@ public sealed class TodoApiFeatureStepDefinitions
         var item = _testContext.NewTodoItem;
         var id = item.ItemId;
 
-        var match = _testContext.TaskList
+        var match = _testContext.TodoList
             .SingleOrDefault(i => i.ItemId == id);
 
         ((object)match).ShouldNotBeNull();
