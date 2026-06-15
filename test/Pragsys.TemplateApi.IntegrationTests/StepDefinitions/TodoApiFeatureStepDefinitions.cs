@@ -1,6 +1,7 @@
 ﻿using System.Net.Http.Json;
 using System.Text;
 using Newtonsoft.Json;
+using Polly;
 using Pragsys.TemplateApi.Database.Model;
 using Pragsys.TemplateApi.IntegrationTests.Infrastructure;
 using Reqnroll;
@@ -85,9 +86,26 @@ public sealed class TodoApiFeatureStepDefinitions
     [When("We wait for the background job to complete")]
     public async Task WeWaitForTheBackgroundJobToComplete()
     {
-        // Hangfire jobs are queued and processed asynchronously.
-        // We give the worker time to pick up and process the job.
-        await Task.Delay(TimeSpan.FromSeconds(3));
+        var initialCount = 0;
+
+        await Policy
+            .Handle<HttpRequestException>()
+            .Or<Exception>()
+            .WaitAndRetryAsync(
+                Enumerable.Range(0, 15)
+                    .Select(i => TimeSpan.FromSeconds(1)),
+                async (outcome, delay, retry, ctx) =>
+                {
+                    await _testContext.GetAsync("todo-list/v1");
+                    _testContext.TodoList = await _testContext.LastResponse.Content.ReadFromJsonAsync<List<TodoRecord>>();
+                })
+            .ExecuteAsync(async () =>
+            {
+                if (_testContext.TodoList.Count <= initialCount)
+                    throw new InvalidOperationException("CSV import not yet complete");
+
+                return Task.CompletedTask;
+            });
     }
 
     [Then("The response should contain at least {int} todo items")]
