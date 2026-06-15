@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using Azure.Storage.Blobs;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration.Memory;
@@ -6,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Pragsys.TemplateApi.IntegrationTests.Infrastructure.Auth;
+using Testcontainers.Azurite;
 using Testcontainers.PostgreSql;
 using WireMock.Net.Testcontainers;
 
@@ -16,6 +18,10 @@ public class TestRuntime : IAsyncDisposable
     public WireMockContainer? WireMockContainer { get; private set; }
 
     public PostgreSqlContainer? PostgresContainer { get; private set; }
+
+    public AzuriteContainer? AzuriteContainer { get; private set; }
+
+    public BlobServiceClient? BlobServiceClient { get; private set; }
 
     public WebApplicationFactory<Pragsys.TemplateApi.Api.Program>? SubjectApi { get; private set; }
 
@@ -30,6 +36,9 @@ public class TestRuntime : IAsyncDisposable
     {
         if (WireMockContainer != null)
             await WireMockContainer.DisposeAsync();
+
+        if (AzuriteContainer != null)
+            await AzuriteContainer.DisposeAsync();
 
         if (SubjectApi != null)
             await SubjectApi.DisposeAsync();
@@ -46,11 +55,20 @@ public class TestRuntime : IAsyncDisposable
             .WithAutoRemove(true)
             .Build();
 
+        AzuriteContainer = new AzuriteBuilder()
+            .WithAutoRemove(true)
+            .Build();
+
         await PostgresContainer.StartAsync();
         await WireMockContainer.StartAsync();
+        await AzuriteContainer.StartAsync();
+
+        BlobServiceClient = new BlobServiceClient(AzuriteContainer.GetConnectionString());
 
         // Create SSL Certificate
         SigningCertificate = PemCertificate.Create();
+
+        // Get JWT Issuer
         JwtIssuer = WireMockContainer.GetPublicUrl().TrimEnd('/');
 
         SubjectApi = new WebApplicationFactory<Api.Program>()
@@ -73,6 +91,10 @@ public class TestRuntime : IAsyncDisposable
                         // OIDC
                         { "OpenIdConnect:Audience", TestConstants.Audience },
                         { "OpenIdConnect:Issuer", JwtIssuer },
+
+                        // Azure Blob Storage
+                        { "Storage:ConnectionString", AzuriteContainer.GetConnectionString() },
+                        { "Storage:ContainerName", "uploads" },
                     };
 
                     b.Add(config);

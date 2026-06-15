@@ -54,6 +54,17 @@ services:
       - local
     command: [ "start-dev" ]
 
+  local-azurite:
+    image: mcr.microsoft.com/azure-storage/azurite
+    container_name: local-azurite
+    restart: always
+    ports:
+      - "10000:10000"
+    environment:
+      - AZURITE_ACCOUNTS=devstoreaccount1:my-account-key
+    networks:
+      - local
+
   local-sonarqube:
     image: sonarqube
     container_name: local-sonarqube

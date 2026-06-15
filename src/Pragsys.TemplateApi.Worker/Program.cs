@@ -19,6 +19,7 @@ public static class Program
 
             builder.Services.WithSerilog(builder.Configuration, "Pragsys.TemplateApi Worker");
             builder.Services.WithPostgres(builder.Configuration);
+            builder.Services.WithAzureBlobStorage(builder.Configuration);
             builder.Services.WithHangfire(builder.Configuration);
             builder.Services.WithHangfireServer(builder.Configuration);
             builder.Services.AddAppHealthChecks(builder.Configuration);

@@ -26,6 +26,7 @@ public class Program
             builder.Services.WithIngressConfig();
             builder.Services.WithSerilog(builder.Configuration, "Pragsys.TemplateApi API");
             builder.Services.WithPostgres(builder.Configuration);
+            builder.Services.WithAzureBlobStorage(builder.Configuration);
             builder.Services.WithMediatr();
             builder.Services.WithOpenIdConnect(builder.Configuration);
             builder.Services.WithAuthorizationPolicy();

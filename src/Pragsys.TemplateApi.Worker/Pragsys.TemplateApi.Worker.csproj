@@ -16,6 +16,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Pragsys.TemplateApi.Core\Pragsys.TemplateApi.Core.csproj" />
     <ProjectReference Include="..\Pragsys.TemplateApi.Instrumentation\Pragsys.TemplateApi.Instrumentation.csproj" />
+    <ProjectReference Include="..\Pragsys.TemplateApi.Database\Pragsys.TemplateApi.Database.csproj" />
   </ItemGroup>
 
 </Project>

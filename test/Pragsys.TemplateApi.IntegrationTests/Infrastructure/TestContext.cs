@@ -1,6 +1,9 @@
-﻿using System.Net.Http.Headers;
+﻿using System.IO;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Security.Claims;
+using System.Text;
+using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Polly;
 using Pragsys.TemplateApi.Api.Auth;
@@ -22,6 +25,8 @@ public class TestContext
     public TodoRecord NewTodoItem { get; set; }
 
     public List<TodoRecord>? TodoList { get; set; }
+
+    public string? UploadedBlobName { get; set; }
 
     public Dictionary<string, TestUser> Users { get; private set; } = new Dictionary<string, TestUser>();
 
@@ -124,4 +129,33 @@ public class TestContext
             return result;
         });
     }
+
+    public async Task UploadCsvAsync(string fileName, string content)
+    {
+        using var client = _testRuntime.SubjectApi.CreateClient();
+        if (CurrentUser != null)
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", CurrentUser.UserJwt);
+
+        using var stream = new MemoryStream(Encoding.UTF8.GetBytes(content));
+        using var contentStream = new StreamContent(stream);
+        contentStream.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/csv");
+
+        using var multipartContent = new MultipartFormDataContent
+        {
+            { contentStream, "file", fileName },
+        };
+
+        LastResponse = await RetryPolicy.ExecuteAsync(async () =>
+        {
+            return await client.PostAsync("upload/csv", multipartContent);
+        });
+
+        var result = await LastResponse.Content.ReadFromJsonAsync<CsvUploadResult>();
+        if (result != null)
+        {
+            UploadedBlobName = result.BlobName;
+        }
+    }
 }
+
+public record CsvUploadResult(string BlobName, string Message);

@@ -1,4 +1,4 @@
-﻿using DbUp;
+﻿using Azure.Storage.Blobs;
 using Hangfire;
 using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Builder;
@@ -8,8 +8,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Npgsql;
-using Polly;
 using Pragsys.CQRS;
 using Pragsys.TemplateApi.Core.Validators;
 using Pragsys.TemplateApi.Database;
@@ -129,6 +127,21 @@ public static class ConfigurationExtensions
                     return new Uri($"{issuer}/.well-known/openid-configuration");
                 },
                 "OIDC Provider");
+
+        return services;
+    }
+
+    public static IServiceCollection WithAzureBlobStorage(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddSingleton(provider =>
+            new BlobServiceClient(configuration.GetSection("Storage:ConnectionString").Value));
+
+        services.AddSingleton(provider =>
+        {
+            var client = provider.GetRequiredService<BlobServiceClient>();
+            var containerName = configuration.GetSection("Storage:ContainerName").Value ?? "uploads";
+            return client.GetBlobContainerClient(containerName);
+        });
 
         return services;
     }
