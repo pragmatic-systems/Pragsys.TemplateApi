@@ -1,4 +1,5 @@
 ﻿using System.Net.Http.Json;
+using System.Text;
 using Newtonsoft.Json;
 using Pragsys.TemplateApi.Database.Model;
 using Pragsys.TemplateApi.IntegrationTests.Infrastructure;
@@ -61,5 +62,38 @@ public sealed class TodoApiFeatureStepDefinitions
             .SingleOrDefault(i => i.ItemId == id);
 
         ((object)match).ShouldNotBeNull();
+    }
+
+    [When(@"We upload a CSV file with three todo items")]
+    public async Task WeUploadACsvFileWithThreeTodoItems()
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine("Buy groceries,Weekly shopping list,2025-12-25");
+        sb.AppendLine("Walk the dog,Daily evening walk,");
+        sb.AppendLine("Read a book,Finish the current novel,2025-12-31");
+
+        await _testContext.UploadCsvAsync("test-todos.csv", sb.ToString());
+    }
+
+    [Then("The response should contain a blob name")]
+    public void TheResponseShouldContainABlobName()
+    {
+        _testContext.UploadedBlobName.ShouldNotBeNull();
+        _testContext.UploadedBlobName.ShouldNotBeNullOrEmpty();
+    }
+
+    [When("We wait for the background job to complete")]
+    public async Task WeWaitForTheBackgroundJobToComplete()
+    {
+        // Hangfire jobs are queued and processed asynchronously.
+        // We give the worker time to pick up and process the job.
+        await Task.Delay(TimeSpan.FromSeconds(3));
+    }
+
+    [Then("The response should contain at least {int} todo items")]
+    public void TheResponseShouldContainAtLeastNTodoItems(int count)
+    {
+        _testContext.TodoList.ShouldNotBeNull();
+        _testContext.TodoList.Count.ShouldBeGreaterThanOrEqualTo(count);
     }
 }
