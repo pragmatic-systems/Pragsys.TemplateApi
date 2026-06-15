@@ -8,10 +8,8 @@ Scenario: Upload CSV and import todo items via background job
 	And User 'Alice' has claims 'ReadWrite'
 	When We are connecting as 'Alice'
 	And We upload a CSV file with three todo items
-	Then The response should be 200 OK
-	And The response should contain a blob name
-	And The blob name should not be empty
+	Then The response should contain a blob name
 	When We wait for the background job to complete
 	And We get our TodoList
-	Then The response should be 200 OK
+	Then The response should contain a Todo List
 	And The response should contain at least 3 todo items

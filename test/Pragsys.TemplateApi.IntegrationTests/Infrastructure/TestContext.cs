@@ -147,7 +147,7 @@ public class TestContext
 
         LastResponse = await RetryPolicy.ExecuteAsync(async () =>
         {
-            return await client.PostAsync("upload/csv", multipartContent);
+            return await client.PostAsync("todo-list/v1/upload", multipartContent);
         });
 
         var result = await LastResponse.Content.ReadFromJsonAsync<CsvUploadResult>();

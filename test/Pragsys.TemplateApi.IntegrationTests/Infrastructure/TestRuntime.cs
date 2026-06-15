@@ -21,9 +21,9 @@ public class TestRuntime : IAsyncDisposable
 
     public AzuriteContainer? AzuriteContainer { get; private set; }
 
-    public BlobServiceClient? BlobServiceClient { get; private set; }
-
     public WebApplicationFactory<Pragsys.TemplateApi.Api.Program>? SubjectApi { get; private set; }
+
+    public WebApplicationFactory<Pragsys.TemplateApi.Worker.Program>? SubjectWorker { get; private set; }
 
     /// <summary>
     /// Certificate used for signing the JWT used by the API.
@@ -42,6 +42,9 @@ public class TestRuntime : IAsyncDisposable
 
         if (SubjectApi != null)
             await SubjectApi.DisposeAsync();
+
+        if (SubjectWorker != null)
+            await SubjectWorker.DisposeAsync();
     }
 
     public async Task InitializeAsync()
@@ -55,7 +58,7 @@ public class TestRuntime : IAsyncDisposable
             .WithAutoRemove(true)
             .Build();
 
-        AzuriteContainer = new AzuriteBuilder()
+        AzuriteContainer = new AzuriteBuilder("mcr.microsoft.com/azure-storage/azurite")
             .WithAutoRemove(true)
             .Build();
 
@@ -63,15 +66,24 @@ public class TestRuntime : IAsyncDisposable
         await WireMockContainer.StartAsync();
         await AzuriteContainer.StartAsync();
 
-        BlobServiceClient = new BlobServiceClient(AzuriteContainer.GetConnectionString());
-
         // Create SSL Certificate
         SigningCertificate = PemCertificate.Create();
 
         // Get JWT Issuer
         JwtIssuer = WireMockContainer.GetPublicUrl().TrimEnd('/');
 
-        SubjectApi = new WebApplicationFactory<Api.Program>()
+        SubjectApi = ConfigureSubjectApi();
+        SubjectWorker = ConfigureSubjectWorker();
+
+        SubjectWorker.CreateClient();
+
+        var wiremockAdmin = new WiremockConfigurationClient(WireMockContainer.CreateWireMockAdminClient());
+        await wiremockAdmin.ConfigureOIDCWellKnown(JwtIssuer);
+    }
+
+    private WebApplicationFactory<Api.Program> ConfigureSubjectApi()
+    {
+        return new WebApplicationFactory<Api.Program>()
             .WithWebHostBuilder(builder =>
             {
                 // Override this so we don't inherit any default config.
@@ -119,8 +131,33 @@ public class TestRuntime : IAsyncDisposable
                     o.ValidateOnBuild = true;
                 });
             });
+    }
 
-        var wiremockAdmin = new WiremockConfigurationClient(WireMockContainer.CreateWireMockAdminClient());
-        await wiremockAdmin.ConfigureOIDCWellKnown(JwtIssuer);
+    private WebApplicationFactory<Worker.Program> ConfigureSubjectWorker()
+    {
+        return new WebApplicationFactory<Worker.Program>()
+            .WithWebHostBuilder(builder =>
+            {
+                builder.UseEnvironment("IntegrationTest");
+
+                builder.ConfigureAppConfiguration((c, b) =>
+                {
+                    var config = new MemoryConfigurationSource();
+
+                    config.InitialData = new Dictionary<string, string?>
+                    {
+                        { "ConnectionStrings:PostgresDb", PostgresContainer.GetConnectionString() },
+                        { "Storage:ConnectionString", AzuriteContainer.GetConnectionString() },
+                        { "Storage:ContainerName", "uploads" },
+                    };
+
+                    b.Add(config);
+                });
+
+                builder.UseDefaultServiceProvider(o =>
+                {
+                    o.ValidateOnBuild = true;
+                });
+            });
     }
 }

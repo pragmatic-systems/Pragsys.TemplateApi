@@ -5,7 +5,7 @@ using Serilog;
 namespace Pragsys.TemplateApi.Worker;
 
 #pragma warning disable S1118
-public static class Program
+public class Program
 #pragma warning restore S1118
 {
     public static void Main(string[] args)

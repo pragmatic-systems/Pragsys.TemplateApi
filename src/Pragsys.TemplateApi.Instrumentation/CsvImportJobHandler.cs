@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -80,7 +80,7 @@ public class CsvImportJobHandler
                 Guid.NewGuid(),
                 title,
                 description,
-                dueDate ?? DateTime.Today);
+                dueDate ?? DateTime.UtcNow.Date);
 
             records.Add(record);
         }

@@ -143,6 +143,8 @@ public static class ConfigurationExtensions
             return client.GetBlobContainerClient(containerName);
         });
 
+        services.AddHostedService<BlobContainerInitService>();
+
         return services;
     }
 
