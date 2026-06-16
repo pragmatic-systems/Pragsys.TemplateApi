@@ -105,7 +105,7 @@ namespace Pragsys.TemplateApi.IntegrationTests.Features
         
         private static global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages InitializeCucumberMessages()
         {
-            return new global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages("Features/TodoApiFeatures.feature.ndjson", 5);
+            return new global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages("Features/TodoApiFeatures.feature.ndjson", 6);
         }
         
         async System.Threading.Tasks.ValueTask Xunit.IAsyncLifetime.InitializeAsync()
@@ -278,6 +278,64 @@ this.ScenarioInitialize(scenarioInfo, ruleInfo);
 #line hidden
 #line 33
  await testRunner.ThenAsync("The response should be 401 Unauthorized", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [global::Xunit.FactAttribute(DisplayName="Upload CSV and import todo items via background job")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "TodoApiFeatures")]
+        [global::Xunit.TraitAttribute("Description", "Upload CSV and import todo items via background job")]
+        [global::Xunit.TraitAttribute("Category", "todo-list")]
+        [global::Xunit.TraitAttribute("Category", "api")]
+        [global::Xunit.TraitAttribute("Category", "upload")]
+        public async global::System.Threading.Tasks.Task UploadCSVAndImportTodoItemsViaBackgroundJob()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "todo-list",
+                    "api",
+                    "upload"};
+            global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
+            string pickleIndex = "3";
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Upload CSV and import todo items via background job", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            string[] tagsOfRule = ((string[])(null));
+            global::Reqnroll.RuleInfo ruleInfo = null;
+#line 36
+this.ScenarioInitialize(scenarioInfo, ruleInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                await testRunner.SkipScenarioAsync();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 37
+ await testRunner.GivenAsync("We have user \'Alice\'", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+#line hidden
+#line 38
+ await testRunner.AndAsync("User \'Alice\' has claims \'ReadWrite\'", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 39
+ await testRunner.WhenAsync("We are connecting as \'Alice\'", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+#line 40
+ await testRunner.AndAsync("We upload a CSV file with three todo items", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 41
+ await testRunner.ThenAsync("The response should contain a blob name", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+#line 42
+ await testRunner.WhenAsync("We wait for the background job to complete", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+#line 43
+ await testRunner.AndAsync("We get our TodoList", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 44
+ await testRunner.ThenAsync("The response should contain a Todo List", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+#line 45
+ await testRunner.AndAsync("The response should contain at least 3 todo items", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
             }
             await this.ScenarioCleanupAsync();

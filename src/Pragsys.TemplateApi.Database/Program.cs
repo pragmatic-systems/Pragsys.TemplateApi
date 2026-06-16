@@ -1,4 +1,6 @@
-﻿namespace Pragsys.TemplateApi.Database;
+﻿using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+
+namespace Pragsys.TemplateApi.Database;
 
 public static class Program
 {
@@ -13,6 +15,7 @@ public static class Program
 
         try
         {
+            Migrator.EnsureDb(connectionString);
             Migrator.Migrate(connectionString);
         }
         catch (Exception ex)

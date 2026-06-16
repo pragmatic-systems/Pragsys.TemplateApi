@@ -1,6 +1,6 @@
 ﻿using System.Net;
 using System.Security.Claims;
-using Pragsys.TemplateApi.Api;
+using Pragsys.TemplateApi.Instrumentation;
 using Pragsys.TemplateApi.IntegrationTests.Infrastructure;
 using Reqnroll;
 
@@ -57,6 +57,11 @@ public class CommonStepDefinitions
         {
             claims.Add(new Claim(ClaimTypes.Role, Roles.TodoListRead));
             claims.Add(new Claim(ClaimTypes.Role, Roles.TodoListWrite));
+        }
+
+        if (claimSetName == "HangfireDashboard")
+        {
+            claims.Add(new Claim(ClaimTypes.Role, Roles.HangfireDashboard));
         }
 
         _testContext.AddUserClaims(userName, claims);

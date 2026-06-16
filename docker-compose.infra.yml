@@ -37,6 +37,7 @@ services:
   local-keycloak:
     image: quay.io/keycloak/keycloak:26.6
     container_name: local-keycloak
+    restart: always
     ports:
       - "8443:8443"
     environment:
@@ -52,6 +53,17 @@ services:
     networks:
       - local
     command: [ "start-dev" ]
+
+  local-azurite:
+    image: mcr.microsoft.com/azure-storage/azurite
+    container_name: local-azurite
+    restart: always
+    ports:
+      - "10000:10000"
+    environment:
+      - AZURITE_ACCOUNTS=devstoreaccount1:my-account-key
+    networks:
+      - local
 
   local-sonarqube:
     image: sonarqube

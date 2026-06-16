@@ -1,42 +1,61 @@
 ﻿using System;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.RateLimiting;
 using System.Threading.Tasks;
+using Hangfire;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
-using Pragsys.CQRS;
+using Microsoft.OpenApi.Models;
 using Pragsys.TemplateApi.Api.Auth;
-using Pragsys.TemplateApi.Api.HostedServices;
-using Pragsys.TemplateApi.Core.Validators;
-using Pragsys.TemplateApi.Database;
-using Prometheus;
-using Serilog;
+using Pragsys.TemplateApi.Instrumentation;
 
 namespace Pragsys.TemplateApi.Api;
 
 public static class ConfigurationExtensions
 {
-    public static IApplicationBuilder UseHttpsRedirectionExcluding(this IApplicationBuilder builder, string excluding)
+    public static IServiceCollection WithSwaggerGen(this IServiceCollection services)
     {
-        builder.UseWhen(
-            context => !context.Request.Path.StartsWithSegments(excluding),
-            builder => builder.UseHttpsRedirection());
+        services.AddSwaggerGen(options =>
+        {
+            var securityScheme = new OpenApiSecurityScheme
+            {
+                Name = "Authorization",
+                Type = SecuritySchemeType.Http,
+                Scheme = "bearer",
+                BearerFormat = "JWT",
+                In = ParameterLocation.Header,
+                Description = "Enter a JWT token to authenticate.",
+            };
 
-        return builder;
+            options.AddSecurityDefinition("Bearer", securityScheme);
+
+            var securityRequirement = new OpenApiSecurityRequirement();
+            securityRequirement.Add(
+                new OpenApiSecurityScheme
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer",
+                    },
+                },
+                new string[0]);
+
+            options.AddSecurityRequirement(securityRequirement);
+        });
+
+        return services;
     }
 
     public static IServiceCollection WithIngressConfig(this IServiceCollection services)
@@ -59,33 +78,6 @@ public static class ConfigurationExtensions
             // 1mb request size
             options.Limits.MaxRequestBodySize = 1024 * 1024;
         });
-        return services;
-    }
-
-    public static IServiceCollection WithMediatr(this IServiceCollection services)
-    {
-        services.AddCqrs(cfg =>
-        {
-            cfg.RegisterServicesFromAssemblies(
-                typeof(InsertTodoValidator).Assembly);
-        });
-        return services;
-    }
-
-    public static IServiceCollection WithPostgres(this IServiceCollection services, IConfiguration configuration)
-    {
-        services.AddDbContext<ApplicationDbContext>((s, options) =>
-        {
-            var config = s.GetRequiredService<IConfiguration>();
-            var conn = config.GetConnectionString("PostgresDb");
-
-            options
-                .UseNpgsql(conn)
-                .UseSnakeCaseNamingConvention()
-                .EnableDetailedErrors();
-        });
-
-        services.AddHostedService<PostgresInitService>();
 
         return services;
     }
@@ -102,7 +94,7 @@ public static class ConfigurationExtensions
                 options.Authority = authSection.GetValue<string>("Issuer");
 
                 // NOTE: This uses any pre-loaded IConfigurationManager<OpenIdConnectConfiguration> which can be supplied by test runners.
-                // If none is supplied, then it remains null and will be auto-initialized based off Authority.
+                // If none is supplied, then it remains null and will be auto-initialized based off Authority/Issuer.
                 options.ConfigurationManager = services
                     .BuildServiceProvider()
                     .GetService<IConfigurationManager<OpenIdConnectConfiguration>>();
@@ -150,52 +142,6 @@ public static class ConfigurationExtensions
         return services;
     }
 
-    public static IServiceCollection WithSerilog(this IServiceCollection services, IConfiguration configuration, string appName)
-    {
-        Log.Logger = new LoggerConfiguration()
-            .ReadFrom.Configuration(configuration)
-            .WriteTo.Console()
-            .Enrich.WithProperty("App", appName)
-            .CreateLogger();
-
-        services.AddSingleton(Log.Logger);
-
-        services.AddLogging(lb =>
-        {
-            lb.ClearProviders();
-            lb.AddSerilog(Log.Logger);
-        });
-
-        return services;
-    }
-
-    public static IServiceCollection AddAppHealthChecks(this IServiceCollection services, IConfiguration configuration, bool testMode)
-    {
-        var healthcheckBuilder = services
-            .AddHealthChecks()
-            .AddNpgSql(s =>
-            {
-                return configuration.GetConnectionString("PostgresDb");
-            });
-
-        // NOTE: Suppress healthcheck for OIDC if we are in test mode, as it's a fake endpoint that won't exist.
-        if (!testMode)
-        {
-            healthcheckBuilder.AddUrlGroup(
-                s =>
-                {
-                    var config = configuration
-                        .GetRequiredSection("OpenIdConnect:OpenIdConfigUrl")
-                        .Value;
-
-                    return new Uri(config);
-                },
-                "OIDC Provider");
-        }
-
-        return services;
-    }
-
     public static WebApplication ConfigureSwagger(this WebApplication app)
     {
         if (app.Environment.IsDevelopment())
@@ -207,29 +153,16 @@ public static class ConfigurationExtensions
         return app;
     }
 
-    public static WebApplication MapInstrumentationEndpoints(this WebApplication app)
+    public static WebApplication UseHangfireDashboard(this WebApplication app)
     {
-        app.UseHttpsRedirectionExcluding("/_system");
-
-        app.MapMetrics("_system/metrics");
-        app.MapHealthChecks("/_system/ping", new HealthCheckOptions { Predicate = _ => false });
-        app.MapHealthChecks("/_system/health", new HealthCheckOptions
+        app.UseHangfireDashboard("/hangfire/dashboard", new DashboardOptions
         {
-            ResponseWriter = async (c, r) =>
+            Authorization = new[]
             {
-                var response = new
-                {
-                    Health = r.Status.ToString(),
-                    Checks = r.Entries.Select(x =>
-                        new
-                        {
-                            Health = x.Value.Status.ToString(),
-                            Name = x.Key,
-                        }),
-                    Duration = r.TotalDuration,
-                };
-                await c.Response.WriteAsJsonAsync(response);
+                new HangfireAuthorizationFilter(),
             },
+            DisplayStorageConnectionString = false,
+            AppPath = null,
         });
 
         return app;

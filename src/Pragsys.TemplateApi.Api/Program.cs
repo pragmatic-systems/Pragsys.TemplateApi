@@ -1,7 +1,10 @@
 ﻿using System;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
+using Pragsys.TemplateApi.Api.Auth;
+using Pragsys.TemplateApi.Instrumentation;
 using Prometheus;
 using Serilog;
 
@@ -18,18 +21,18 @@ public class Program
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            var testMode = builder.Environment.EnvironmentName == "IntegrationTest";
-
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.WithSwaggerGen();
             builder.Services.WithIngressConfig();
             builder.Services.WithSerilog(builder.Configuration, "Pragsys.TemplateApi API");
             builder.Services.WithPostgres(builder.Configuration);
+            builder.Services.WithAzureBlobStorage(builder.Configuration);
             builder.Services.WithMediatr();
             builder.Services.WithOpenIdConnect(builder.Configuration);
             builder.Services.WithAuthorizationPolicy();
+            builder.Services.WithHangfire(builder.Configuration);
             builder.Services.AddControllers();
-            builder.Services.AddAppHealthChecks(builder.Configuration, testMode);
+            builder.Services.AddAppHealthChecks(builder.Configuration);
 
             var app = builder.Build();
 
@@ -38,8 +41,10 @@ public class Program
             app.UseMetricServer(); // https://github.com/prometheus-net/prometheus-net
             app.UseRouting();
             app.UseHttpMetrics();
+            app.UseHangfireCookieJwt(); // Extract JWT from cookie and inject into Auth header BEFORE the JWT Bearer authentication handler runs.
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseHangfireDashboard();
             app.MapControllers();
 
             Log.Logger.Information("Starting Application");
@@ -50,6 +55,10 @@ public class Program
         {
             Log.Logger.Error(ex, "Error Starting Application");
             throw;
+        }
+        finally
+        {
+            Log.CloseAndFlush();
         }
 #pragma warning restore S2139
     }
