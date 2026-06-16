@@ -124,10 +124,49 @@ Issuer: `https://localhost:8443/realms/todolist-realm`
 Audience: `todolist-client`
 
 ## Azure EntraId Config
-* TODO
+* Go to Entra ID. (https://entra.microsoft.com/)
+* Go to `App Registrations` -> Register your App. Note the `ApplicationId` / `ClientId`
+* Go to `Authentication` -> Go to settings. Enable `Access tokens` and `ID tokens`
+* Go to `Certificates and Secrets` -> Create a client secret, record the value.
+* Go to `Token Configuration` -> Add optional claim `Access Token` -> , then select `acct`, `acrs`, `aud`, `email`, `family_name`, `given_name`
+* Go to `Expose an API` -> Setup your `ApplicationID URI` -> formatted `api://todolist`
+* Add a scope -> This will create a scope.
+* Add a `Client Application` -> This will be the application consuming your API. It should be the ID for another registered app, and in the case of the demo, we will be our own owners. Use the AppId you just created.
+* Go to `App roles` -> Create the roles for your applicaiton. In this case we are using `TodoList:Read` amd `TodoList:Write`
+* Go to `Owners` -> Add your root account and any relevant accounts you want to manage this app.
+* Go to `Api Permissions` -> Add a permission -> `My APIs` -> Chose your API -> `Application Permissions`
+* Select the permissions you are interested in, both `TodoList:Read` and `TodoList:Write`.
+* Ensure you `Grant Admin Consent` -> This means the roles show up in the JWT.
+
+### Generate JWT
+
+Post: https://login.microsoftonline.com/{tenant-id}/oauth2/v2.0/token
+
+With URL form:
+grant_type: client_credentials
+client_id: {your-application-client-id}
+client_secret: {your-client-secret}
+scope: api://{your-application-client-id}/.default
 
 ## AWS Cognito Config
-* TODO
+* Go to Amazon Cognito -> Manage User Pools -> Select your pool.
+* Go to App Integration -> App clients.
+* Select your client (or create one).
+* Enable "Generate client secret".
+* Go to "Authorization flows".
+* Check "Access token - client credentials". (This is critical; without this, the request will fail).
+* Go to "Token settings".
+* Ensure Access Token is enabled.
+* Go to "Custom Attributes" (Optional): If you want roles, you usually map Cognito Groups to claims or use Custom Attributes. Cognito doesn't have native "App Roles" like Azure. You typically use Cognito Groups (e.g., TodoList-Readers, TodoList-Writers) and assign the App Client to these groups, or use a Lambda Trigger to inject claims.
+
+### Generate JWT
+
+Post: https://your-region.auth.cognito-idp.amazonaws.com/{user-pool-id}/oauth2/token
+
+With URL form:
+grant_type: client_credentials
+client_id: {your-cognito-client-id}
+client_secret: {your-cognito-client-secret}
 
 ## Docker Pack and Push
 
