@@ -1,10 +1,10 @@
 {
   "$schema": "http://json.schemastore.org/template",
-  "author": "Tristan Rhodes",
+  "author": "Pragmatic Systems",
   "classifications": [ "DotNet Core", "Solution" ],
   "identity": "Pragsys.TemplateApi",
   "name": "Tested Api Template",
-  "description": "Postgres database with API, comes with DbUp, packages as Api and containers.",
+  "description": "API and Job Server with Postgres database, comes with full RBAC and OIDC, DbUp, and blob storage support, packages as containers.",
   "shortName": "Pragsys.TemplateApi",
   "tags": {
     "language": "C#",

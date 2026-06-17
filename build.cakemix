@@ -1,7 +1,8 @@
 {
   "NugetPackages": [],
   "DockerPackages": [
-    "./src/Pragsys.TemplateApi.Api/Dockerfile"
+    "./src/Pragsys.TemplateApi.Api/Dockerfile",
+    "./src/Pragsys.TemplateApi.Worker/Dockerfile"
     //"./src/Pragsys.TemplateApi.Database/Dockerfile"
   ],
   "Tests": [

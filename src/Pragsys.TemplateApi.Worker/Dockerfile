@@ -3,8 +3,8 @@
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
 
-ENV ASPNETCORE_URLS=http://+:8080
-EXPOSE 8080
+ENV ASPNETCORE_URLS=http://+:8081
+EXPOSE 8081
 
 RUN addgroup --system nonroot \
     && adduser --system --ingroup nonroot --shell /bin/sh nonroot
@@ -15,17 +15,17 @@ WORKDIR /src
 # Do not restore / install Husky hooks.
 ENV HUSKY=0
 
-COPY ["src/Pragsys.TemplateApi.Api/Pragsys.TemplateApi.Api.csproj", "src/Pragsys.TemplateApi.Api/"]
-RUN dotnet restore "src/Pragsys.TemplateApi.Api/Pragsys.TemplateApi.Api.csproj"
+COPY ["src/Pragsys.TemplateApi.Worker/Pragsys.TemplateApi.Worker.csproj", "src/Pragsys.TemplateApi.Worker/"]
+RUN dotnet restore "src/Pragsys.TemplateApi.Worker/Pragsys.TemplateApi.Worker.csproj"
 COPY /src /src
-WORKDIR "/src/Pragsys.TemplateApi.Api"
-RUN dotnet build "Pragsys.TemplateApi.Api.csproj" -c Release -o /app/build
+WORKDIR "/src/Pragsys.TemplateApi.Worker"
+RUN dotnet build "Pragsys.TemplateApi.Worker.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "Pragsys.TemplateApi.Api.csproj" -c Release -o /app/publish
+RUN dotnet publish "Pragsys.TemplateApi.Worker.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 USER nonroot
-ENTRYPOINT ["dotnet", "Pragsys.TemplateApi.Api.dll"]
+ENTRYPOINT ["dotnet", "Pragsys.TemplateApi.Worker.dll"]

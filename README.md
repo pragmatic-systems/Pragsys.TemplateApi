@@ -2,8 +2,8 @@
 This project is a template published by https://github.com/pragmatic-systems
 
 To Install: 
-* Clone Repo to local folder, eg `c:\git\Pragsys.TemplateApi`
-* Run `dotnet new install c:\git\Pragsys.TemplateApi`
+* Clone Repo to local folder, eg `c:\git\Pragsys.TemplateApi` (Windows) or `~/repos/Pragsys.TemplateApi` (Linux/macOS)
+* Run `dotnet new install <path-to-cloned-repo>`
 
 To Create a project: 
 * Navigate to your new empty project directory.
@@ -18,9 +18,35 @@ To Create a project:
 
 ## End Of Template Project Header
 
+## Table of Contents
+
+- [Overview](#overview)
+  - [Features](#features)
+  - [Prerequisites](#prerequisites)
+  - [To Run](#to-run)
+- [Formatting](#formatting)
+- [Local Services](#local-services)
+  - [Seq](#seq)
+  - [Postgres (+ PgAdmin)](#postgres--pgadmin)
+  - [Keycloak](#keycloak)
+  - [Database Migrations](#database-migrations)
+  - [Authentication](#authentication)
+- [Local Keycloak Hosting](#local-keycloak-hosting)
+  - [Keycloak SSL Setup](#keycloak-ssl-setup)
+  - [Keycloak Configuration](#keycloak-configuration)
+  - [Keycloak – Generate JWT](#keycloak--generate-jwt)
+  - [Keycloak – Validate JWT](#keycloak--validate-jwt)
+- [Azure Entra ID Config](#azure-entra-id-config)
+  - [Entra ID – Generate JWT](#entra-id--generate-jwt)
+  - [Entra ID – Validate JWT](#entra-id--validate-jwt)
+- [AWS Cognito Config](#aws-cognito-config)
+  - [Cognito – Generate JWT](#cognito--generate-jwt)
+  - [Cognito – Validate JWT](#cognito--validate-jwt)
+- [Docker Pack and Push](#docker-pack-and-push)
+
 ## Overview
 
-This solution contains a postgres DB, a simple Todo List API, and a DB up project to handle DB migrations.
+This solution contains a simple Todo List API with background Workerhost, a postgres DB, and a DB up project to handle DB migrations.
 
 ### Features
 * OpenIdConnect support for JWT based auth and RBAC.
@@ -76,7 +102,7 @@ Currently we run migrations on app-start, this simplifies startup and developmen
 ### Authentication
 If you have an existing AWS Cognito or Azure Entra setup, you can skip local keycloak setup and register the application with them.
 
-## Local Keycloak
+## Local Keycloak Hosting
 
 For full local development, you will need to configure Keycloak, which takes a bit more setup than just launching a docker container.
 
@@ -88,27 +114,20 @@ See the SSL Setup guide for local Keycloak in this repo: https://github.com/prag
 
 ### Keycloak Configuration
 
-### Create Realm
-Go to the dropdown `master` and create a new realm `todolist-realm`. It's worth bearing in mind that a Realm can represent all your users across multiple applications.
-
-In realm settings, set Unmanaged Attributes to `Only administrators can write`. This causes the Attributes table to be shown in User accounts, and will be where we add our custom role configurations.
-
-### Create Client
-In your new Realm, create a new client for your application `todolist-client`, ensuring you have enabled `Client authentication` and `Client authorization` and `Direct access grants`.
-
-In your new client, go to `client Scopes` => `todolist-client-dedicated` and:
-* add a custom attribute mapping for user attribute `roles`. `Add mapper by configuration` => `User Attribute`. Name: `roles-mapper`, User Attribute: `roles`, Token Claim Name: `roles` and set `Multivalued` = true. This will take any user attributes called `roles` and include them in the JWT token when loaded.
-* add a custom attribute mapping for audience and include the client name.
-
-Under `Client > Client Details > Credentials`, record the `clientsecret` for later.
-
-### Create User
-Create an app user `todolist-user`. As we are creating a service to service role the account will need to be interaction free. Configure the user completely, including first and last name and email (this is required to activate a User account), set and record the password, ensure that it is not transient and there are no pending actions for the user.
-Now add attributes (`roles`, `TodoList:Write`) and (`roles`, `TodoList:Read`) to the Attributes page.
+* Go to local **[Keycloak](https://localhost:8443/)**
+* Go to the **`master`** dropdown → Create a new realm **`todolist-realm`** (a realm can represent all users across multiple applications).
+* In **realm settings**, set **Unmanaged Attributes** to `Only administrators can write`. This shows the Attributes table in user accounts for custom role configurations.
+* In your new realm, create a client **`todolist-client`** → Enable **`Client authentication`**, **`Client authorization`**, and **`Direct access grants`**.
+* Go to **Client Scopes** → **`todolist-client-dedicated`**:
+  * **Add a roles mapper:** `Add mapper by configuration` → `User Attribute`. Name: `roles-mapper`, User Attribute: `roles`, Token Claim Name: `roles`, set **`Multivalued`** = true. This includes user `roles` attributes in the JWT.
+  * **Add an audience mapper** and include the client name.
+* Under **Client** → **Client Details** → **Credentials**, record the **`client secret`** for later.
+* Create an app user **`todolist-user`** → Configure fully (first/last name, email required to activate), set and record the password, ensure it is **not transient** and has no pending actions.
+* Add attributes to the user: (`roles`, `TodoList:Read`), (`roles`, `TodoList:Write`), and (`roles`, `Hangfire:Dashboard`).
 	
-### Generate JWT
+### Keycloak – Generate JWT
 
-Post: https://localhost:8443/realms/{myrealm}/protocol/openid-connect/token
+Post: https://localhost:8443/realms/todolist-realm/protocol/openid-connect/token
 
 With URL form:
 grant_type: password
@@ -117,17 +136,73 @@ client_secret: {clientsecret}
 username: todolist-user
 password: {userpassword}
 
-### Validate JWT
+### Keycloak – Validate JWT
+
 For the configuration in your dotnet application, you will need:
 
 Issuer: `https://localhost:8443/realms/todolist-realm`
 Audience: `todolist-client`
 
-## Azure EntraId Config
-* TODO
+## Azure Entra ID Config
+
+* Go to **[Entra ID](https://entra.microsoft.com/)** → **App Registrations** → Register your app. Note the **`ApplicationId`** / **`ClientId`**.
+* Go to **Authentication** → Enable **`Access tokens`** and **`ID tokens`**.
+* Go to **Certificates and Secrets** → Create a **client secret** and record the value.
+* Go to **Token Configuration** → Add optional claims for **`Access Token`** → select `acct`, `acrs`, `aud`, `email`, `family_name`, `given_name`.
+* Go to **Expose an API** → Set your **`Application ID URI`** (e.g. `api://todolist`).
+* **Add a scope** to create the permission scopes.
+* **Add a Client Application** → This is the app consuming your API. For the demo, use the AppId you just created.
+* Go to **App roles** → Create roles for your application: `TodoList:Read`, `TodoList:Write`, and `Hangfire:Dashboard`.
+* Go to **Owners** → Add your root account and any relevant management accounts.
+* Go to **API Permissions** → **Add a permission** → **My APIs** → Choose your API → **Application Permissions**.
+* Select **`TodoList:Read`**, **`TodoList:Write`**, and **`Hangfire:Dashboard`**.
+* Click **Grant Admin Consent** → This ensures the roles appear in the JWT.
+
+### Entra ID – Generate JWT
+
+Post: https://login.microsoftonline.com/{tenant-id}/oauth2/v2.0/token
+
+With URL form:
+grant_type: client_credentials
+client_id: {your-application-client-id}
+client_secret: {your-client-secret}
+scope: api://{your-application-client-id}/.default
+
+### Entra ID – Validate JWT
+
+For the configuration in your dotnet application, you will need:
+
+Issuer: `https://login.microsoftonline.com/{tenant-id}/v2.0`
+Audience: `api://todolist`
 
 ## AWS Cognito Config
-* TODO
+
+> ⚠️ **Disclaimer:** Not production-ready. This configuration bypasses standard security practices for demonstration purposes only.
+
+* Go to **[AWS Cognito](https://aws.amazon.com/cognito/)** → **Manage User Pools** → Select your pool.
+* Go to **App Integration** → **App clients** → Select your client (or create one).
+* Enable **"Generate client secret"**.
+* Go to **Authorization flows** → Check **"Access token – client credentials"**.
+* Go to **Token settings** → Ensure **Access Token** is enabled.
+* **Demo Hack (Lambda):** Create a **Pre Token Generation** Lambda trigger. Configure it to always inject `{"TodoList:Read": ["true"], "TodoList:Write": ["true"], "Hangfire:Dashboard": ["true"]}` into `claimsToAddOrOverride`, ignoring all user/group context.
+* Attach the Lambda to your User Pool under **Triggers** → **Pre Token Generation**.
+* Test by requesting a token via **Client Credentials** flow and decoding the JWT to verify the custom claims are present.
+
+### Cognito – Generate JWT
+
+Post: https://{your-region}.auth.cognito-idp.amazonaws.com/{user-pool-id}/oauth2/token
+
+With URL form:
+grant_type: client_credentials
+client_id: {your-cognito-client-id}
+client_secret: {your-cognito-client-secret}
+
+### Cognito – Validate JWT
+
+For the configuration in your dotnet application, you will need:
+
+Issuer: `https://cognito-idp.{your-region}.amazonaws.com/{user-pool-id}`
+Audience: `{your-cognito-client-id}`
 
 ## Docker Pack and Push
 
