@@ -88,6 +88,7 @@ See the SSL Setup guide for local Keycloak in this repo: https://github.com/prag
 
 ## Keycloak Configuration
 
+* Go to local **[Keycloak](https://localhost:8443/)**
 * Go to the **`master`** dropdown → Create a new realm **`todolist-realm`** (a realm can represent all users across multiple applications).
 * In **realm settings**, set **Unmanaged Attributes** to `Only administrators can write`. This shows the Attributes table in user accounts for custom role configurations.
 * In your new realm, create a client **`todolist-client`** → Enable **`Client authentication`**, **`Client authorization`**, and **`Direct access grants`**.
@@ -96,7 +97,7 @@ See the SSL Setup guide for local Keycloak in this repo: https://github.com/prag
   * **Add an audience mapper** and include the client name.
 * Under **Client** → **Client Details** → **Credentials**, record the **`client secret`** for later.
 * Create an app user **`todolist-user`** → Configure fully (first/last name, email required to activate), set and record the password, ensure it is **not transient** and has no pending actions.
-* Add attributes to the user: (`roles`, `TodoList:Write`) and (`roles`, `TodoList:Read`).
+* Add attributes to the user: (`roles`, `TodoList:Read`), (`roles`, `TodoList:Write`), and (`roles`, `Hangfire:Dashboard`).
 	
 ### Generate JWT
 
@@ -124,10 +125,10 @@ Audience: `todolist-client`
 * Go to **Expose an API** → Set your **`Application ID URI`** (e.g. `api://todolist`).
 * **Add a scope** to create the permission scopes.
 * **Add a Client Application** → This is the app consuming your API. For the demo, use the AppId you just created.
-* Go to **App roles** → Create roles for your application: `TodoList:Read` and `TodoList:Write`.
+* Go to **App roles** → Create roles for your application: `TodoList:Read`, `TodoList:Write`, and `Hangfire:Dashboard`.
 * Go to **Owners** → Add your root account and any relevant management accounts.
 * Go to **API Permissions** → **Add a permission** → **My APIs** → Choose your API → **Application Permissions**.
-* Select **`TodoList:Read`** and **`TodoList:Write`**.
+* Select **`TodoList:Read`**, **`TodoList:Write`**, and **`Hangfire:Dashboard`**.
 * Click **Grant Admin Consent** → This ensures the roles appear in the JWT.
 
 ### Generate JWT
@@ -144,7 +145,7 @@ scope: api://{your-application-client-id}/.default
 
 > ⚠️ **Disclaimer:** Not production-ready. This configuration bypasses standard security practices for demonstration purposes only.
 
-* Go to **Amazon Cognito** → **Manage User Pools** → Select your pool.
+* Go to **[AWS Cognito](https://aws.amazon.com/cognito/)** → **Manage User Pools** → Select your pool.
 * Go to **App Integration** → **App clients** → Select your client (or create one).
 * Enable **"Generate client secret"**.
 * Go to **Authorization flows** → Check **"Access token – client credentials"**.
