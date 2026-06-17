@@ -2,8 +2,8 @@
 This project is a template published by https://github.com/pragmatic-systems
 
 To Install: 
-* Clone Repo to local folder, eg `c:\git\Pragsys.TemplateApi`
-* Run `dotnet new install c:\git\Pragsys.TemplateApi`
+* Clone Repo to local folder, eg `c:\git\Pragsys.TemplateApi` (Windows) or `~/repos/Pragsys.TemplateApi` (Linux/macOS)
+* Run `dotnet new install <path-to-cloned-repo>`
 
 To Create a project: 
 * Navigate to your new empty project directory.
@@ -86,7 +86,7 @@ For local keycloak to work properly as an OIDC server with another application, 
 
 See the SSL Setup guide for local Keycloak in this repo: https://github.com/pragmatic-systems/Pragsys.DockerTools
 
-## Keycloak Configuration
+### Keycloak Configuration
 
 * Go to local **[Keycloak](https://localhost:8443/)**
 * Go to the **`master`** dropdown → Create a new realm **`todolist-realm`** (a realm can represent all users across multiple applications).
@@ -101,7 +101,7 @@ See the SSL Setup guide for local Keycloak in this repo: https://github.com/prag
 	
 ### Generate JWT
 
-Post: https://localhost:8443/realms/{myrealm}/protocol/openid-connect/token
+Post: https://localhost:8443/realms/todolist-realm/protocol/openid-connect/token
 
 With URL form:
 grant_type: password
