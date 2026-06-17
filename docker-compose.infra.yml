@@ -65,19 +65,5 @@ services:
     networks:
       - local
 
-  local-sonarqube:
-    image: sonarqube
-    container_name: local-sonarqube
-    ports:
-      - "9000:9000"
-    networks:
-      - local
-    healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:9000/api/system/info"]
-      interval: 10s
-      timeout: 5s
-      retries: 30
-      start_period: 60s
-
 networks:
     local:
