@@ -1,2 +1,0 @@
-#!/usr/bin/env bash
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".githooks\secret-scan.ps1"

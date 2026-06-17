@@ -11,6 +11,10 @@ RUN addgroup --system nonroot \
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
+
+# Do not restore / install Husky hooks.
+ENV HUSKY=0
+
 COPY ["src/Pragsys.TemplateApi.Api/Pragsys.TemplateApi.Api.csproj", "src/Pragsys.TemplateApi.Api/"]
 RUN dotnet restore "src/Pragsys.TemplateApi.Api/Pragsys.TemplateApi.Api.csproj"
 COPY /src /src
