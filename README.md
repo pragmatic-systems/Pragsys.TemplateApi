@@ -9,12 +9,17 @@ To Create a project:
 * Navigate to your new empty project directory.
 * Run `dotnet new Pragsys.TemplateApi --ProjectName:MyAppName`
 
+## Status
+
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=pragmatic-systems_Pragsys.Template.Api&metric=alert_status&token=6047a2bbb68224d6ef02044a0b82b9aae2f68067)](https://sonarcloud.io/summary/new_code?id=pragmatic-systems_Pragsys.Template.Api)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=pragmatic-systems_Pragsys.Template.Api&metric=bugs)](https://sonarcloud.io/summary/new_code?id=pragmatic-systems_Pragsys.Template.Api)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=pragmatic-systems_Pragsys.Template.Api&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=pragmatic-systems_Pragsys.Template.Api)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=pragmatic-systems_Pragsys.Template.Api&metric=coverage&token=6047a2bbb68224d6ef02044a0b82b9aae2f68067)](https://sonarcloud.io/summary/new_code?id=pragmatic-systems_Pragsys.Template.Api)
+
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=pragmatic-systems_Pragsys.Template.Api&metric=security_rating&token=6047a2bbb68224d6ef02044a0b82b9aae2f68067)](https://sonarcloud.io/summary/new_code?id=pragmatic-systems_Pragsys.Template.Api)
 [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=pragmatic-systems_Pragsys.Template.Api&metric=vulnerabilities&token=6047a2bbb68224d6ef02044a0b82b9aae2f68067)](https://sonarcloud.io/summary/new_code?id=pragmatic-systems_Pragsys.Template.Api)
 [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=pragmatic-systems_Pragsys.Template.Api&metric=reliability_rating&token=6047a2bbb68224d6ef02044a0b82b9aae2f68067)](https://sonarcloud.io/summary/new_code?id=pragmatic-systems_Pragsys.Template.Api)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=pragmatic-systems_Pragsys.Template.Api&metric=sqale_rating&token=6047a2bbb68224d6ef02044a0b82b9aae2f68067)](https://sonarcloud.io/summary/new_code?id=pragmatic-systems_Pragsys.Template.Api)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=pragmatic-systems_Pragsys.Template.Api&metric=coverage&token=6047a2bbb68224d6ef02044a0b82b9aae2f68067)](https://sonarcloud.io/summary/new_code?id=pragmatic-systems_Pragsys.Template.Api)
 
 ## End Of Template Project Header
 
