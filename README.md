@@ -20,7 +20,7 @@ To Create a project:
 
 ## Overview
 
-This solution contains a postgres DB, a simple Todo List API, and a DB up project to handle DB migrations.
+This solution contains a simple Todo List API with background Workerhost, a postgres DB, and a DB up project to handle DB migrations.
 
 ### Features
 * OpenIdConnect support for JWT based auth and RBAC.
