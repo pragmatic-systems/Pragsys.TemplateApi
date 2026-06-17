@@ -18,6 +18,32 @@ To Create a project:
 
 ## End Of Template Project Header
 
+## Table of Contents
+
+- [Overview](#overview)
+  - [Features](#features)
+  - [Prerequisites](#prerequisites)
+  - [To Run](#to-run)
+- [Formatting](#formatting)
+- [Local Services](#local-services)
+  - [Seq](#seq)
+  - [Postgres (+ PgAdmin)](#postgres--pgadmin)
+  - [Keycloak](#keycloak)
+  - [Database Migrations](#database-migrations)
+  - [Authentication](#authentication)
+- [Local Keycloak Hosting](#local-keycloak-hosting)
+  - [Keycloak SSL Setup](#keycloak-ssl-setup)
+  - [Keycloak Configuration](#keycloak-configuration)
+  - [Keycloak – Generate JWT](#keycloak--generate-jwt)
+  - [Keycloak – Validate JWT](#keycloak--validate-jwt)
+- [Azure Entra ID Config](#azure-entra-id-config)
+  - [Entra ID – Generate JWT](#entra-id--generate-jwt)
+  - [Entra ID – Validate JWT](#entra-id--validate-jwt)
+- [AWS Cognito Config](#aws-cognito-config)
+  - [Cognito – Generate JWT](#cognito--generate-jwt)
+  - [Cognito – Validate JWT](#cognito--validate-jwt)
+- [Docker Pack and Push](#docker-pack-and-push)
+
 ## Overview
 
 This solution contains a simple Todo List API with background Workerhost, a postgres DB, and a DB up project to handle DB migrations.
@@ -99,7 +125,7 @@ See the SSL Setup guide for local Keycloak in this repo: https://github.com/prag
 * Create an app user **`todolist-user`** → Configure fully (first/last name, email required to activate), set and record the password, ensure it is **not transient** and has no pending actions.
 * Add attributes to the user: (`roles`, `TodoList:Read`), (`roles`, `TodoList:Write`), and (`roles`, `Hangfire:Dashboard`).
 	
-### Generate JWT
+### Keycloak – Generate JWT
 
 Post: https://localhost:8443/realms/todolist-realm/protocol/openid-connect/token
 
@@ -110,7 +136,8 @@ client_secret: {clientsecret}
 username: todolist-user
 password: {userpassword}
 
-### Validate JWT
+### Keycloak – Validate JWT
+
 For the configuration in your dotnet application, you will need:
 
 Issuer: `https://localhost:8443/realms/todolist-realm`
@@ -131,7 +158,7 @@ Audience: `todolist-client`
 * Select **`TodoList:Read`**, **`TodoList:Write`**, and **`Hangfire:Dashboard`**.
 * Click **Grant Admin Consent** → This ensures the roles appear in the JWT.
 
-### Generate JWT
+### Entra ID – Generate JWT
 
 Post: https://login.microsoftonline.com/{tenant-id}/oauth2/v2.0/token
 
@@ -140,6 +167,13 @@ grant_type: client_credentials
 client_id: {your-application-client-id}
 client_secret: {your-client-secret}
 scope: api://{your-application-client-id}/.default
+
+### Entra ID – Validate JWT
+
+For the configuration in your dotnet application, you will need:
+
+Issuer: `https://login.microsoftonline.com/{tenant-id}/v2.0`
+Audience: `api://todolist`
 
 ## AWS Cognito Config
 
@@ -154,7 +188,7 @@ scope: api://{your-application-client-id}/.default
 * Attach the Lambda to your User Pool under **Triggers** → **Pre Token Generation**.
 * Test by requesting a token via **Client Credentials** flow and decoding the JWT to verify the custom claims are present.
 
-### Generate JWT
+### Cognito – Generate JWT
 
 Post: https://{your-region}.auth.cognito-idp.amazonaws.com/{user-pool-id}/oauth2/token
 
@@ -162,6 +196,13 @@ With URL form:
 grant_type: client_credentials
 client_id: {your-cognito-client-id}
 client_secret: {your-cognito-client-secret}
+
+### Cognito – Validate JWT
+
+For the configuration in your dotnet application, you will need:
+
+Issuer: `https://cognito-idp.{your-region}.amazonaws.com/{user-pool-id}`
+Audience: `{your-cognito-client-id}`
 
 ## Docker Pack and Push
 
