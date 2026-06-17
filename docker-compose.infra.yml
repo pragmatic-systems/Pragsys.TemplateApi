@@ -61,7 +61,7 @@ services:
     ports:
       - "10000:10000"
     environment:
-      - AZURITE_ACCOUNTS=devstoreaccount1:my-account-key
+      - AZURITE_ACCOUNTS=devstoreaccount1:BA==
     networks:
       - local
 
