@@ -149,19 +149,23 @@ client_secret: {your-client-secret}
 scope: api://{your-application-client-id}/.default
 
 ## AWS Cognito Config
-* Go to Amazon Cognito -> Manage User Pools -> Select your pool.
-* Go to App Integration -> App clients.
-* Select your client (or create one).
-* Enable "Generate client secret".
-* Go to "Authorization flows".
-* Check "Access token - client credentials". (This is critical; without this, the request will fail).
-* Go to "Token settings".
-* Ensure Access Token is enabled.
-* Go to "Custom Attributes" (Optional): If you want roles, you usually map Cognito Groups to claims or use Custom Attributes. Cognito doesn't have native "App Roles" like Azure. You typically use Cognito Groups (e.g., TodoList-Readers, TodoList-Writers) and assign the App Client to these groups, or use a Lambda Trigger to inject claims.
+DISCLAIMER: Not production ready. This configuration bypasses standard security practices for demonstration purposes only.
+
+Go to Amazon Cognito -> Manage User Pools -> Select your pool.
+Go to App Integration -> App clients.
+Select your client (or create one).
+Enable "Generate client secret".
+Go to "Authorization flows".
+Check "Access token - client credentials".
+Go to "Token settings".
+Ensure Access Token is enabled.
+Demo Hack (Lambda): Create a Pre Token Generation Lambda trigger. Configure it to always inject {"TodoList:Read": ["true"], "TodoList:Write": ["true"], "Hangfire:Dashboard": ["true"]} into claimsToAddOrOverride, ignoring all user/group context.
+Attach the Lambda to your User Pool under Triggers -> Pre Token Generation.
+Test by requesting a token via Client Credentials flow and decoding the JWT to verify the custom claims are present.
 
 ### Generate JWT
 
-Post: https://your-region.auth.cognito-idp.amazonaws.com/{user-pool-id}/oauth2/token
+Post: https://{your-region}.auth.cognito-idp.amazonaws.com/{user-pool-id}/oauth2/token
 
 With URL form:
 grant_type: client_credentials
