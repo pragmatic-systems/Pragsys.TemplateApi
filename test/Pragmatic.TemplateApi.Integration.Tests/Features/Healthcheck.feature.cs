@@ -11,7 +11,7 @@
 #region Designer generated code
 #pragma warning disable
 using Reqnroll;
-namespace Pragmatic.TemplateApi.IntegrationTests.Features
+namespace Pragmatic.TemplateApi.Integration.Tests.Features
 {
     
     
