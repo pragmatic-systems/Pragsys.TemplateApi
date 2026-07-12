@@ -3,14 +3,12 @@
   "DockerPackages": [
     "./src/Pragmatic.TemplateApi.Api/Dockerfile",
     "./src/Pragmatic.TemplateApi.Worker/Dockerfile"
-    //"./src/Pragmatic.TemplateApi.Database/Dockerfile"
   ],
   "Tests": [
     "./test/Pragmatic.TemplateApi.IntegrationTests/Pragmatic.TemplateApi.IntegrationTests.csproj",
     "./test/Pragmatic.TemplateApi.UnitTests/Pragmatic.TemplateApi.UnitTests.csproj"
   ],
   "Benchmarks": [
-    //"./test/Pragmatic.TemplateApi.Benchmark/Pragmatic.TemplateApi.Benchmark.csproj"
   ],
   "ApiSpecs": {
     "Pragmatic.TemplateApi.Api": "http://localhost:5080"
