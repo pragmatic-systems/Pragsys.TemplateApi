@@ -2,10 +2,10 @@
   "$schema": "http://json.schemastore.org/template",
   "author": "Pragmatic Systems",
   "classifications": [ "DotNet Core", "Solution" ],
-  "identity": "Pragsys.TemplateApi",
+  "identity": "Pragmatic.TemplateApi",
   "name": "Tested Api Template",
   "description": "API and Job Server with Postgres database, comes with full RBAC and OIDC, DbUp, and blob storage support, packages as containers.",
-  "shortName": "Pragsys.TemplateApi",
+  "shortName": "Pragmatic.TemplateApi",
   "tags": {
     "language": "C#",
     "type": "solution"
@@ -20,13 +20,13 @@
       "type": "derived",
       "valueSource": "ProjectName",
       "valueTransform": "chain",
-      "replaces": "Pragsys.TemplateApi"
+      "replaces": "Pragmatic.TemplateApi"
     },
     "RenameFiles": {
       "type": "derived",
       "valueSource": "ProjectName",
       "valueTransform": "chain",
-      "fileRename": "Pragsys.TemplateApi"
+      "fileRename": "Pragmatic.TemplateApi"
     }
   },
   "sources": [
