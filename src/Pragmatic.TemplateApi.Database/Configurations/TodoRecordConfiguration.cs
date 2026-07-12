@@ -1,0 +1,24 @@
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Pragmatic.TemplateApi.Database.Model;
+
+namespace Pragmatic.TemplateApi.Database.Configurations;
+
+public class TodoRecordConfiguration : IEntityTypeConfiguration<TodoRecord>
+{
+    public void Configure(EntityTypeBuilder<TodoRecord> entity)
+    {
+        entity
+            .HasKey(e => e.ItemId);
+
+        entity
+            .ToTable("todo_list");
+
+        entity
+            .Property(e => e.Version)
+            .IsConcurrencyToken()
+            .ValueGeneratedOnAddOrUpdate()
+            .HasColumnType("xid")
+            .HasColumnName("xmin");
+    }
+}

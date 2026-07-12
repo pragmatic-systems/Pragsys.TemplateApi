@@ -1,13 +1,13 @@
-# Pragsys .NET API Template Header
+# Pragmatic .NET API Template Header
 This project is a template published by https://github.com/pragmatic-systems
 
 To Install: 
-* Clone Repo to local folder, eg `c:\git\Pragsys.TemplateApi` (Windows) or `~/repos/Pragsys.TemplateApi` (Linux/macOS)
+* Clone Repo to local folder, eg `c:\git\Pragmatic.TemplateApi` (Windows) or `~/repos/Pragmatic.TemplateApi` (Linux/macOS)
 * Run `dotnet new install <path-to-cloned-repo>`
 
 To Create a project: 
 * Navigate to your new empty project directory.
-* Run `dotnet new Pragsys.TemplateApi --ProjectName:MyAppName`
+* Run `dotnet new Pragmatic.TemplateApi --ProjectName:MyAppName`
 
 ## Status
 
@@ -73,7 +73,7 @@ This solution contains a simple Todo List API with background Workerhost, a post
 
 Run `docker compose -f docker-compose.infra.yml up` 
 Launch apps:
-* Pragsys.TemplateApi.API
+* Pragmatic.TemplateApi.API
 
 ## Formatting
 The project needs to be correctly formatted to pass the build. To format the project using the dotnet format tool - 
@@ -115,7 +115,7 @@ For full local development, you will need to configure Keycloak, which takes a b
 
 For local keycloak to work properly as an OIDC server with another application, it needs to be running HTTPS with a valid, trusted certificate, otherwise you will receive an SSL error at runtime. To support this, you will need to generate a certificate for localhost and add it to trusted root, and load this certificate into Keycloak.
 
-See the SSL Setup guide for local Keycloak in this repo: https://github.com/pragmatic-systems/Pragsys.DockerTools
+See the SSL Setup guide for local Keycloak in this repo: https://github.com/pragmatic-systems/Pragmatic.DockerTools
 
 ### Keycloak Configuration
 
