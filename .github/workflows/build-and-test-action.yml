@@ -1,4 +1,3 @@
-
 name: Build and Test Solution
 run-name: Build and Test Solution
 
@@ -7,8 +6,11 @@ env:
   HUSKY: '0'
 
 on:
+  push:
+    branches:
+      - main
   pull_request:
-    branches:    
+    branches:
       - main
 
 permissions:
@@ -31,6 +33,10 @@ jobs:
         run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
         id: extract_branch
 
+      - name: Install dotnet tools
+        shell: bash
+        run: dotnet tool restore
+
       - name: Run cake step
         uses: cake-build/cake-action@763b621ef69b317c1d6bde43a65f189c936b503b
         with:
@@ -39,9 +45,10 @@ jobs:
           SonarOrg: ${{ vars.SONARORG }}
           SonarToken: ${{ secrets.SONARTOKEN }}
           SonarHostUrl: ${{ vars.SONARHOST }}
-          SonarProjectKey: ${{ secrets.SONAR_PROJ_KEY }}-PR
-          SonarProjectName: ${{ vars.SONAR_PROJ_NAME }}-PR
-          SonarBranch: main # NOTE: Free sonar so we're using "main" and a build scan project.
+          # NOTE: Free sonar so we're using "main" and a seperate build scan project for Main vs PR.
+          SonarProjectKey: ${{ github.event.pull_request && format('{0}-PR', secrets.SONAR_PROJ_KEY) || secrets.SONAR_PROJ_KEY }}
+          SonarProjectName: ${{ github.event.pull_request && format('{0}-PR', vars.SONAR_PROJ_NAME) || vars.SONAR_PROJ_NAME }}
+          SonarBranch: main 
 
       - name: Publish Test Report with Pull Request Comment
         uses: ctrf-io/github-test-reporter@0f299074936c32ccaab5be5230511f6b2b9080aa
@@ -53,7 +60,7 @@ jobs:
           always-latest-comment: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          
+
       - name: Publish Artifacts
         uses: actions/upload-artifact@v7
         if: ${{ !cancelled() }}       # run this step even if previous step failed
